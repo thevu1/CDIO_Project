@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký - HealthQuest</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body class="auth-body">
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-grid"></div>
+
+    <div class="auth-shell">
+        <div class="auth-panel auth-brand">
+            <div class="brand-top">
+                <div class="brand-chip">🌿 Build your better self</div>
+                <div class="brand-logo">HQ</div>
+            </div>
+
+            <div class="brand-content">
+                <h1>HealthQuest</h1>
+                <p class="brand-subtitle">
+                    Bắt đầu hành trình xây dựng thói quen tích cực, ngủ tốt hơn, vận động đều hơn và tập trung hơn mỗi ngày.
+                </p>
+
+                <div class="brand-cards">
+                    <div class="mini-card">
+                        <span class="mini-icon">🚶</span>
+                        <div>
+                            <strong>Daily steps</strong>
+                            <p>Theo dõi vận động hằng ngày</p>
+                        </div>
+                    </div>
+
+                    <div class="mini-card">
+                        <span class="mini-icon">📵</span>
+                        <div>
+                            <strong>Screen control</strong>
+                            <p>Kiểm soát thời gian dùng máy</p>
+                        </div>
+                    </div>
+
+                    <div class="mini-card">
+                        <span class="mini-icon">🏆</span>
+                        <div>
+                            <strong>Level up</strong>
+                            <p>Tạo động lực bằng streak và điểm</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="auth-panel auth-form-panel">
+            <div class="form-header">
+                <span class="form-tag">Create account</span>
+                <h2>Đăng ký tài khoản</h2>
+                <p>Tạo tài khoản để bắt đầu sử dụng HealthQuest.</p>
+            </div>
+
+            <form action="/register" method="POST" class="auth-form">
+                <div class="input-wrap">
+                    <label>Họ và tên</label>
+                    <input type="text" name="name" placeholder="Nhập họ và tên" required>
+                </div>
+
+                <div class="input-wrap">
+                    <label>Email</label>
+                    <input type="email" name="email" placeholder="you@example.com" required>
+                </div>
+
+                <div class="input-wrap">
+                    <label>Mật khẩu</label>
+                    <input type="password" name="password" placeholder="Nhập mật khẩu" required>
+                </div>
+
+                <button type="submit" class="btn-gradient">Đăng ký</button>
+            </form>
+
+            <p class="auth-switch">
+                Đã có tài khoản?
+                <a href="/login">Đăng nhập</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
