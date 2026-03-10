@@ -1,6 +1,6 @@
 const express = require("express")
 const path = require("path")
-const db = require("../database/dbLocal")
+const db = require("../database/db")
 const fs = require("fs")
 const app = express.Router()
 
