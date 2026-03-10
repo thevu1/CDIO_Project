@@ -2,7 +2,7 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const path = require("path");
 const fs = require("fs")
-const db = require("../database/db");
+const db = require("../database/dbLocal");
 const app = express.Router()
 
 app.get("/", (req, res) => {
