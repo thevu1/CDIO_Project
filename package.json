@@ -13,8 +13,16 @@
     "body-parser": "^2.2.2",
     "express": "^5.2.1",
     "express-session": "^1.19.0",
-    "mysql2": "^3.19.0"
+    "mysql2": "^3.19.1"
   },
   "keywords": [],
-  "type": "commonjs"
+  "type": "commonjs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thevu1/CDIO_Project.git"
+  },
+  "bugs": {
+    "url": "https://github.com/thevu1/CDIO_Project/issues"
+  },
+  "homepage": "https://github.com/thevu1/CDIO_Project#readme"
 }
