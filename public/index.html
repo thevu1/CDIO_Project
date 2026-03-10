@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HealthQuest - Bạn bè</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top bar với avatar, tên và streak lửa -->
+        <div class="top-bar">
+            <div class="user-info">
+                <div class="avatar">👤</div>
+                <div class="greeting">
+                    <span class="hello">Xin chào,</span>
+                    <span class="username" id="username"></span>
+                </div>
+            </div>
+            <div class="top-streak">
+                <span class="streak-icon">🔥</span>
+                <span class="streak-number" id="top-streak">0</span>
+            </div>
+        </div>
+
+        <!-- Ngày hiện tại -->
+        <div class="date" id="current-date"></div>
+
+        <!-- Khu vực Streak và Mục tiêu (biểu đồ tròn) -->
+        <div class="stats-row">
+            <div class="streak-box">
+                <span class="streak-label">Streak của tôi</span>
+                <div class="streak-value-wrapper">
+                    <span class="streak-fire">🔥</span>
+                    <span class="streak-number-large" id="my-streak">0</span>
+                </div>
+            </div>
+            <div class="goal-box">
+                <div class="circular-progress" id="circular-progress">
+                    <svg viewBox="0 0 36 36" class="circular-chart">
+                        <path class="circle-bg"
+                            d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831"
+                        />
+                        <path class="circle"
+                            id="progress-circle"
+                            stroke-dasharray="0, 100"
+                            d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831"
+                        />
+                        <text x="18" y="20.35" class="percentage" id="progress-text">0%</text>
+                    </svg>
+                </div>
+                <div class="goal-label">Mục tiêu 30 ngày</div>
+            </div>
+        </div>
+
+        <!-- Tìm kiếm bạn bè -->
+        <div class="search-section">
+            <h3>Tìm bạn mới</h3>
+            <div class="search-box">
+                <input type="text" id="search-keyword" placeholder="UID, tên hoặc số điện thoại...">
+                <button id="search-btn">Tìm</button>
+            </div>
+            <div id="search-results" class="results-list"></div>
+        </div>
+
+        <!-- Danh sách bạn bè -->
+        <div class="friends-section">
+            <h3>Bạn bè <span class="badge">(streak)</span></h3>
+            <div id="friends-list" class="friends-list"></div>
+        </div>
+
+        <!-- Thanh điều hướng dưới cùng -->
+        <div class="bottom-nav">
+            <div class="nav-item">
+                <span class="nav-icon">🚶</span>
+                <span class="nav-label">Đi bộ</span>
+            </div>
+            <div class="nav-item">
+                <span class="nav-icon">😴</span>
+                <span class="nav-label">Giấc ngủ</span>
+            </div>
+            <div class="nav-item active">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-label">Trang chủ</span>
+            </div>
+            <div class="nav-item">
+                <span class="nav-icon">📱</span>
+                <span class="nav-label">Màn hình</span>
+            </div>
+            <div class="nav-item">
+                <span class="nav-icon">🎯</span>
+                <span class="nav-label">Tập trung</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
