@@ -9,6 +9,7 @@ const db = require("./database/db");
 const app = express();
 const PORT = 3000;
 
+
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(session({
@@ -34,11 +35,12 @@ app.get("/register", (req, res) => {
 app.post("/register", async (req, res) => {
     const { name, email, password } = req.body;
 
+    const userId = "U" + Math.floor(100000 + Math.random() * 900000);
     const hash = await bcrypt.hash(password, 10);
 
     db.query(
-        "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
-        [name, email, hash],
+        "INSERT INTO users (userid, name, email, password) VALUES (?, ?, ?, ?)",
+        [userId, name, email, hash],
         (err, result) => {
             if (err) {
                 console.log(err);
