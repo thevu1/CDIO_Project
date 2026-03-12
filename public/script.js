@@ -2,16 +2,10 @@
 const usernameSpan = document.getElementById('username');
 const topStreakSpan = document.getElementById('top-streak');
 const dateElement = document.getElementById('current-date');
-const myStreakSpan = document.getElementById('my-streak');
-const progressCircle = document.getElementById('progress-circle');
-const progressText = document.getElementById('progress-text');
 const searchBtn = document.getElementById('search-btn');
 const searchKeyword = document.getElementById('search-keyword');
 const searchResults = document.getElementById('search-results');
 const friendsList = document.getElementById('friends-list');
-
-// Constants
-const MAX_STREAK = 30; // Mục tiêu 30 ngày
 
 // Format date
 function updateDate() {
@@ -27,30 +21,11 @@ function updateDate() {
     }
 }
 
-// Update circular progress
-function updateCircularProgress(streak) {
-    const streakNum = Number(streak) || 0;
-    console.log('📊 Cập nhật progress với streak =', streakNum);
-    
-    const percent = Math.min(100, (streakNum / MAX_STREAK) * 100);
-    console.log('📈 Phần trăm =', percent.toFixed(1) + '%');
-    
-    const dashArray = `${percent}, 100`;
-    
-    if (progressCircle) {
-        progressCircle.setAttribute('stroke-dasharray', dashArray);
-    }
-    
-    if (progressText) {
-        progressText.textContent = `${Math.round(percent)}%`;
-    }
-}
-
 // Fetch current user info
 async function fetchMyInfo() {
     try {
         console.log('🔄 Đang gọi API /api/me...');
-        const res = await fetch('/api/me', { cache: 'no-store' }); // chống cache
+        const res = await fetch('/api/me', { cache: 'no-store' });
         if (!res.ok) throw new Error('Không thể lấy thông tin user');
         const me = await res.json();
         console.log('✅ Dữ liệu user từ API:', me);
@@ -59,15 +34,10 @@ async function fetchMyInfo() {
         
         if (usernameSpan) usernameSpan.textContent = me.name || 'Người dùng';
         if (topStreakSpan) topStreakSpan.textContent = streakNum;
-        if (myStreakSpan) myStreakSpan.textContent = streakNum;
-        
-        updateCircularProgress(streakNum);
     } catch (err) {
         console.error('❌ Lỗi lấy thông tin:', err);
         if (usernameSpan) usernameSpan.textContent = 'Người dùng';
         if (topStreakSpan) topStreakSpan.textContent = '0';
-        if (myStreakSpan) myStreakSpan.textContent = '0';
-        updateCircularProgress(0);
     }
 }
 
@@ -214,52 +184,7 @@ function escapeHtml(unsafe) {
     });
 }
 
-// Thêm nút "Điểm danh" vào giao diện
-function addCheckinButton() {
-    if (document.getElementById('checkin-btn')) return;
-    
-    const statsRow = document.querySelector('.stats-row');
-    if (statsRow) {
-        const checkinBtn = document.createElement('button');
-        checkinBtn.id = 'checkin-btn';
-        checkinBtn.textContent = '🔥 Điểm danh hàng ngày';
-        checkinBtn.style.cssText = `
-            background: #f1c40f;
-            border: none;
-            border-radius: 40px;
-            padding: 12px 20px;
-            width: 100%;
-            font-weight: bold;
-            margin: 10px 0 20px;
-            cursor: pointer;
-            font-size: 16px;
-            color: #333;
-        `;
-        statsRow.parentNode.insertBefore(checkinBtn, statsRow.nextSibling);
-        
-        checkinBtn.addEventListener('click', async () => {
-            try {
-                console.log('🔄 Đang điểm danh...');
-                const res = await fetch('/api/update-streak', { method: 'POST' });
-                const data = await res.json();
-                if (res.ok) {
-                    alert('✅ Điểm danh thành công!');
-                    console.log('✅ Streak mới:', data.streak);
-                    fetchMyInfo();
-                    loadFriends();
-                } else {
-                    alert(data.error || 'Có lỗi xảy ra');
-                }
-            } catch (err) {
-                console.error('❌ Lỗi điểm danh:', err);
-                alert('Lỗi kết nối');
-            }
-        });
-    }
-}
-
 // Initialization
 updateDate();
 fetchMyInfo();
 loadFriends();
-addCheckinButton();

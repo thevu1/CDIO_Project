@@ -2,24 +2,26 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
 }
 
 body {
     background: #f5f7fa;
     display: flex;
     justify-content: center;
+    align-items: center;
     min-height: 100vh;
     padding: 16px;
 }
 
 .app-container {
-    max-width: 380px;
+    max-width: 400px;
     width: 100%;
-    background: white;
-    border-radius: 32px;
-    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.05);
-    padding: 24px 20px 20px;
+    background: #ffffff;
+    border-radius: 40px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    padding: 20px 20px 12px;  /* giảm padding trên và dưới */
+    transition: transform 0.2s;
 }
 
 /* Top bar */
@@ -27,30 +29,31 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    background: white;
-    padding: 8px 12px;
-    border-radius: 40px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    margin-bottom: 12px;  /* giảm từ 20px */
+    background: #ffffff;
+    padding: 8px 12px 8px 16px;
+    border-radius: 60px;
+    box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.08);
     border: 1px solid #f0f0f0;
 }
 
 .user-info {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
 }
 
 .avatar {
-    width: 44px;
-    height: 44px;
-    background: #faf1e0;
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(145deg, #fef3e0, #ffe6b3);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    font-size: 26px;
     color: #b95b0d;
+    box-shadow: 0 4px 10px rgba(243, 156, 18, 0.2);
 }
 
 .greeting {
@@ -60,277 +63,244 @@ body {
 
 .hello {
     font-size: 13px;
-    color: #a0a0a0;
+    color: #9b9b9b;
+    letter-spacing: 0.3px;
 }
 
 .username {
-    font-size: 16px;
-    font-weight: 600;
-    color: #333;
+    font-size: 18px;
+    font-weight: 700;
+    color: #2c3e50;
+    line-height: 1.2;
 }
 
 .top-streak {
-    background: #fff1e0;
-    padding: 8px 16px;
-    border-radius: 40px;
+    background: linear-gradient(145deg, #fff1e0, #ffe1c6);
+    padding: 10px 18px;
+    border-radius: 50px;
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-weight: 600;
+    gap: 8px;
+    font-weight: 700;
     color: #d35400;
+    box-shadow: 0 4px 12px rgba(243, 156, 18, 0.15);
 }
 
 .streak-icon {
-    font-size: 18px;
+    font-size: 20px;
 }
 
 .streak-number {
-    font-size: 16px;
+    font-size: 18px;
 }
 
 /* Date */
 .date {
-    background: #fafafa;
+    background: #f8fafc;
     display: inline-block;
-    padding: 8px 18px;
-    border-radius: 40px;
-    font-size: 14px;
+    padding: 10px 24px;
+    border-radius: 50px;
+    font-size: 15px;
     font-weight: 500;
-    color: #7f8c8d;
-    margin-bottom: 24px;
-    border: 1px solid #f0f0f0;
-}
-
-/* Stats row: streak và mục tiêu */
-.stats-row {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 28px;
-}
-
-.streak-box {
-    flex: 2;
-    background: #fff9f0;
-    border-radius: 24px;
-    padding: 16px 14px;
-    border: 1px solid #ffe6b3;
-}
-
-.streak-label {
-    font-size: 14px;
-    color: #b95b0d;
-    font-weight: 500;
-}
-
-.streak-value-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 8px;
-}
-
-.streak-fire {
-    font-size: 32px;
-}
-
-.streak-number-large {
-    font-size: 48px;
-    font-weight: 700;
-    color: #e67e22;
-    line-height: 1;
-}
-
-.goal-box {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: white;
-    border-radius: 24px;
-    padding: 12px 0;
-    border: 1px solid #f0f0f0;
-}
-
-.circular-progress {
-    width: 80px;
-    height: 80px;
-}
-
-.circular-chart {
-    width: 100%;
-    height: 100%;
-}
-
-.circle-bg {
-    fill: none;
-    stroke: #eee;
-    stroke-width: 3;
-}
-
-.circle {
-    fill: none;
-    stroke: #f39c12;
-    stroke-width: 3;
-    stroke-linecap: round;
-    transition: stroke-dasharray 0.3s;
-}
-
-.percentage {
-    fill: #333;
-    font-size: 8px;
-    text-anchor: middle;
-    dominant-baseline: middle;
-    font-weight: 600;
-}
-
-.goal-label {
-    font-size: 11px;
-    color: #95a5a6;
-    margin-top: 4px;
+    color: #4b5563;
+    margin-bottom: 16px;  /* giảm từ 28px */
+    border: 1px solid #e9eef2;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
 }
 
 /* Search section */
 .search-section {
-    margin-bottom: 28px;
+    margin-bottom: 16px;  /* giảm từ 32px */
+}
+
+/* Ảnh phía trên tìm kiếm */
+.search-image {
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.search-image img {
+    width: 100%;
+    height: 200px;            /* chiều cao cố định, ảnh sẽ cắt bớt phần dư */
+    object-fit: cover;        /* cắt ảnh để vừa khung, giữ tỷ lệ */
+    object-position: center;  /* căn giữa phần ảnh hiển thị */
+    display: block;
+    border-radius: 29px;
+    border: 2px solid #f1c40f;
+    box-shadow: 0 8px 20px -6px rgba(241, 196, 15, 0.25);
 }
 
 h3 {
-    font-size: 17px;
-    color: #2c3e50;
-    margin-bottom: 14px;
-    font-weight: 600;
+    font-size: 18px;
+    color: #1e293b;
+    margin-bottom: 12px;  /* giảm từ 16px */
+    font-weight: 650;
+    display: flex;
+    align-items: center;
 }
 
 .badge {
     font-size: 12px;
-    font-weight: 400;
+    font-weight: 500;
     color: #f39c12;
     background: #fff3e0;
-    padding: 4px 10px;
-    border-radius: 30px;
-    margin-left: 8px;
+    padding: 4px 12px;
+    border-radius: 40px;
+    margin-left: 10px;
+    letter-spacing: 0.3px;
 }
 
 .search-box {
     display: flex;
-    gap: 8px;
-    margin-bottom: 16px;
+    gap: 10px;
+    margin-bottom: 12px;  /* giảm từ 18px */
 }
 
 .search-box input {
     flex: 1;
-    padding: 14px 18px;
-    border: 2px solid #f0f0f0;
-    border-radius: 40px;
+    padding: 14px 20px;  /* giảm padding dọc một chút */
+    border: 2px solid #edf2f7;
+    border-radius: 50px;
     font-size: 15px;
     outline: none;
-    transition: border 0.2s;
+    transition: all 0.2s;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
 }
 
 .search-box input:focus {
     border-color: #f1c40f;
+    box-shadow: 0 0 0 4px rgba(241, 196, 15, 0.15);
 }
 
 .search-box button {
-    background: #f1c40f;
+    background: linear-gradient(145deg, #f1c40f, #e0b20c);
     border: none;
-    border-radius: 40px;
-    padding: 0 24px;
+    border-radius: 50px;
+    padding: 0 24px;  /* giảm padding ngang */
     color: white;
-    font-weight: 600;
+    font-weight: 650;
     font-size: 15px;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.2s;
+    box-shadow: 0 8px 16px -6px rgba(241, 196, 15, 0.4);
+    letter-spacing: 0.5px;
 }
 
 .search-box button:hover {
-    background: #d4ac0d;
+    background: linear-gradient(145deg, #e0b20c, #f1c40f);
+    transform: scale(1.02);
+    box-shadow: 0 10px 20px -6px rgba(241, 196, 15, 0.6);
 }
 
 /* Results and friends list */
 .results-list, .friends-list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;  /* giảm từ 12px */
 }
 
 .friend-item, .search-item {
-    background: #fefefe;
-    border-radius: 20px;
-    padding: 14px 16px;
+    background: #ffffff;
+    border-radius: 28px;
+    padding: 14px 16px;  /* giảm padding từ 18px */
     display: flex;
     justify-content: space-between;
     align-items: center;
     border: 1px solid #f0f0f0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.02);
+    transition: all 0.2s;
+}
+
+.friend-item:hover, .search-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.1);
+    border-color: #ffe6b3;
 }
 
 .friend-info {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 4px;  /* giảm từ 6px */
     flex: 1;
 }
 
 .friend-name {
-    font-weight: 600;
-    color: #34495e;
-    font-size: 15px;
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 16px;
+    letter-spacing: -0.2px;
 }
 
 .friend-phone, .friend-id {
     font-size: 12px;
-    color: #95a5a6;
+    color: #7c8b9a;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .friend-streak {
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 15px;
+    font-weight: 700;
     color: #e67e22;
     background: #fff3e0;
-    padding: 5px 12px;
-    border-radius: 30px;
-    margin-left: 8px;
+    padding: 6px 14px;  /* giảm padding ngang */
+    border-radius: 40px;
+    margin-left: 8px;  /* giảm từ 12px */
+    box-shadow: inset 0 1px 4px rgba(0,0,0,0.02);
+    white-space: nowrap;
 }
 
 .friend-actions button, .search-item button {
     background: transparent;
     border: 2px solid;
-    border-radius: 30px;
-    padding: 6px 16px;
-    font-weight: 600;
+    border-radius: 40px;
+    padding: 6px 16px;  /* giảm padding */
+    font-weight: 650;
     font-size: 13px;
     cursor: pointer;
     transition: all 0.2s;
-    min-width: 70px;
+    min-width: 70px;  /* giảm từ 80px */
+    letter-spacing: 0.3px;
 }
 
 .search-item button {
     border-color: #f1c40f;
     color: #f1c40f;
+    background: rgba(241, 196, 15, 0.02);
 }
 
 .search-item button:hover {
     background: #f1c40f;
     color: white;
+    border-color: #f1c40f;
+    transform: scale(0.98);
+    box-shadow: 0 8px 16px -6px #f1c40f;
 }
 
 .friend-actions .remove-friend {
     border-color: #e67e22;
     color: #e67e22;
+    background: rgba(230, 126, 34, 0.02);
 }
 
 .friend-actions .remove-friend:hover {
     background: #e67e22;
     color: white;
+    border-color: #e67e22;
+    transform: scale(0.98);
+    box-shadow: 0 8px 16px -6px #e67e22;
 }
 
 .empty-message {
     text-align: center;
-    color: #bdc3c7;
+    color: #a0b3c9;
     font-style: italic;
-    padding: 20px 0;
+    padding: 20px 0;  /* giảm từ 30px */
+    background: #f9f9fc;
+    border-radius: 40px;
+    border: 1px dashed #d0ddee;
 }
 
 /* Bottom navigation */
@@ -338,29 +308,40 @@ h3 {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    background: white;
-    border-top: 1px solid #f0f0f0;
-    padding: 10px 0 6px;
-    margin-top: 30px;
+    background: #ffffff;
+    border-top: 1px solid #f0f4f9;
+    padding: 10px 0 6px;  /* giảm padding */
+    margin-top: 16px;  /* giảm từ 36px */
+    border-radius: 60px 60px 0 0;
 }
 
 .nav-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
-    color: #b0b0b0;
+    gap: 4px;  /* giảm từ 5px */
+    color: #9aa9b9;
     font-size: 11px;
-    font-weight: 500;
-    transition: color 0.2s;
-    cursor: default;
+    font-weight: 600;
+    transition: all 0.2s;
+    cursor: pointer;
     flex: 1;
+    padding: 4px 0;  /* giảm từ 6px */
+    border-radius: 40px;
 }
 
 .nav-item.active {
     color: #f1c40f;
+    background: #fff9e6;
+    transform: translateY(-2px);
 }
 
 .nav-icon {
-    font-size: 20px;
+    font-size: 22px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
+}
+
+.nav-label {
+    font-size: 11px;
+    font-weight: 500;
 }
