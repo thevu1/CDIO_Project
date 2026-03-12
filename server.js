@@ -24,12 +24,18 @@ const pool = mysql.createPool({
 });
 
 // Cấu hình user hiện tại (cố định để demo)
-const CURRENT_USER_ID = 1; // Đảm bảo user này tồn tại trong DB
+const CURRENT_USER_ID = 1;
 
 // Helper: Kiểm tra user tồn tại
 async function userExists(userId) {
     const [rows] = await pool.execute('SELECT id FROM users WHERE id = ?', [userId]);
     return rows.length > 0;
+}
+
+// Lấy ngày theo múi giờ Việt Nam (Asia/Ho_Chi_Minh)
+function getLocalDate() {
+    const today = new Date();
+    return today.toLocaleDateString('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' });
 }
 
 // API thông tin user hiện tại
@@ -42,6 +48,7 @@ app.get('/api/me', async (req, res) => {
         if (rows.length === 0) {
             return res.status(404).json({ error: 'User hiện tại không tồn tại trong DB' });
         }
+        console.log('📌 API /api/me trả về:', rows[0]);
         res.json(rows[0]);
     } catch (err) {
         console.error('Lỗi /api/me:', err);
@@ -151,19 +158,44 @@ app.post('/api/friends/remove', async (req, res) => {
     }
 });
 
+// Hàm chuyển đổi một đối tượng Date thành chuỗi ngày (YYYY-MM-DD) theo múi giờ Việt Nam
+// Hàm chuyển đổi ngày từ database thành chuỗi YYYY-MM-DD theo múi giờ Việt Nam
+function formatDateToLocal(date) {
+    if (!date) return null;
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return null;
+    return d.toLocaleDateString('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' });
+}
+
 // Cập nhật streak
 async function updateStreak(userId) {
     try {
         const [rows] = await pool.execute('SELECT last_active, streak FROM users WHERE id = ?', [userId]);
         if (rows.length === 0) return;
         const user = rows[0];
-        const today = new Date().toISOString().slice(0, 10);
-        if (user.last_active === today) return;
-        const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+        const today = getLocalDate();
+
+        // Format last_active từ database
+        const lastDate = formatDateToLocal(user.last_active);
+        console.log(`📅 last_active DB: ${user.last_active}, lastDate: ${lastDate}, today: ${today}`);
+
+        // Nếu đã điểm danh hôm nay thì không làm gì
+        if (lastDate === today) {
+            console.log('✅ Đã điểm danh hôm nay, giữ nguyên streak =', user.streak);
+            return;
+        }
+
+        // Tính ngày hôm qua
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = yesterday.toLocaleDateString('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' });
+
         let newStreak = 1;
-        if (user.last_active === yesterday) {
+        if (lastDate === yesterdayStr) {
             newStreak = user.streak + 1;
         }
+
+        console.log(`🔄 Cập nhật streak: ${user.streak} → ${newStreak}`);
         await pool.execute('UPDATE users SET streak = ?, last_active = ? WHERE id = ?', [newStreak, today, userId]);
     } catch (err) {
         console.error('Lỗi cập nhật streak:', err);
@@ -174,14 +206,17 @@ async function updateStreak(userId) {
 app.post('/api/update-streak', async (req, res) => {
     try {
         await updateStreak(CURRENT_USER_ID);
-        res.json({ success: true });
+        // Lấy lại streak mới để trả về
+        const [rows] = await pool.execute('SELECT streak FROM users WHERE id = ?', [CURRENT_USER_ID]);
+        res.json({ success: true, streak: rows[0].streak });
     } catch (err) {
+        console.error('Lỗi /api/update-streak:', err);
         res.status(500).json({ error: 'Lỗi cập nhật streak' });
     }
 });
 
 // Khởi động server
 app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
-    updateStreak(CURRENT_USER_ID);
+    console.log(`🚀 Server running at http://localhost:${port}`);
+    // KHÔNG tự động gọi updateStreak ở đây
 });

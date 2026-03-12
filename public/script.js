@@ -22,15 +22,26 @@ function updateDate() {
     const date = today.getDate();
     const month = months[today.getMonth()];
     const year = today.getFullYear();
-    dateElement.textContent = `${dayName}, ${date} Tháng ${month}, ${year}`;
+    if (dateElement) {
+        dateElement.textContent = `${dayName}, ${date} Tháng ${month}, ${year}`;
+    }
 }
 
 // Update circular progress
 function updateCircularProgress(streak) {
-    const percent = Math.min(100, (streak / MAX_STREAK) * 100);
+    const streakNum = Number(streak) || 0;
+    console.log('📊 Cập nhật progress với streak =', streakNum);
+    
+    const percent = Math.min(100, (streakNum / MAX_STREAK) * 100);
+    console.log('📈 Phần trăm =', percent.toFixed(1) + '%');
+    
     const dashArray = `${percent}, 100`;
+    
     if (progressCircle) {
         progressCircle.setAttribute('stroke-dasharray', dashArray);
+    }
+    
+    if (progressText) {
         progressText.textContent = `${Math.round(percent)}%`;
     }
 }
@@ -38,20 +49,24 @@ function updateCircularProgress(streak) {
 // Fetch current user info
 async function fetchMyInfo() {
     try {
-        const res = await fetch('/api/me');
+        console.log('🔄 Đang gọi API /api/me...');
+        const res = await fetch('/api/me', { cache: 'no-store' }); // chống cache
         if (!res.ok) throw new Error('Không thể lấy thông tin user');
         const me = await res.json();
+        console.log('✅ Dữ liệu user từ API:', me);
         
-        usernameSpan.textContent = me.name;
-        topStreakSpan.textContent = me.streak;
-        myStreakSpan.textContent = me.streak;
+        const streakNum = Number(me.streak) || 0;
         
-        updateCircularProgress(me.streak);
+        if (usernameSpan) usernameSpan.textContent = me.name || 'Người dùng';
+        if (topStreakSpan) topStreakSpan.textContent = streakNum;
+        if (myStreakSpan) myStreakSpan.textContent = streakNum;
+        
+        updateCircularProgress(streakNum);
     } catch (err) {
-        console.error('Lỗi lấy thông tin:', err);
-        usernameSpan.textContent = 'Người dùng';
-        topStreakSpan.textContent = '0';
-        myStreakSpan.textContent = '0';
+        console.error('❌ Lỗi lấy thông tin:', err);
+        if (usernameSpan) usernameSpan.textContent = 'Người dùng';
+        if (topStreakSpan) topStreakSpan.textContent = '0';
+        if (myStreakSpan) myStreakSpan.textContent = '0';
         updateCircularProgress(0);
     }
 }
@@ -59,17 +74,22 @@ async function fetchMyInfo() {
 // Load friends list
 async function loadFriends() {
     try {
-        const res = await fetch('/api/friends');
+        console.log('🔄 Đang gọi API /api/friends...');
+        const res = await fetch('/api/friends', { cache: 'no-store' });
         if (!res.ok) throw new Error('Lỗi tải danh sách bạn');
         const friends = await res.json();
+        console.log('✅ Danh sách bạn bè:', friends);
         displayFriends(friends);
     } catch (err) {
-        console.error(err);
-        friendsList.innerHTML = '<div class="empty-message">Không thể tải danh sách bạn</div>';
+        console.error('❌ Lỗi tải danh sách bạn:', err);
+        if (friendsList) {
+            friendsList.innerHTML = '<div class="empty-message">Không thể tải danh sách bạn</div>';
+        }
     }
 }
 
 function displayFriends(friends) {
+    if (!friendsList) return;
     friendsList.innerHTML = '';
     if (friends.length === 0) {
         friendsList.innerHTML = '<div class="empty-message">Chưa có bạn bè</div>';
@@ -117,21 +137,28 @@ function displayFriends(friends) {
 }
 
 // Search users
-searchBtn.addEventListener('click', async () => {
-    const keyword = searchKeyword.value.trim();
-    if (!keyword) return;
-    try {
-        const res = await fetch(`/api/users/search?keyword=${encodeURIComponent(keyword)}`);
-        if (!res.ok) throw new Error('Lỗi tìm kiếm');
-        const users = await res.json();
-        displaySearchResults(users);
-    } catch (err) {
-        console.error(err);
-        searchResults.innerHTML = '<div class="empty-message">Lỗi tìm kiếm</div>';
-    }
-});
+if (searchBtn) {
+    searchBtn.addEventListener('click', async () => {
+        const keyword = searchKeyword.value.trim();
+        if (!keyword) return;
+        try {
+            console.log('🔍 Tìm kiếm với keyword:', keyword);
+            const res = await fetch(`/api/users/search?keyword=${encodeURIComponent(keyword)}`);
+            if (!res.ok) throw new Error('Lỗi tìm kiếm');
+            const users = await res.json();
+            console.log('✅ Kết quả tìm kiếm:', users);
+            displaySearchResults(users);
+        } catch (err) {
+            console.error('❌ Lỗi tìm kiếm:', err);
+            if (searchResults) {
+                searchResults.innerHTML = '<div class="empty-message">Lỗi tìm kiếm</div>';
+            }
+        }
+    });
+}
 
 function displaySearchResults(users) {
+    if (!searchResults) return;
     searchResults.innerHTML = '';
     if (users.length === 0) {
         searchResults.innerHTML = '<div class="empty-message">Không tìm thấy người dùng</div>';
@@ -187,7 +214,52 @@ function escapeHtml(unsafe) {
     });
 }
 
+// Thêm nút "Điểm danh" vào giao diện
+function addCheckinButton() {
+    if (document.getElementById('checkin-btn')) return;
+    
+    const statsRow = document.querySelector('.stats-row');
+    if (statsRow) {
+        const checkinBtn = document.createElement('button');
+        checkinBtn.id = 'checkin-btn';
+        checkinBtn.textContent = '🔥 Điểm danh hàng ngày';
+        checkinBtn.style.cssText = `
+            background: #f1c40f;
+            border: none;
+            border-radius: 40px;
+            padding: 12px 20px;
+            width: 100%;
+            font-weight: bold;
+            margin: 10px 0 20px;
+            cursor: pointer;
+            font-size: 16px;
+            color: #333;
+        `;
+        statsRow.parentNode.insertBefore(checkinBtn, statsRow.nextSibling);
+        
+        checkinBtn.addEventListener('click', async () => {
+            try {
+                console.log('🔄 Đang điểm danh...');
+                const res = await fetch('/api/update-streak', { method: 'POST' });
+                const data = await res.json();
+                if (res.ok) {
+                    alert('✅ Điểm danh thành công!');
+                    console.log('✅ Streak mới:', data.streak);
+                    fetchMyInfo();
+                    loadFriends();
+                } else {
+                    alert(data.error || 'Có lỗi xảy ra');
+                }
+            } catch (err) {
+                console.error('❌ Lỗi điểm danh:', err);
+                alert('Lỗi kết nối');
+            }
+        });
+    }
+}
+
 // Initialization
 updateDate();
 fetchMyInfo();
 loadFriends();
+addCheckinButton();
