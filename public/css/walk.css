@@ -1,0 +1,138 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
+}
+
+body {
+    background: #f3f5f9;
+}
+
+.container {
+    max-width: 420px;
+    margin: auto;
+    padding-bottom: 90px;
+}
+
+/* HEADER */
+
+.header {
+    background: linear-gradient(180deg, #2962ff, #2f6cff);
+    padding: 25px 20px 60px;
+    color: white;
+    text-align: center;
+}
+
+.header h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+/* CARD */
+
+.card {
+    background: white;
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    margin: 20px;
+}
+
+.header .card {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    box-shadow: none;
+}
+
+.card h3 {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.card h1 {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+/* PROGRESS BAR */
+
+.progress {
+    width: 100%;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    margin-top: 15px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: white;
+    border-radius: 20px;
+}
+
+/* GRID */
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    padding: 0 20px;
+}
+
+.grid .card {
+    margin: 0;
+}
+
+.grid p {
+    font-size: 22px;
+    font-weight: 700;
+    margin-top: 6px;
+}
+
+/* BUTTON */
+
+.btn {
+    display: block;
+    width: calc(100% - 40px);
+    margin: 25px auto;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    background: #2962ff;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    box-shadow: 0 6px 15px rgba(41, 98, 255, 0.4);
+    cursor: pointer;
+}
+
+/* BOTTOM NAV */
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 420px;
+    background: white;
+    display: flex;
+    justify-content: space-around;
+    padding: 12px 0;
+    border-top: 1px solid #eee;
+}
+
+.bottom-nav a {
+    text-decoration: none;
+    color: #777;
+    font-size: 13px;
+    text-align: center;
+}
+
+.bottom-nav a:first-child {
+    color: #2962ff;
+    font-weight: 600;
+}

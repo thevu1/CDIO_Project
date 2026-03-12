@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/sleep.css">
+    <title>Giấc ngủ</title>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="header" style="background:#8e24aa">
+
+            <h2>Sẵn sàng ngủ</h2>
+
+            <div class="card">
+                <h1 id="sleepTime">22:30</h1>
+                <p>Giờ ngủ mục tiêu</p>
+            </div>
+
+        </div>
+        <div class="card">
+
+            <h3>Đặt giờ ngủ</h3>
+
+            <input type="time" id="timePicker" value="22:30" min="01:00">
+
+            <button class="btn" onclick="saveSleepTime()">Lưu</button>
+        
+        </div>
+        
+        <div class="reminder-card">
+
+            <div class="reminder-left">
+
+                <div class="reminder-icon">
+                    🔔
+                </div>
+
+                <div>
+
+                    <h3>Nhắc nhở</h3>
+                    <p>Cảnh báo lúc <span id="reminderTime">22:00</span> (Trước 30 phút)</p>
+
+                </div>
+
+            </div>
+
+            <div class="toggle"></div>
+
+        </div>
+
+        <div class="card">
+
+            <h3>Lịch sử 7 ngày</h3>
+
+            <p>Chưa có dữ liệu</p>
+
+        </div>
+        <div class="bottom-nav">
+
+            <a href="/walk">
+                🚶<br>Đi bộ
+            </a>
+
+            <a href="/sleep">
+                🌙<br>Giấc ngủ
+            </a>
+
+            <a href="/index">
+                🏠<br>Trang chủ
+            </a>
+
+            <a href="/screen">
+                📱<br>Màn hình
+            </a>
+
+            <a href="/focus">
+                🎯<br>Tập trung
+            </a>
+
+        </div>
+    </div>
+    <script src="/js/sleep.js"></script>
+</body>
+
+</html>

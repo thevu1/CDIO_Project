@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/screen.css">
+    <title>Screen Time</title>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="header" style="background:#ff5722">
+
+            <h2>Thời gian màn hình</h2>
+
+            <div class="card">
+
+                <h1 id="screenTime">0h 0p</h1>
+
+                <p>Giới hạn 4h</p>
+
+                <div class="progress">
+                    <div class="progress-bar" style="width:10%"></div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="grid">
+
+            <div class="card">
+                <h3>Trung bình 7 ngày</h3>
+                <p>0h</p>
+            </div>
+
+            <div class="card">
+                <h3>Tuần đủ giới hạn</h3>
+                <p>0%</p>
+            </div>
+
+        </div>
+
+        <!-- REMINDER CARD -->
+
+        <div class="reminder-card">
+
+            <div class="reminder-left">
+
+                <div class="reminder-icon">
+                    🔔
+                </div>
+
+                <div>
+
+                    <h3>Cách sử dụng</h3>
+                    <p>• Nhấn "Bắt đầu theo dõi" khi bạn bắt đầu sử dụng điện thoại
+                        • Nhấn "Dừng theo dõi" khi bạn ngừng sử dụng
+                        • Hệ thống sẽ cảnh báo khi bạn vượt quá giới hạn
+                        • Bạn có thể thêm giới hạn tạm thời cho phiên sử dụng</p>
+
+                </div>
+
+            </div>
+
+            <div class="toggle"></div>
+
+        </div>
+
+        <!-- QUICK LIMIT CARD -->
+
+        <div class="limit-card">
+
+            <div class="limit-left">
+
+                <div class="limit-icon">
+                    ⏱
+                </div>
+
+                <div>
+
+                    <h3>Giới hạn tạm thời</h3>
+                    <p>Đặt giới hạn 30 phút</p>
+
+                </div>
+
+            </div>
+
+            <button class="limit-btn">
+                Bật
+            </button>
+
+        </div>
+
+        <div class="bottom-nav">
+
+            <a href="/walk">
+                🚶<br>Đi bộ
+            </a>
+
+            <a href="/sleep">
+                🌙<br>Giấc ngủ
+            </a>
+
+            <a href="/index">
+                🏠<br>Trang chủ
+            </a>
+
+            <a href="/screen" class="active screen-active">
+                📱<br>Màn hình
+            </a>
+
+            <a href="/focus">
+                🎯<br>Tập trung
+            </a>
+
+        </div>
+    </div>
+    <script src="/js/app.js"></script>
+</body>
+
+</html>
