@@ -86,76 +86,64 @@ async function loadTasks() {
 }
 
 /* =================================
-COMPLETE TASK
-================================= */
-
-async function completeTask(id, type) {
-
-    try {
-
-        await fetch(`${API}/complete-task`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ id, type })
-        });
-
-        loadTasks();
-
-    } catch (err) {
-        console.error("Complete task error:", err);
-    }
-
-}
-/* =================================
 LEADERBOARD
 ================================= */
 
-async function loadLeaderboard() {
+const MEDALS = { 1: '🥇', 2: '🥈', 3: '🥉' };
 
-    try {
+function renderLeaderboard(players) {
+    const list = document.getElementById('leaderboardList');
 
-        const res = await fetch(`${API}/leaderboard`);
-        const data = await res.json();
-
-        const board = document.getElementById("leaderboard");
-        board.innerHTML = "";
-
-        data.forEach((user, index) => {
-
-            const row = document.createElement("div");
-            row.className = "leader-item";
-
-            row.innerHTML = `
-
-                <div class="leader-left">
-
-                    <div class="rank">${index + 1}</div>
-
-                    <img src="https://i.pravatar.cc/40?img=${index + 1}" 
-                    class="leader-avatar">
-
-                    <div class="leader-name">${user.name}</div>
-
-                </div>
-
-                <div class="score">${user.xp} XP</div>
-
-            `;
-
-            board.appendChild(row);
-
-        });
-
-    } catch (err) {
-
-        console.error("Leaderboard error:", err);
-
+    if (!players || players.length === 0) {
+        list.innerHTML = `
+            <div class="lb-row" style="justify-content:center;color:var(--muted);font-size:13px">
+                Chưa có dữ liệu
+            </div>`;
+        return;
     }
 
+    list.innerHTML = players.map(p => {
+        const isMe       = p.is_me === 1;
+        const rowClass   = isMe ? 'lb-row me' : 'lb-row';
+        const rankStyle  = isMe ? 'color:var(--accent)' : '';
+        const nameStyle  = isMe ? 'color:var(--accent)' : '';
+        const avatarClass = isMe ? 'lb-avatar wa' : 'lb-avatar ng';
+        const medal      = MEDALS[p.rank]
+            ? `<div class="lb-medal">${MEDALS[p.rank]}</div>`
+            : `<div class="lb-medal" style="opacity:.3">🏅</div>`;
+
+        return `
+            <div class="${rowClass}">
+                <div class="lb-rank" style="${rankStyle}">#${p.rank}</div>
+                <div class="${avatarClass}">${p.avatar ?? 'NG'}</div>
+                <div class="lb-info">
+                    <div class="lb-name" style="${nameStyle}">${p.name}</div>
+                    <div class="lb-sub">Level ${p.level ?? 1} • ${p.xp} XP</div>
+                </div>
+                ${medal}
+            </div>`;
+    }).join('');
 }
 
+async function loadLeaderboard() {
+    try {
+        const res  = await fetch('/leaderboardList');
+        const json = await res.json();
+        renderLeaderboard(json);
+
+    } catch (err) {
+        document.getElementById('leaderboardList').innerHTML = `
+            <div class="lb-row" style="flex-direction:column;align-items:center;gap:8px;padding:16px">
+                <span style="font-size:13px;color:var(--muted)">⚠️ Không tải được dữ liệu</span>
+                <button onclick="loadLeaderboard()"
+                    style="background:rgba(168,85,247,.2);border:1px solid rgba(168,85,247,.35);
+                           border-radius:8px;padding:5px 16px;font-size:12px;font-weight:700;
+                           color:#c084fc;cursor:pointer;font-family:inherit">
+                    Thử lại
+                </button>
+            </div>`;
+    }
+}
 /* =================================
 STREAK SYSTEM
 ================================= */
@@ -192,6 +180,34 @@ function logout() {
     window.location.href = "/logout";
 
 }
+function LevelUp() {
+    alert("Congratulations! You've leveled up!");
+}
+
+async function loadProfile() {
+
+    const res = await fetch(`${API}/profile-data`);
+    const data = await res.json();
+
+    const xp = data.xp;
+    const level = data.level;
+    const streak = data.streak;
+
+    document.getElementById("xpText").innerText =
+        xp + " / 500 XP";
+
+    document.getElementById("levelText").innerText =
+        "Level " + level;
+
+    document.getElementById("streakText").innerText =
+        "🔥 " + streak;
+
+    const percent = (xp % 500) / 500 * 100;
+
+    document.getElementById("xpFill").style.width =
+        percent + "%";
+
+}
 
 /* =================================
 AUTO LOAD
@@ -202,4 +218,5 @@ window.onload = () => {
     loadTasks();
     loadLeaderboard();
     loadStreak();
+    loadProfile();
 };

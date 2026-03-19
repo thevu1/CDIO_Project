@@ -1,56 +1,83 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <link rel="stylesheet" href="/css/sleep.css">
+
     <title>Giấc ngủ</title>
 </head>
 
 <body>
+
     <div class="container">
 
-        <div class="header" style="background:#8e24aa">
+        <!-- HEADER -->
+
+        <div class="header">
 
             <h2>Sẵn sàng ngủ</h2>
 
             <div class="card">
-                <h1 id="sleepTime">22:30</h1>
+
+                <div class="clock">
+
+                    <span id="sleepHour">22</span>
+                    <span>:</span>
+                    <span id="sleepMinute">30</span>
+
+                </div>
+
                 <p>Giờ ngủ mục tiêu</p>
+
             </div>
 
         </div>
-        <div class="card">
 
-            <h3>Đặt giờ ngủ</h3>
 
-            <input type="time" id="timePicker" value="22:30" min="01:00">
+        <!-- SET TIME -->
 
-            <button class="btn" onclick="saveSleepTime()">Lưu</button>
-        
+        <div class="card sleep-set">
+
+            <h3 class="sleep-title">Đặt giờ ngủ</h3>
+
+            <div class="sleep-row">
+
+                <input type="text" id="timeDisplay" value="22:30" readonly onclick="openPicker()">
+
+                <button class="btn" onclick="saveSleepTime()">Lưu</button>
+
+            </div>
+
         </div>
-        
+
+
+        <!-- REMINDER -->
+
         <div class="reminder-card">
 
             <div class="reminder-left">
 
-                <div class="reminder-icon">
-                    🔔
-                </div>
+                <div class="reminder-icon">🔔</div>
 
                 <div>
 
                     <h3>Nhắc nhở</h3>
+
                     <p>Cảnh báo lúc <span id="reminderTime">22:00</span> (Trước 30 phút)</p>
 
                 </div>
 
             </div>
 
-            <div class="toggle"></div>
+            <div class="toggle" onclick="toggleReminder()"></div>
 
         </div>
+
+
+        <!-- HISTORY -->
 
         <div class="card">
 
@@ -59,31 +86,69 @@
             <p>Chưa có dữ liệu</p>
 
         </div>
+
+
+        <!-- BOTTOM NAV -->
+
         <div class="bottom-nav">
 
-            <a href="/walk">
-                🚶<br>Đi bộ
-            </a>
+            <a href="/walk">🚶<br>Đi bộ</a>
 
-            <a href="/sleep">
-                🌙<br>Giấc ngủ
-            </a>
+            <a href="/sleep">🌙<br>Giấc ngủ</a>
 
-            <a href="/index">
-                🏠<br>Trang chủ
-            </a>
+            <a href="/index">🏠<br>Trang chủ</a>
 
-            <a href="/screen">
-                📱<br>Màn hình
-            </a>
+            <a href="/screen">📱<br>Màn hình</a>
 
-            <a href="/focus">
-                🎯<br>Tập trung
-            </a>
+            <a href="/focus">🎯<br>Tập trung</a>
 
         </div>
+
     </div>
+
+
+    <!-- TIME PICKER MODAL -->
+
+    <div class="time-modal" id="timeModal">
+
+        <div class="time-box">
+
+            <div class="time-header">
+
+                <button onclick="closePicker()">✕</button>
+
+                <h3>Sửa báo thức</h3>
+
+                <button onclick="confirmTime()">✔</button>
+
+            </div>
+
+            <div class="time-wheel">
+
+                <div class="wheel-container">
+                    <div class="wheel">
+                        <select id="hourSelect" size="5">
+                            <!-- Các option sẽ được thêm bằng JavaScript -->
+                        </select>
+                    </div>
+                    <div class="wheel">
+                        <select id="minuteSelect" size="5">
+                            <!-- Các option sẽ được thêm bằng JavaScript -->
+                        </select>
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
     <script src="/js/sleep.js"></script>
+
 </body>
 
 </html>

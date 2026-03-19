@@ -1,78 +1,129 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/walk.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <title>Đi bộ & Vận động</title>
+    <link rel="stylesheet" href="/css/walk.css">
 </head>
+
 <body>
     <div class="container">
 
-    <div class="header" style="background:#2962ff">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="back-btn"><i class="fas fa-chevron-left"></i></div>
+            <h2>Đi bộ &amp; Vận động 🚶</h2>
+        </div>
 
-        <h2>Đi bộ & Vận động</h2>
-
-        <div class="card">
-            <h3>Hôm nay</h3>
-            <h1>0.0 km / 5 km</h1>
-
-            <div class="progress">
-                <div class="progress-bar" style="width:0%"></div>
+        <!-- HERO CARD -->
+        <div class="hero-card">
+            <div class="hero-label">Hôm nay</div>
+            <div class="hero-main-row">
+                <div>
+                    <div style="display:flex;align-items:baseline;gap:4px">
+                        <span class="hero-km" id="kmDisplay">5.0</span>
+                        <span class="hero-km-unit">km</span>
+                    </div>
+                    <div class="hero-km-sub" id="kmSub">5 km / 5 km</div>
+                </div>
+                <div class="circle-wrap">
+                    <svg width="72" height="72" viewBox="0 0 72 72">
+                        <circle class="circle-bg" cx="36" cy="36" r="29" />
+                        <circle class="circle-fill" id="circleArc" cx="36" cy="36" r="29" />
+                    </svg>
+                    <div class="circle-text">
+                        <span class="big-pct" id="pctDisplay">100</span>
+                        <span class="sm-pct">%</span>
+                    </div>
+                </div>
             </div>
 
+            <div class="hero-bar-bg">
+                <div class="hero-bar-fill" id="heroBar" style="width:100%"></div>
+            </div>
+
+            <div class="congrats-banner">
+                <i class="fas fa-chart-line"></i>
+                🎉 Chúc mừng! Bạn đã đạt mục tiêu hôm nay!
+            </div>
+
+            <div class="mission-badge" onclick="claimXP()">
+                <div class="mission-left">
+                    <i class="fas fa-check-circle"></i>
+                    <span id="missionText">Nhiệm vụ hoàn thành</span>
+                </div>
+                <div class="xp-chip">+50 XP</div>
+            </div>
+        </div>
+
+        <!-- GOAL -->
+        <div class="section-label">Mục tiêu</div>
+        <div class="goal-card">
+            <div class="goal-top">
+                <div class="goal-top-left">
+                    <div class="goal-icon">🎯</div>
+                    <div>
+                        <div class="goal-info-title">Mục tiêu hàng ngày</div>
+                        <div class="goal-info-sub">Có thể chỉnh trong cài đặt</div>
+                    </div>
+                </div>
+                <div class="edit-btn" onclick="editGoal()"><i class="fas fa-pen"></i></div>
+            </div>
+            <div class="goal-value">
+                <span id="goalVal">5</span>
+                <span class="unit">km mỗi ngày</span>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="section-label">Thống kê</div>
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-top"><i class="fas fa-chart-line"></i> TB 7 ngày</div>
+                <div class="stat-val" id="avg7d">5.0 <span class="unit">km</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top"><i class="fas fa-calendar-check"></i> Tổng số ngày</div>
+                <div class="stat-val orange" id="totalDays">1 <span class="unit">ngày</span></div>
+            </div>
+        </div>
+
+        <!-- CHART -->
+        <div class="section-label">Biểu đồ</div>
+        <div class="chart-card">
+            <div class="chart-header"><span>📈</span> Lịch sử 7 ngày</div>
+            <div class="chart-area">
+                <div class="chart-svg-wrap">
+                    <svg id="barChart" viewBox="0 0 340 160" preserveAspectRatio="xMidYMid meet"></svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTTOM NAV -->
+        <div class="bottom-nav">
+            <a href="/walk" class="active">
+                <div class="nav-icon">🚶</div>Đi bộ
+            </a>
+            <a href="/sleep">
+                <div class="nav-icon">🌙</div>Giấc ngủ
+            </a>
+            <a href="/index">
+                <div class="nav-icon">🏠</div>Trang chủ
+            </a>
+            <a href="/screen">
+                <div class="nav-icon">📱</div>Màn hình
+            </a>
+            <a href="/focus">
+                <div class="nav-icon">🎯</div>Tập trung
+            </a>
         </div>
 
     </div>
 
-
-    <div class="card">
-        <h3>Mục tiêu hằng ngày</h3>
-        <p>5 km mỗi ngày</p>
-    </div>
-
-
-    <div class="grid">
-
-        <div class="card">
-            <h3>Trung bình 7 ngày</h3>
-            <p>0.0 km</p>
-        </div>
-
-        <div class="card">
-            <h3>Tổng số ngày</h3>
-            <p>0</p>
-        </div>
-
-    </div>
-
-
-    <button class="btn">+ Thêm khoảng cách thủ công</button>
-
-    <div class="bottom-nav">
-
-        <a href="/walk">
-            🚶<br>Đi bộ
-        </a>
-
-        <a href="/sleep">
-            🌙<br>Giấc ngủ
-        </a>
-
-        <a href ="/index">
-            🏠<br>Trang chủ
-        </a>
-
-        <a href="/screen">
-            📱<br>Màn hình
-        </a>
-
-        <a href="/focus">
-            🎯<br>Tập trung
-        </a>
-
-    </div>
-    <script src="/js/app.js"></script>
-</div>
+    <script src="/js/walk.js"></script>
 </body>
+
 </html>

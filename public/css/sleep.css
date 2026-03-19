@@ -30,7 +30,7 @@ body {
 }
 
 .header h2 {
-    font-size: 20px;
+    font-size: 40px;
     margin-bottom: 20px;
     font-weight: 600;
 }
@@ -82,7 +82,7 @@ body {
 }
 
 .card p {
-    color :black;
+    color: black;
     font-size: 14px;
     margin-bottom: 15px;
 }
@@ -315,4 +315,233 @@ body {
 
     transition: 0.3s;
 
+}
+
+/* SLEEP SETTING CARD */
+
+.sleep-set {
+    text-align: center;
+}
+
+/* TITLE */
+
+.sleep-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+/* ROW LAYOUT */
+
+.sleep-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+}
+
+/* TIME INPUT */
+
+#timePicker {
+
+    flex: 2;
+    /* chiếm 2/3 */
+
+    padding: 10px;
+
+    border-radius: 10px;
+    border: 1px solid #ccc;
+
+    font-size: 16px;
+
+}
+
+/* BUTTON */
+
+.sleep-row .btn {
+
+    flex: 1;
+
+}
+
+.toggle.off {
+    background: #ccc;
+}
+
+.toggle.off::after {
+    right: auto;
+    left: 3px;
+}
+
+/* DIGITAL CLOCK */
+
+.clock {
+
+    font-size: 60px;
+    font-weight: 700;
+    letter-spacing: 4px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+/* TIME INPUT */
+
+#timeDisplay {
+
+    flex: 2;
+
+    padding: 12px;
+
+    border-radius: 12px;
+
+    border: 1px solid #ccc;
+
+    font-size: 18px;
+
+    text-align: center;
+
+    cursor: pointer;
+
+}
+
+/* MODAL */
+
+.time-modal {
+
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background: rgba(0, 0, 0, 0.6);
+
+    display: none;
+
+    justify-content: center;
+    align-items: center;
+
+    z-index: 999;
+
+}
+
+/* BOX */
+
+.time-box {
+
+    background: #111;
+
+    color: white;
+
+    width: 320px;
+
+    border-radius: 20px;
+
+    padding: 20px;
+
+}
+
+/* HEADER */
+
+.time-header {
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 20px;
+
+}
+
+.time-header button {
+
+    background: none;
+    border: none;
+
+    color: white;
+
+    font-size: 20px;
+
+    cursor: pointer;
+
+}
+
+/* WHEEL */
+
+.time-wheel {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 20px;
+
+}
+
+/* SELECT STYLE */
+
+.time-wheel select {
+
+    background: #000;
+
+    color: white;
+
+    border: none;
+
+    font-size: 28px;
+
+    height: 200px;
+
+    overflow-y: auto;
+
+}
+
+/* OPTION */
+
+.time-wheel option {
+
+    padding: 10px;
+
+    font-size: 22px;
+
+}
+
+.wheel-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    position: relative;
+}
+
+.wheel {
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    height: 200px;
+    width: 100px;
+    position: relative;
+}
+
+.wheel select {
+    background: transparent;
+    color: white;
+    border: none;
+    font-size: 28px;
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+    scroll-behavior: smooth;
+}
+
+.wheel option {
+    padding: 12px 0;
+    font-size: 22px;
+    text-align: center;
 }
