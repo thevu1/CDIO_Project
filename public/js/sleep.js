@@ -1,191 +1,241 @@
-const API = "http://localhost:3000/api"
+/* ═══════════════════════════════════════
+   sleep.js — Giấc ngủ
+   Đã dọn: bỏ hàm trùng lặp, gộp logic
+═══════════════════════════════════════ */
 
-function goWalk() {
-  location.href = "/walk"
-}
+const API = "http://localhost:3000/api";
 
-function goSleep() {
-  location.href = "/sleep"
-}
+/* ── Navigation ── */
+function goWalk() { location.href = "/walk"; }
+function goSleep() { location.href = "/sleep"; }
+function goScreen() { location.href = "/screen"; }
+function goFocus() { location.href = "/focus"; }
+function goHome() { location.href = "/index"; }
 
-function goScreen() {
-  location.href = "/screen"
-}
-
-function goFocus() {
-  location.href = "/focus"
-}
-function goHome() {
-  location.href = "/index"
-}
-
-async function saveSleepTime() {
-  const time = document.getElementById("timePicker").value;
-
-  await fetch("/api/update-sleep-time", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ time })
-  });
-
-  document.getElementById("sleepTime").innerText = time;
-
-  // Tính giờ cảnh báo (giờ ngủ - 30 phút)
-  const [h, m] = time.split(":");
-  let hour = parseInt(h, 10);
-  let minute = parseInt(m, 10);
-  minute -= 30;
-  if (minute < 0) {
-    hour -= 1;
-    minute += 60;
-  }
-  if (hour < 0) hour += 24;
-  const reminder = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
-  document.getElementById("reminderTime").innerText = reminder;
-}
+/* ─────────────────────────────────────────
+   STATE
+───────────────────────────────────────── */
+let hour = 22;
+let minute = 30;
 let reminderOn = true;
 
-function toggleReminder() {
+/* ─────────────────────────────────────────
+   KHỞI TẠO KHI DOM SẴN SÀNG
+───────────────────────────────────────── */
+document.addEventListener("DOMContentLoaded", () => {
 
-  const toggle = document.querySelector(".toggle");
-
-  reminderOn = !reminderOn;
-
-  if (reminderOn) {
-
-    toggle.classList.remove("off");
-
-  } else {
-
-    toggle.classList.add("off");
-
-  }
-
-}
-
-let hour = 22
-let minute = 30
-
-const hourSelect = document.getElementById("hourSelect")
-const minuteSelect = document.getElementById("minuteSelect")
-
-/* INIT PICKER */
-
-for (let i = 0; i < 24; i++) {
-
-  let opt = document.createElement("option")
-
-  opt.value = i
-  opt.text = i.toString().padStart(2, "0")
-
-  hourSelect.appendChild(opt)
-
-}
-
-for (let i = 0; i < 60; i++) {
-
-  let opt = document.createElement("option")
-
-  opt.value = i
-  opt.text = i.toString().padStart(2, "0")
-
-  minuteSelect.appendChild(opt)
-
-}
-
-/* OPEN */
-
-function openPicker() {
-
-  document.getElementById("timeModal").style.display = "flex"
-
-  hourSelect.value = hour
-  minuteSelect.value = minute
-
-}
-
-/* CLOSE */
-
-function closePicker() {
-
-  document.getElementById("timeModal").style.display = "none"
-
-}
-
-/* CONFIRM */
-
-function confirmTime() {
-
-  hour = parseInt(hourSelect.value)
-  minute = parseInt(minuteSelect.value)
-
-  updateUI()
-
-  closePicker()
-
-}
-
-/* SAVE */
-
-function saveSleepTime() {
-
-  updateUI()
-
-}
-
-/* UPDATE */
-
-function updateUI() {
-
-  let h = hour.toString().padStart(2, "0")
-  let m = minute.toString().padStart(2, "0")
-
-  document.getElementById("sleepHour").innerText = h
-  document.getElementById("sleepMinute").innerText = m
-
-  document.getElementById("timeDisplay").value = h + ":" + m
-
-  /* reminder */
-
-  let total = hour * 60 + minute - 30
-
-  let rh = Math.floor(total / 60)
-  let rm = total % 60
-
-  document.getElementById("reminderTime").innerText =
-    rh.toString().padStart(2, "0") + ":" + rm.toString().padStart(2, "0")
-
-}
-
-/* TOGGLE */
-
-function toggleReminder() {
-
-  document.querySelector(".toggle").classList.toggle("off")
-
-}
-function populateTimeOptions() {
+  // Đổ options vào hour/minute select
   const hourSelect = document.getElementById("hourSelect");
   const minuteSelect = document.getElementById("minuteSelect");
 
   for (let h = 0; h < 24; h++) {
-    const option = document.createElement("option");
-    option.value = h;
-    option.textContent = h.toString().padStart(2, '0');
-    hourSelect.appendChild(option);
+    const opt = document.createElement("option");
+    opt.value = h;
+    opt.textContent = h.toString().padStart(2, "0");
+    hourSelect.appendChild(opt);
   }
 
   for (let m = 0; m < 60; m++) {
-    const option = document.createElement("option");
-    option.value = m;
-    option.textContent = m.toString().padStart(2, '0');
-    minuteSelect.appendChild(option);
+    const opt = document.createElement("option");
+    opt.value = m;
+    opt.textContent = m.toString().padStart(2, "0");
+    minuteSelect.appendChild(opt);
   }
 
-  hourSelect.selectedIndex = 19; // ví dụ: 19 giờ
-  minuteSelect.selectedIndex = 24; // ví dụ: 24 phút
+  // Load giờ đã lưu từ localStorage (nếu có)
+  const saved = localStorage.getItem("sleepTime");
+  if (saved) {
+    const [h, m] = saved.split(":").map(Number);
+    hour = h;
+    minute = m;
+  }
+
+  // Cập nhật toàn bộ UI với giờ hiện tại
+  updateUI();
+
+  // Animate progress bars nếu có
+  document.querySelectorAll(".progress-fill").forEach(el => {
+    const target = el.style.width;
+    el.style.width = "0%";
+    requestAnimationFrame(() => {
+      setTimeout(() => { el.style.width = target; }, 100);
+    });
+  });
+});
+
+/* ─────────────────────────────────────────
+   UPDATE UI — cập nhật tất cả nơi hiển thị giờ
+───────────────────────────────────────── */
+function updateUI() {
+  const h = hour.toString().padStart(2, "0");
+  const m = minute.toString().padStart(2, "0");
+  const timeStr = `${h}:${m}`;
+
+  // Header clock (nếu có)
+  const sleepHour = document.getElementById("sleepHour");
+  const sleepMinute = document.getElementById("sleepMinute");
+  if (sleepHour) sleepHour.innerText = h;
+  if (sleepMinute) sleepMinute.innerText = m;
+
+  // Input trong sleep-set card
+  const timeDisplay = document.getElementById("timeDisplay");
+  if (timeDisplay) timeDisplay.value = timeStr;
+
+  // ── Hero card — hiển thị giờ to ──
+  updateHeroTime(timeStr);
+
+  // Tính giờ nhắc nhở (giờ ngủ - 30 phút)
+  let total = hour * 60 + minute - 30;
+  if (total < 0) total += 1440; // xử lý qua nửa đêm
+  const rh = Math.floor(total / 60) % 24;
+  const rm = total % 60;
+  const reminderEl = document.getElementById("reminderTime");
+  if (reminderEl) {
+    reminderEl.innerText =
+      rh.toString().padStart(2, "0") + ":" +
+      rm.toString().padStart(2, "0");
+  }
 }
 
-document.addEventListener("DOMContentLoaded", populateTimeOptions);
+/* ─────────────────────────────────────────
+   HERO TIME — cập nhật giờ lớn trên hero card
+───────────────────────────────────────── */
+function updateHeroTime(time) {
+  const el = document.getElementById("heroTime");
+  if (!el) return;
+
+  el.textContent = time;
+
+  // Animation nhấp nháy khi cập nhật
+  el.style.transform = "scale(1.12)";
+  el.style.color = "#c084fc";
+  setTimeout(() => {
+    el.style.transform = "scale(1)";
+    el.style.color = "#fff";
+  }, 300);
+}
+
+/* ─────────────────────────────────────────
+   TIME PICKER MODAL
+───────────────────────────────────────── */
+function openPicker() {
+  document.getElementById("timeModal").style.display = "flex";
+  // Đặt select về giờ hiện tại
+  document.getElementById("hourSelect").value = hour;
+  document.getElementById("minuteSelect").value = minute;
+}
+
+function closePicker() {
+  document.getElementById("timeModal").style.display = "none";
+}
+
+function confirmTime() {
+  hour = parseInt(document.getElementById("hourSelect").value);
+  minute = parseInt(document.getElementById("minuteSelect").value);
+  updateUI();
+  closePicker();
+}
+
+/* ─────────────────────────────────────────
+   LƯU GIỜ NGỦ
+───────────────────────────────────────── */
+function saveSleepTime() {
+  const timeStr = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+  localStorage.setItem("sleepTime", timeStr);
+
+  // Đồng bộ lên server
+  fetch("/api/update-sleep-time", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ time: timeStr })
+  }).catch(err => console.warn("[saveSleepTime] Không đồng bộ được:", err.message));
+
+  updateUI();
+  showToast("✅ Đã lưu giờ ngủ: " + timeStr);
+}
+
+/* ─────────────────────────────────────────
+   TOGGLE NHẮC NHỞ
+───────────────────────────────────────── */
+function toggleReminder() {
+  reminderOn = !reminderOn;
+  const toggle = document.getElementById("reminderToggle");
+  if (toggle) toggle.classList.toggle("off", !reminderOn);
+}
+
+/* ─────────────────────────────────────────
+   TOAST NOTIFICATION
+───────────────────────────────────────── */
+function showToast(msg) {
+  // Xóa toast cũ nếu còn
+  const old = document.querySelector(".toast");
+  if (old) old.remove();
+
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2800);
+}
+
+/* ─────────────────────────────────────────
+   LOG MODAL (ghi nhận giấc ngủ)
+───────────────────────────────────────── */
+function openLogModal() {
+  const modal = document.getElementById("logModal");
+  if (modal) modal.classList.add("open");
+}
+
+function closeLogModal() {
+  const modal = document.getElementById("logModal");
+  if (modal) modal.classList.remove("open");
+}
+
+function confirmLog() {
+  const bed = document.getElementById("logBedtime").value;
+  const wake = document.getElementById("logWakeTime").value;
+  if (!bed || !wake) return;
+
+  const [bh, bm] = bed.split(":").map(Number);
+  const [wh, wm] = wake.split(":").map(Number);
+  let dur = (wh * 60 + wm) - (bh * 60 + bm);
+  if (dur < 0) dur += 1440;
+  const dh = Math.floor(dur / 60);
+  const dm = dur % 60;
+
+  // Lưu vào localStorage
+  const today = new Date();
+  const label = `${today.getDate()}/${today.getMonth() + 1}`;
+  const history = JSON.parse(localStorage.getItem("sleepHistory") || "[]");
+  history.unshift({ date: label, bed, wake, dur: `${dh}h ${dm}p` });
+  if (history.length > 7) history.pop();
+  localStorage.setItem("sleepHistory", JSON.stringify(history));
+
+  renderHistory();
+  closeLogModal();
+  showToast(`✅ Đã lưu: ngủ ${dh}h ${dm}p`);
+}
+
+/* ─────────────────────────────────────────
+   RENDER LỊCH SỬ 7 NGÀY
+───────────────────────────────────────── */
+function renderHistory() {
+  const container = document.getElementById("historyContent");
+  if (!container) return;
+
+  const history = JSON.parse(localStorage.getItem("sleepHistory") || "[]");
+  if (!history.length) {
+    container.innerHTML = "<p>Chưa có dữ liệu. Bắt đầu ghi nhận giấc ngủ hôm nay!</p>";
+    return;
+  }
+
+  container.innerHTML = history.map(s => `
+        <div class="history-item">
+            <div class="hi-left">
+                <div class="hi-date">${s.date} — ${s.bed} → ${s.wake}</div>
+                <div class="hi-time">Tổng thời gian ngủ</div>
+            </div>
+            <div class="hi-dur">${s.dur}</div>
+        </div>
+    `).join("");
+}

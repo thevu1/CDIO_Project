@@ -13,31 +13,46 @@
 
 <body>
     <div class="phone">
-        <!-- ─── Scroll wrapper ─── -->
         <div class="scroll">
 
-            <!-- Top bar -->
+            <!-- ── Top bar ── -->
             <div class="topbar">
-                <div class="avatar">WA</div>
-                <div class="gear-btn">
+
+                <!-- AVATAR → click mở profile modal -->
+                <div class="avatar" id="avatarBtn">WA</div>
+
+                <!-- GEAR → click mở dropdown -->
+                <div class="gear-btn" id="gearBtn">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c4c0e0" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="3" />
                         <path
                             d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
                     </svg>
+
+                    <!-- Hidden dropdown -->
+                    <div class="gear-dropdown" id="gearDropdown">
+                        <a href="/help" class="dropdown-item">
+                            <span>❓</span> Trợ giúp
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="/logout" class="dropdown-item dropdown-logout">
+                            <span>🚪</span> Đăng xuất
+                        </a>
+                    </div>
                 </div>
+
             </div>
 
             <!-- Profile -->
             <div class="profile">
-                <h1>Warrior</h1>
+                <h1 id="profileName">Warrior</h1>
                 <div class="level-row">
-                    <span class="level-badge">Level 1</span>
+                    <span class="level-badge" id="profileLevel">Level 1</span>
                     <div class="xp-bar-wrap">
-                        <div class="xp-bar"></div>
+                        <div class="xp-bar" id="profileXpBar"></div>
                     </div>
-                    <span class="xp-text">30 / 100 XP</span>
+                    <span class="xp-text" id="profileXpText">30 / 100 XP</span>
                 </div>
             </div>
 
@@ -56,12 +71,8 @@
             <!-- Leaderboard card -->
             <div class="card">
                 <div class="section-title">🏆 Bảng xếp hạng</div>
-
-                <!-- Danh sách — sẽ được render bởi JS -->
                 <div id="leaderboardList">
-
-                    <!-- Skeleton placeholder hiển thị trong lúc đang tải -->
-                    <div class="lb-row" id="skel-1">
+                    <div class="lb-row">
                         <div class="lb-rank" style="opacity:.3">—</div>
                         <div class="lb-avatar ng" style="opacity:.3"></div>
                         <div class="lb-info">
@@ -73,7 +84,7 @@
                         </div>
                         <div class="lb-medal" style="opacity:.15">🏅</div>
                     </div>
-                    <div class="lb-row" id="skel-2">
+                    <div class="lb-row">
                         <div class="lb-rank" style="opacity:.3">—</div>
                         <div class="lb-avatar ng" style="opacity:.3"></div>
                         <div class="lb-info">
@@ -85,7 +96,7 @@
                         </div>
                         <div class="lb-medal" style="opacity:.15">🏅</div>
                     </div>
-                    <div class="lb-row" id="skel-3">
+                    <div class="lb-row">
                         <div class="lb-rank" style="opacity:.3">—</div>
                         <div class="lb-avatar wa" style="opacity:.3"></div>
                         <div class="lb-info">
@@ -97,14 +108,12 @@
                         </div>
                         <div class="lb-medal" style="opacity:.15">🏅</div>
                     </div>
-
                 </div>
             </div>
 
             <!-- Tasks card -->
             <div class="card">
                 <div class="section-title">📋 Nhiệm vụ hôm nay</div>
-
                 <div class="task-row">
                     <div class="task-header">
                         <span class="task-name">Đi bộ 🚶</span>
@@ -114,14 +123,12 @@
                         <div class="progress-fill" style="width:0%"></div>
                     </div>
                 </div>
-
                 <div class="task-row">
                     <div class="task-header">
                         <span class="task-name">Giấc ngủ 🌙</span>
                     </div>
                     <div class="task-sub">Chưa ghi nhận</div>
                 </div>
-
                 <div class="task-row">
                     <div class="task-header">
                         <span class="task-name">Thời gian màn hình 📱</span>
@@ -131,7 +138,6 @@
                         <div class="progress-fill" style="width:0%"></div>
                     </div>
                 </div>
-
                 <div class="task-row">
                     <div class="task-header">
                         <span class="task-name">Tập trung 🎯</span>
@@ -142,50 +148,83 @@
 
         </div><!-- /scroll -->
 
-        <div class="bottom-nav">
-            <a href="/walk">
-                <div class="nav-icon">🚶</div>
-                Đi bộ
-            </a>
-            <a href="/sleep">
-                <div class="nav-icon">🌙</div>
-                Giấc ngủ
-            </a>
-            <a href="/index" class="active">
-                <div class="nav-icon">🏠</div>
-                Trang chủ
-            </a>
-            <a href="/screen">
-                <div class="nav-icon">📱</div>
-                Màn hình
-            </a>
-            <a href="/focus">
-                <div class="nav-icon">🎯</div>
-                Tập trung
-            </a>
+        <!-- ═══════════════════════════════
+             PROFILE MODAL
+        ═══════════════════════════════ -->
+        <div class="profile-overlay" id="profileOverlay">
+            <div class="profile-modal">
 
+                <div class="pm-header">
+                    <button class="pm-close" id="pmClose">✕</button>
+                    <span class="pm-title">Hồ sơ</span>
+                    <a href="/profile" class="pm-edit">✏️ Sửa</a>
+                </div>
+
+                <div class="pm-hero">
+                    <div class="pm-avatar" id="pmAvatar">WA</div>
+                    <div class="pm-name" id="pmName">Warrior</div>
+                    <div class="pm-email" id="pmEmail">—</div>
+                </div>
+
+                <div class="pm-level-row">
+                    <span class="pm-badge" id="pmBadge">Level 1</span>
+                    <div class="pm-xp-wrap">
+                        <div class="pm-xp-bar" id="pmXpBar" style="width:30%"></div>
+                    </div>
+                    <span class="pm-xp-text" id="pmXpText">30 / 100 XP</span>
+                </div>
+
+                <div class="pm-stats">
+                    <div class="pm-stat">
+                        <div class="pm-stat-val" id="pmStreak">0</div>
+                        <div class="pm-stat-label">🔥 Streak</div>
+                    </div>
+                    <div class="pm-stat">
+                        <div class="pm-stat-val" id="pmRank">#—</div>
+                        <div class="pm-stat-label">🏆 Hạng</div>
+                    </div>
+                    <div class="pm-stat">
+                        <div class="pm-stat-val" id="pmTotalXp">0</div>
+                        <div class="pm-stat-label">⭐ Tổng XP</div>
+                    </div>
+                </div>
+
+                <div class="pm-divider"></div>
+
+                <div class="pm-actions">
+                    <a href="/profile" class="pm-action-btn">
+                        <span>👤</span> Xem hồ sơ đầy đủ
+                    </a>
+                    <a href="/logout" class="pm-action-btn pm-logout">
+                        <span>🚪</span> Đăng xuất
+                    </a>
+                </div>
+
+            </div>
         </div>
 
-        <script src="/js/app.js">
-            // Animate progress bars on load
-            window.addEventListener('load', () => {
-                document.querySelectorAll('.progress-fill').forEach(el => {
-                    const target = el.style.width;
-                    el.style.width = '0%';
-                    requestAnimationFrame(() => {
-                        setTimeout(() => { el.style.width = target; }, 100);
-                    });
-                });
-            });
+        <!-- Bottom nav -->
+        <div class="bottom-nav">
+            <a href="/walk">
+                <div class="nav-icon">🚶</div>Đi bộ
+            </a>
+            <a href="/sleep">
+                <div class="nav-icon">🌙</div>Giấc ngủ
+            </a>
+            <a href="/index" class="active">
+                <div class="nav-icon">🏠</div>Trang chủ
+            </a>
+            <a href="/screen">
+                <div class="nav-icon">📱</div>Màn hình
+            </a>
+            <a href="/focus">
+                <div class="nav-icon">🎯</div>Tập trung
+            </a>
+        </div>
 
-            // Nav item click
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                    item.classList.add('active');
-                });
-            });
-        </script>
+    </div><!-- /phone -->
+
+    <script src="/js/app.js"></script>
 </body>
 
 </html>

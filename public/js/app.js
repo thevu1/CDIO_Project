@@ -103,12 +103,12 @@ function renderLeaderboard(players) {
     }
 
     list.innerHTML = players.map(p => {
-        const isMe       = p.is_me === 1;
-        const rowClass   = isMe ? 'lb-row me' : 'lb-row';
-        const rankStyle  = isMe ? 'color:var(--accent)' : '';
-        const nameStyle  = isMe ? 'color:var(--accent)' : '';
+        const isMe = p.is_me === 1;
+        const rowClass = isMe ? 'lb-row me' : 'lb-row';
+        const rankStyle = isMe ? 'color:var(--accent)' : '';
+        const nameStyle = isMe ? 'color:var(--accent)' : '';
         const avatarClass = isMe ? 'lb-avatar wa' : 'lb-avatar ng';
-        const medal      = MEDALS[p.rank]
+        const medal = MEDALS[p.rank]
             ? `<div class="lb-medal">${MEDALS[p.rank]}</div>`
             : `<div class="lb-medal" style="opacity:.3">🏅</div>`;
 
@@ -127,7 +127,7 @@ function renderLeaderboard(players) {
 
 async function loadLeaderboard() {
     try {
-        const res  = await fetch('/leaderboardList');
+        const res = await fetch('/leaderboardList');
         const json = await res.json();
         renderLeaderboard(json);
 
@@ -208,6 +208,49 @@ async function loadProfile() {
         percent + "%";
 
 }
+/* ─────────────────────────────────────────
+   1. GEAR DROPDOWN
+───────────────────────────────────────── */
+const gearBtn = document.getElementById('gearBtn');
+const gearDropdown = document.getElementById('gearDropdown');
+
+gearBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = gearDropdown.classList.toggle('open');
+    gearBtn.classList.toggle('gear-active', isOpen);
+});
+
+// Đóng khi click ra ngoài
+document.addEventListener('click', () => {
+    gearDropdown.classList.remove('open');
+    gearBtn.classList.remove('gear-active');
+});
+
+/* ─────────────────────────────────────────
+   2. PROFILE MODAL
+───────────────────────────────────────── */
+const avatarBtn = document.getElementById('avatarBtn');
+const profileOverlay = document.getElementById('profileOverlay');
+const pmClose = document.getElementById('pmClose');
+
+// Mở modal khi bấm avatar
+avatarBtn.addEventListener('click', () => {
+    profileOverlay.classList.add('open');
+    loadProfile();
+});
+
+// Đóng khi bấm nút ✕
+pmClose.addEventListener('click', () => {
+    profileOverlay.classList.remove('open');
+});
+
+// Đóng khi bấm nền tối bên ngoài modal
+profileOverlay.addEventListener('click', (e) => {
+    if (e.target === profileOverlay) {
+        profileOverlay.classList.remove('open');
+    }
+});
+
 
 /* =================================
 AUTO LOAD
