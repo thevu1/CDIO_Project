@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ sơ HealthQuest</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header hồ sơ -->
+        <div class="profile-header">
+            <img src="https://via.placeholder.com/80" alt="avatar" class="avatar" id="avatar">
+            <h1 id="user-name">Nguyễn Văn A</h1>
+            <button id="edit-profile" style="display: none;">Chỉnh sửa</button>
+            <button id="logout" style="display: none;">Đăng xuất</button>
+        </div>
+
+        <!-- Danh sách thông tin -->
+        <div class="profile-info" id="profile-info">
+            <!-- Các trường sẽ được render bằng JS -->
+        </div>
+
+        <!-- Thanh điều hướng dưới -->
+        <div class="bottom-nav">
+            <i class="fas fa-walking"></i>
+            <i class="fas fa-bed"></i>
+            <i class="fas fa-home active"></i>
+            <i class="fas fa-mobile-alt"></i>
+            <i class="fas fa-brain"></i>
+        </div>
+    </div>
+
+    <!-- Modal chỉnh sửa (ẩn) -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Chỉnh sửa hồ sơ</h2>
+            <form id="edit-form">
+                <label>Biệt danh: <input type="text" name="nickname"></label>
+                <label>Ngày sinh: <input type="date" name="birthdate"></label>
+                <label>Thành phố: <input type="text" name="city"></label>
+                <label>Số điện thoại: <input type="text" name="phone_number"></label>
+                <h3>Quyền riêng tư</h3>
+                <!-- Các dropdown cho từng trường -->
+                <div id="privacy-settings"></div>
+                <button type="submit">Lưu</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/profile.js"></script>
+</body>
+</html>
