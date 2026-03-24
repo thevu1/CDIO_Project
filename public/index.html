@@ -2,19 +2,17 @@
 <html>
 
 <head>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>HealthQuest</title>
-    <link rel="apple-touch-icon" href="/icon.png">
-    <link rel="stylesheet" href="/css/main.css">
+
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#4CAF50">
+    <meta name="apple-mobile-web-app-title" content="HealthQuest">
+    <link rel="stylesheet" href="./static/css/main.css">
+
 </head>
 
 <body>
-
 
     <div class="app">
 
@@ -22,11 +20,21 @@
 
         <header>
 
-            <div class="main-header" style="background-color: chocolate;">
+            <div class="main-header">
 
                 <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="avatar">
 
-                <div class="settings">⚙️</div>
+                <div class="settings" onclick="toggleMenu()">
+                    ⚙️
+                    <ul class="settings-menu">
+
+                        <li><a href="/profile">Hồ sơ</a></li>
+                        <li><a href="/logout">Đăng xuất</a></li>
+                        <li><a href="/help">Trợ giúp</a></li>
+
+                    </ul>
+
+                </div>
 
                 <div class="header-content">
 
@@ -37,7 +45,7 @@
                         <span class="level-badge">0</span>
 
                         <div class="xp-bar">
-                            <div class="xp-fill" style="width: 0%"></div>
+                            <div class="xp-fill" style="width:0%"></div>
                         </div>
 
                         <span class="xp-text">0 / 500 XP</span>
@@ -61,19 +69,21 @@
 
             </div>
 
-
         </header>
 
+        <!-- LEADERBOARD -->
 
         <div class="big-card">
 
             <div class="leaderboard-title">🏆 Leaderboard</div>
 
-            <div id="leaderboard"></div>
+            <div id="leaderboard" class="leaderboard-list">
+                <!-- JS sẽ render vào đây -->
+            </div>
 
         </div>
 
-        <!-- TASK LIST CARD -->
+        <!-- TASK LIST -->
 
         <div class="big-card">
 
@@ -85,15 +95,10 @@
 
                 <div class="task-item">
 
-                    <div class="task-top">
+                    <div class="task-header">
 
-                        <div class="task-header">
-
-                            <span class="task-name">Đi bộ 🚶</span>
-
-                            <span class="percent blue">0%</span>
-
-                        </div>
+                        <span class="task-name">Đi bộ 🚶</span>
+                        <span class="percent blue">0%</span>
 
                     </div>
 
@@ -106,32 +111,23 @@
 
                 <div class="task-item">
 
-                    <div class="task-top">
-
-                        <div>
-                            <div class="task-name">Giấc ngủ</div>
-                            <div class="task-progress">Chưa ghi nhận</div>
-                        </div>
-
-                        <div>🌙</div>
-
+                    <div>
+                        <div class="task-name">Giấc ngủ</div>
+                        <div class="task-progress">Chưa ghi nhận</div>
                     </div>
+
+                    <div>🌙</div>
 
                 </div>
 
-                <!-- SCREEN TIME -->
+                <!-- SCREEN -->
 
                 <div class="task-item">
 
-                    <div class="task-top">
+                    <div class="task-header">
 
-                        <div class="task-header">
-
-                            <span class="task-name">Thời gian màn hình 📱</span>
-
-                            <span class="percent orange">0%</span>
-
-                        </div>
+                        <span class="task-name">Thời gian màn hình 📱</span>
+                        <span class="percent orange">0%</span>
 
                     </div>
 
@@ -145,16 +141,12 @@
 
                 <div class="task-item">
 
-                    <div class="task-top">
-
-                        <div>
-                            <div class="task-name">Tập trung</div>
-                            <div class="task-progress">0 phút</div>
-                        </div>
-
-                        <div>🎯</div>
-
+                    <div>
+                        <div class="task-name">Tập trung</div>
+                        <div class="task-progress">0 phút</div>
                     </div>
+
+                    <div>🎯</div>
 
                 </div>
 
@@ -162,78 +154,21 @@
 
         </div>
 
-        <!-- MOBILE NAV -->
+        <!-- NAV -->
 
         <div class="bottom-nav">
 
-            <a href="/walk">
-                🚶<br>Đi bộ
-            </a>
-
-            <a href="/sleep">
-                🌙<br>Giấc ngủ
-            </a>
-
-            <a href="/" class="active home-active">
-                🏠<br>Trang chủ
-            </a>
-
-            <a href="/screen">
-                📱<br>Màn hình
-            </a>
-
-            <a href="/focus">
-                🎯<br>Tập trung
-            </a>
+            <a href="/walk">🚶<br>Đi bộ</a>
+            <a href="/sleep">🌙<br>Giấc ngủ</a>
+            <a href="/index">🏠<br>Trang chủ</a>
+            <a href="/screen">📱<br>Màn hình</a>
+            <a href="/focus">🎯<br>Tập trung</a>
 
         </div>
 
+    </div>
+    <script src="./static/js/app.js"></script>
 
-        
-        
-        <script src="/js/app.js"></script>
-
-        
-        <script>
-
-            if ("serviceWorker" in navigator) {
-                navigator.serviceWorker.register("/service-worker.js");
-            }
-
-            let deferredPrompt;
-
-            window.addEventListener("beforeinstallprompt", (e) => {
-
-            e.preventDefault();
-            deferredPrompt = e;
-
-            const installBtn = document.createElement("button");
-            installBtn.innerText = "📲 Cài đặt HealthQuest";
-            installBtn.style.position = "fixed";
-            installBtn.style.bottom = "80px";
-            installBtn.style.left = "50%";
-            installBtn.style.transform = "translateX(-50%)";
-            installBtn.style.padding = "10px 20px";
-            installBtn.style.borderRadius = "10px";
-            installBtn.style.border = "none";
-            installBtn.style.background = "#4CAF50";
-            installBtn.style.color = "white";
-
-            document.body.appendChild(installBtn);
-
-            installBtn.addEventListener("click", () => {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then(() => {
-                installBtn.remove();
-                deferredPrompt = null;
-                });
-            });
-
-        });
-
-        </script>
-</body>
-</html>
 </body>
 
 </html>

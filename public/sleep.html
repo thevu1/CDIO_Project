@@ -3,13 +3,13 @@
 
 <head>
     <meta charset="UTF-8">
-    <link rel="apple-touch-icon" href="/icon.png">
-    <link rel="stylesheet" href="/css/sleep.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./static/css/sleep.css">
+
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#4CAF50">
+    <meta name="apple-mobile-web-app-title" content="HealthQuest">
+
     <title>Giấc ngủ</title>
 </head>
 
@@ -21,24 +21,21 @@
             <h2>Sẵn sàng ngủ</h2>
 
             <div class="card">
-
-                <h1>22:30</h1>
-
+                <h1 id="sleepTime">22:30</h1>
                 <p>Giờ ngủ mục tiêu</p>
-
             </div>
 
         </div>
-
-
         <div class="card">
 
-            <p>Chưa có dữ liệu giấc ngủ hôm nay</p>
+            <h3>Đặt giờ ngủ</h3>
 
-            <button class="btn">Ghi nhận giấc ngủ</button>
+            <input type="time" id="timePicker" value="22:30" min="01:00">
 
+            <button class="btn" onclick="saveSleepTime()">Lưu</button>
+        
         </div>
-
+        
         <div class="reminder-card">
 
             <div class="reminder-left">
@@ -50,7 +47,7 @@
                 <div>
 
                     <h3>Nhắc nhở</h3>
-                    <p>Cảnh báo lúc 22:00 (30 phút trước)</p>
+                    <p>Cảnh báo lúc <span id="reminderTime">22:00</span> (Trước 30 phút)</p>
 
                 </div>
 
@@ -77,7 +74,7 @@
                 🌙<br>Giấc ngủ
             </a>
 
-            <a href="/">
+            <a href="/index">
                 🏠<br>Trang chủ
             </a>
 
@@ -91,45 +88,8 @@
 
         </div>
     </div>
-    <script src="/js/app.js"></script>
-    <script>
-
-            if ("serviceWorker" in navigator) {
-                navigator.serviceWorker.register("/service-worker.js");
-            }
-
-            let deferredPrompt;
-
-            window.addEventListener("beforeinstallprompt", (e) => {
-
-            e.preventDefault();
-            deferredPrompt = e;
-
-            const installBtn = document.createElement("button");
-            installBtn.innerText = "📲 Cài đặt HealthQuest";
-            installBtn.style.position = "fixed";
-            installBtn.style.bottom = "80px";
-            installBtn.style.left = "50%";
-            installBtn.style.transform = "translateX(-50%)";
-            installBtn.style.padding = "10px 20px";
-            installBtn.style.borderRadius = "10px";
-            installBtn.style.border = "none";
-            installBtn.style.background = "#4CAF50";
-            installBtn.style.color = "white";
-
-            document.body.appendChild(installBtn);
-
-            installBtn.addEventListener("click", () => {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then(() => {
-                installBtn.remove();
-                deferredPrompt = null;
-                });
-            });
-
-        });
-
-        </script>
+    <script src="./static/js/sleep.js"></script>
+    <script src="./static/js/app.js"></script>
 </body>
 
 </html>

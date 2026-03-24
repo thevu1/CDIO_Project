@@ -6,7 +6,7 @@ const authRoutes = require("./routes/auth")
 const homeRoutes = require("./routes/home")
 
 const app = express()
-const PORT = process.env.PORT || 3000  
+const PORT = 3000
 
 app.use(bodyParser.urlencoded({extended:true}))
 app.use(express.json())
@@ -14,11 +14,11 @@ app.use(express.json())
 app.use(session({
     secret:"healthquest-secret",
     resave:false,
-    saveUninitialized:true
+    saveUninitialized:false
 }))
 
-app.use(express.static("public"))
-app.use("/static",express.static("static"))
+app.use("/static", express.static("public"))
+app.use("/static", express.static("static"))
 
 /* ROUTES */
 

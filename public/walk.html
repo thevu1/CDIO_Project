@@ -2,14 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="/css/walk.css">
-    <link rel="apple-touch-icon" href="/icon.png">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./static/css/walk.css">
 
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#4CAF50">
+    <meta name="apple-mobile-web-app-title" content="HealthQuest">
+
     <title>Đi bộ & Vận động</title>
 </head>
 <body>
@@ -65,7 +64,7 @@
             🌙<br>Giấc ngủ
         </a>
 
-        <a href ="/">
+        <a href ="/index">
             🏠<br>Trang chủ
         </a>
 
@@ -78,46 +77,7 @@
         </a>
 
     </div>
-    <script src="/js/app.js"></script>
-    
+    <script src="./static/js/app.js"></script>
 </div>
-<script>
-
-            if ("serviceWorker" in navigator) {
-                navigator.serviceWorker.register("/service-worker.js");
-            }
-
-            let deferredPrompt;
-
-            window.addEventListener("beforeinstallprompt", (e) => {
-
-            e.preventDefault();
-            deferredPrompt = e;
-
-            const installBtn = document.createElement("button");
-            installBtn.innerText = "📲 Cài đặt HealthQuest";
-            installBtn.style.position = "fixed";
-            installBtn.style.bottom = "80px";
-            installBtn.style.left = "50%";
-            installBtn.style.transform = "translateX(-50%)";
-            installBtn.style.padding = "10px 20px";
-            installBtn.style.borderRadius = "10px";
-            installBtn.style.border = "none";
-            installBtn.style.background = "#4CAF50";
-            installBtn.style.color = "white";
-
-            document.body.appendChild(installBtn);
-
-            installBtn.addEventListener("click", () => {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then(() => {
-                installBtn.remove();
-                deferredPrompt = null;
-                });
-            });
-
-        });
-
-        </script>
 </body>
 </html>

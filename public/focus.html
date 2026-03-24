@@ -3,47 +3,97 @@
 
 <head>
     <meta charset="UTF-8">
-    <link rel="apple-touch-icon" href="/icon.png">
-    <link rel="stylesheet" href="/css/focus.css">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./static/css/focus.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#4CAF50">
+    <meta name="apple-mobile-web-app-title" content="HealthQuest">
+
     <title>Chế độ Tập trung</title>
 </head>
 
 <body>
+
     <div class="container">
 
-        <div class="header" style="background:#2e7d32">
-
-            <h2>Chế độ Tập trung</h2>
-
+        <div class="header"
+            style="background:#2e7d32; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <h2>Chế độ Tập trung</h2>
+                <h3>Làm việc hiệu quả : tập trung và nghỉ ngơi</h3>
+            </div>
         </div>
 
+        <div id="focusBar" class="focus-bar" style="display:none;">
 
-        <div class="grid">
+            <div class="focus-timer" id="timer">45:00</div>
+
+            <button class="btn stop-btn" onclick="stopFocus()">
+                Kết thúc
+            </button>
+
+
+        </div>
+        <div class="focus-row">
+
+            <h3 class="mode-title" onclick="toggleMenu()">
+                Chọn chế độ tập trung
+                <span class="arrow" id="arrow">⌄</span>
+            </h3>
+
+            <div class="mode-menu" id="modeMenu">
+                <div onclick="selectMode('25 - 10')">Chế độ 1: 25 - 10</div>
+                <div onclick="selectMode('45 - 15')">Chế độ 2: 45 - 15</div>
+                <div onclick="selectMode('60 - 20')">Chế độ 3: 60 - 20</div>
+            </div>
+
+
+            <i class="fas fa-comment-dots focus-icon" onclick="openPopup()"></i>
+            <div id="focusPopup" class="popup">
+
+                <div class="popup-content">
+
+                    <span class="close-btn" onclick="closePopup()">×</span>
+
+                    <h3>Chọn thời gian làm việc bạn mong muốn</h3>
+                    <p>Chế độ 1:Làm việc 25 phút và nghỉ ngơi 10 phút</p>
+                    <p>Chế độ 2:Làm việc 45 phút và nghỉ ngơi 15 phút</p>
+                    <p>Chế độ 3:Làm việc 60 phút và nghỉ ngơi 20 phút</p>
+
+                </div>
+
+            </div>
+        </div>
+        <div class="grid-card" id="modeGrid">
 
             <div class="card">
 
                 <h3>Trên màn hình</h3>
 
-                <button class="btn" onclick="startFocus()">Bắt đầu</button>
+                <p>45:00</p>
+
+                <button class="btn" onclick="startFocus('screen')">
+                    Bắt đầu
+                </button>
 
             </div>
-
 
             <div class="card">
 
                 <h3>Ngoài màn hình</h3>
 
-                <button class="btn">Bắt đầu</button>
+                <p>45:00</p>
+
+                <button class="btn" onclick="startFocus('offline')">
+                    Bắt đầu
+                </button>
 
             </div>
 
         </div>
-
 
         <div class="grid">
 
@@ -54,74 +104,42 @@
 
             <div class="card">
                 <h3>Tổng thời gian</h3>
-                <p>0 phút</p>
+                <p id="total">0 phút</p>
+            </div>
+
+            <div class="card">
+                <h3>Phiên đã làm</h3>
+                <p id="completedSessions">0</p>
+                <p id="focusTime">0 phút</p>
             </div>
 
         </div>
+
+        <div class="history">
+
+            <h4>Lịch sử hôm nay</h4>
+
+            <div id="historyList">
+                Chưa có phiên nào
+            </div>
+
+        </div>
+
         <div class="bottom-nav">
 
-            <a href="/walk">
-                🚶<br>Đi bộ
-            </a>
+            <a href="/walk">🚶<br>Đi bộ</a>
+            <a href="/sleep">🌙<br>Giấc ngủ</a>
+            <a href="/index">🏠<br>Trang chủ</a>
+            <a href="/screen">📱<br>Màn hình</a>
+            <a href="/focus">🎯<br>Tập trung</a>
 
-            <a href="/sleep">
-                🌙<br>Giấc ngủ
-            </a>
-
-            <a href="/">
-                🏠<br>Trang chủ
-            </a>
-
-            <a href="/screen">
-                📱<br>Màn hình
-            </a>
-
-            <a href="/focus">
-                🎯<br>Tập trung
-            </a>
+        </div>
 
     </div>
-    <script src="/js/app.js"></script>
 
-       
-    <script>
+    <script src="./static/js/focus.js"></script>
+    <script src="./static/js/app.js"></script>
 
-        if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.register("/service-worker.js");
-        }
-
-        let deferredPrompt;
-
-        window.addEventListener("beforeinstallprompt", (e) => {
-
-        e.preventDefault();
-        deferredPrompt = e;
-
-        const installBtn = document.createElement("button");
-        installBtn.innerText = "📲 Cài đặt HealthQuest";
-        installBtn.style.position = "fixed";
-        installBtn.style.bottom = "80px";
-        installBtn.style.left = "50%";
-        installBtn.style.transform = "translateX(-50%)";
-        installBtn.style.padding = "10px 20px";
-        installBtn.style.borderRadius = "10px";
-        installBtn.style.border = "none";
-        installBtn.style.background = "#4CAF50";
-        installBtn.style.color = "white";
-
-        document.body.appendChild(installBtn);
-
-        installBtn.addEventListener("click", () => {
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then(() => {
-            installBtn.remove();
-            deferredPrompt = null;
-            });
-        });
-
-    });
-
-    </script>
 </body>
 
 </html>

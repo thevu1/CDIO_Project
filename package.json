@@ -1,28 +1,25 @@
 {
-  "name": "healthquest",
+  "name": "dangnhap",
   "version": "1.0.0",
-  "description": "HealthQuest App",
+  "description": "",
   "main": "server.js",
   "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
+  "keywords": [],
   "author": "",
   "license": "ISC",
+  "type": "commonjs",
   "dependencies": {
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.2",
+    "cors": "^2.8.6",
     "express": "^5.2.1",
     "express-session": "^1.19.0",
-    "mysql2": "^3.19.1"
-  },
-  "keywords": [],
-  "type": "commonjs",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/thevu1/CDIO_Project.git"
-  },
-  "bugs": {
-    "url": "https://github.com/thevu1/CDIO_Project/issues"
-  },
-  "homepage": "https://github.com/thevu1/CDIO_Project#readme"
+    "mysql2": "^3.20.0",
+    "nodemailer": "^8.0.3",
+    "resend": "^6.9.4",
+    "uuid": "^13.0.0"
+  }
 }
