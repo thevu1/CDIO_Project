@@ -1,12 +1,13 @@
+require("dotenv").config();
 const express = require("express")
 const session = require("express-session")
 const bodyParser = require("body-parser")
-
 const authRoutes = require("./routes/auth")
 const homeRoutes = require("./routes/home")
 
 const app = express()
 const PORT = 3000
+
 
 app.use(bodyParser.urlencoded({extended:true}))
 app.use(express.json())

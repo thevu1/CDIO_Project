@@ -7,12 +7,12 @@ const db = mysql.createConnection({
     database: "healthquest"
 });
 
-db.connect((err) => {
-    if (err) {
-        console.log("Database connection error:", err);
-    } else {
-        console.log("MySQL Connected");
-    }
-});
+// db.connect((err) => {
+//     if (err) {
+//         console.log("Database connection error:", err);
+//     } else {
+//         console.log("MySQL Connected");
+//     }
+// });
 
 module.exports = db;

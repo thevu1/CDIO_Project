@@ -4,11 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng nhập - HealthQuest</title>
-<<<<<<< HEAD
-    <link rel="stylesheet" href="/style.css">
-=======
     <link rel="stylesheet" href="./static/style.css">
->>>>>>> 777db99 (new register)
 </head>
 <body class="app-preview-body">
     <div class="mobile-preview">
@@ -30,14 +26,16 @@
 
             <form action="/login" method="POST" class="mobile-form">
                 <div class="mobile-input-group">
-                    <label>Email</label>
-                    <input type="email" name="email" placeholder="you@example.com" required>
+                    <label>Email / Username</label>
+                    <input type="text" name="email" placeholder="Email hoặc tên đăng nhập" required>
                 </div>
 
                 <div class="mobile-input-group">
                     <label>Mật khẩu</label>
                     <input type="password" name="password" placeholder="Nhập mật khẩu" required>
                 </div>
+            <div id="error-message" style="color:red; margin-bottom:10px;"></div>   
+
 
                 <button type="submit" class="app-btn">Đăng nhập</button>
             </form>
@@ -66,5 +64,19 @@
             </p>
         </div>
     </div>
+    <script>
+    const params = new URLSearchParams(window.location.search);
+    const error = params.get("error");
+
+    const msg = document.getElementById("error-message");
+
+    if (error === "notfound") {
+        msg.innerText = "Sai Tài Khoản Hoặc Mật Khẩu!";
+    }
+
+    if (error === "wrongpass") {
+        msg.innerText = "Sai mật khẩu!";
+    }
+</script>
 </body>
 </html>
