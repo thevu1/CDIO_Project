@@ -62,7 +62,7 @@
         if (!req.session.user) {
             return res.redirect("/login");
         }
-        res.redirect("index");
+        res.redirect("/index");
     });
 
     app.get("/login", (req, res) => {
@@ -70,6 +70,57 @@
     });
     app.get("/register", (req, res) => {
         res.sendFile(path.join(__dirname, "../templates/register.html"));
+    });
+    // /* =========================
+    //    SETUP PROFILE
+    // ========================= */
+
+    app.get("/setup-profile", (req, res) => {
+        if (!req.session.user) return res.redirect("/login");
+        res.sendFile(path.join(__dirname, "../templates/setup.html"));
+    });
+
+
+    // /* =========================
+    //    Get cities API
+    // ========================= */
+    app.get("/api/cities", (req, res) => {
+        db.query("SELECT * FROM cities", (err, results) => {
+            if (err) return res.status(500).json(err);
+            res.json(results);
+        });
+    });
+
+
+    // /* =========================
+    //    SETUP PROFILE
+    // ========================= */
+    app.post("/setup-profile", (req, res) => {
+        const {  birthdate, city_id, phone_number } = req.body;
+
+        if (!phone_number) {
+            return res.send("Số điện thoại là bắt buộc");
+        }
+
+        db.query(
+            `UPDATE users 
+            SET birthdate=?, city_id=?, phone_number=?, profile_completed=TRUE
+            WHERE id=?`,
+            [
+                
+                birthdate || null,
+                city_id || null,
+                phone_number,
+                req.session.user.id
+            ],
+            () => {
+
+                // 🔥 update session luôn
+                req.session.user.profile_completed = true;
+
+                res.redirect("/index");
+            }
+        );
     });
     /* =========================
     REGISTER
@@ -178,7 +229,7 @@
             db.query(
                 `INSERT INTO users (name, email, password, nickname, is_verified, verify_token, verify_expires)
                 VALUES (?, ?, ?, ?, ?, ?, ?)`,
-                [name, email, hash, username, false, token, expires],
+                [username, email, hash, name, false, token, expires],
                 async (err) => {
 
                     if (err) return res.json({ status: "error" });
@@ -372,32 +423,7 @@
             }
         );
     });
-    // /* =========================
-    //    SETUP PROFILE
-    // ========================= */
-
-    app.get("/setup-profile", (req, res) => {
-        if (!req.session.user) return res.redirect("/login");
-        res.sendFile(path.join(__dirname, "../templates/setup.html"));
-    });
-
-    // /* =========================
-    //    UPDATE PROFILE
-    // ========================= */
-
-    app.post("/setup-profile", (req, res) => {
-        const { nickname, birthdate, city, phone_number } = req.body;
-
-        db.query(
-            `UPDATE users 
-            SET nickname=?, birthdate=?, city=?, phone_number=? 
-            WHERE id=?`,
-            [nickname, birthdate, city, phone_number, req.session.user.id],
-            () => {
-                res.redirect("/home");
-            }
-        );
-    });
+    
 
     // /* =========================
     //    RESEND MAIL
@@ -448,7 +474,7 @@
         const { email, password } = req.body;
 
         db.query(
-            "SELECT * FROM users WHERE email = ? OR nickname = ?",
+            "SELECT * FROM users WHERE email = ? OR name = ?",
             [email, email],
             async  (err, results) => {
 
@@ -467,9 +493,19 @@
                 if (!match) {
                     return res.redirect("/login?error=wrongpass");
                 }
+                // ❌ Chưa verify
+                if (!user.is_verified) {
+                    return res.redirect("/login?error=notverified");
+                }
+
+                req.session.user = user;
+
+                // nếu chưa setup → bắt đi setup
+                if (!user.profile_completed) {
+                    return res.redirect("/setup-profile");
+                }
 
                 // ✅ Đúng
-                req.session.user = user;
                 res.redirect("/index");
             }
         );
@@ -483,12 +519,16 @@
         res.redirect("/index");
     });
 
+    // /* =========================
+    //    Logout
+    // ========================= */
+    
     app.get("/logout", (req, res) => {
         req.session.destroy();
         res.redirect("/login");
     });
 
-    module.exports = app;
+
 
     /* =========================
     EMAIL TEMPLATE
@@ -517,3 +557,4 @@
         </div>
         `;  
     }
+module.exports = app;

@@ -12,117 +12,162 @@
     <title>Screen Time</title>
 </head>
 
+
 <body>
     <div class="container">
 
-        <div class="header" style="background:#ff5722">
-
-            <h2>Thời gian màn hình</h2>
-
-            <div class="card">
-
-                <h1 id="screenTime">0h 0p</h1>
-
-                <p>Giới hạn 4h</p>
-
-                <div class="progress">
-                    <div class="progress-bar" style="width:10%"></div>
-                </div>
-
+        <!-- HEADER -->
+        <div class="header">
+            <div class="back-btn">
+                <a href="/index"><i class="fas fa-chevron-left"></i></a>
             </div>
-
+            <h2>Thời gian màn hình <div class="header-icon">📱</div>
+            </h2>
         </div>
 
-        <div class="grid">
-
-            <div class="card">
-                <h3>Trung bình 7 ngày</h3>
-                <p>0h</p>
+        <!-- HERO USAGE CARD -->
+        <div class="hero-card">
+            <div class="hero-label">Thời gian sử dụng hôm nay</div>
+            <div class="hero-time-row">
+                <div class="hero-time">
+                    <span class="big" id="hoursDisplay">0</span>
+                    <span class="unit">h</span>
+                    <span class="big" id="minsDisplay">0</span>
+                    <span class="unit">p</span>
+                </div>
+                <div class="circle-wrap">
+                    <svg width="66" height="66" viewBox="0 0 66 66">
+                        <circle class="circle-bg" cx="33" cy="33" r="27" />
+                        <circle class="circle-fill" id="circleArc" cx="33" cy="33" r="27" />
+                    </svg>
+                    <div class="circle-text" id="pctText">0%</div>
+                </div>
             </div>
-
-            <div class="card">
-                <h3>Tuần đủ giới hạn</h3>
-                <p>0%</p>
+            <div class="hero-limit" id="limitLabel">Giới hạn: 4h</div>
+            <div class="hero-bar-bg">
+                <div class="hero-bar-fill" id="heroBar"></div>
             </div>
-
+            <div class="mission-badge" onclick="claimMission()">
+                <div class="mission-left">
+                    <i class="fas fa-check-circle"></i>
+                    <span id="missionText">Nhiệm vụ hoàn thành</span>
+                </div>
+                <div class="xp-chip">+30 XP</div>
+            </div>
         </div>
 
-        <!-- REMINDER CARD -->
-
-        <div class="reminder-card">
-
-            <div class="reminder-left">
-
-                <div class="reminder-icon">
-                    🔔
-                </div>
-
-                <div>
-
-                    <h3>Cách sử dụng</h3>
-                    <p>• Nhấn "Bắt đầu theo dõi" khi bạn bắt đầu sử dụng điện thoại
-                        • Nhấn "Dừng theo dõi" khi bạn ngừng sử dụng
-                        • Hệ thống sẽ cảnh báo khi bạn vượt quá giới hạn
-                        • Bạn có thể thêm giới hạn tạm thời cho phiên sử dụng</p>
-
-                </div>
-
+        <!-- STATS ROW -->
+        <div class="section-label">Thống kê tuần</div>
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-top"><i class="fas fa-chart-line"></i> TB 7 ngày</div>
+                <div class="stat-value" id="avg7d">0<span class="unit">h 0p</span></div>
             </div>
-
-            <div class="toggle"></div>
-
+            <div class="stat-card">
+                <div class="stat-top"><i class="fas fa-calendar-check"></i> Tuân thủ</div>
+                <div class="stat-value green" id="compliance">0<span class="unit">%</span></div>
+            </div>
         </div>
 
-        <!-- QUICK LIMIT CARD -->
-
-        <div class="limit-card">
-
-            <div class="limit-left">
-
-                <div class="limit-icon">
-                    ⏱
-                </div>
-
-                <div>
-
-                    <h3>Giới hạn tạm thời</h3>
-                    <p>Đặt giới hạn 30 phút</p>
-
-                </div>
-
+        <!-- INFO BOX -->
+        <div class="info-box">
+            <i class="fas fa-info-circle"></i>
+            <div class="info-box-text">
+                Giới hạn tạm thời chỉ áp dụng cho phiên hiện tại.<br>
+                Thay đổi giới hạn mặc định trong <strong style="color:var(--purple-lt)">Cài đặt</strong>.
             </div>
-
-            <button class="limit-btn">
-                Bật
-            </button>
-
         </div>
 
+        <!-- APP BREAKDOWN (new feature) -->
+        <div class="section-label">Ứng dụng sử dụng nhiều nhất</div>
+        <div class="breakdown-card">
+            <div class="breakdown-header">
+                <div class="breakdown-title"><span>📊</span> Phân tích ứng dụng</div>
+                <div class="today-chip">Hôm nay</div>
+            </div>
+
+            <div class="app-row">
+                <div class="app-icon" style="background:rgba(255,87,34,0.18)">🎬</div>
+                <div class="app-info">
+                    <div class="app-name">YouTube</div>
+                    <div class="app-bar-bg">
+                        <div class="app-bar-fill" data-w="72"
+                            style="background:linear-gradient(90deg,#ff5722,#ff8a65);width:0%"></div>
+                    </div>
+                </div>
+                <div class="app-time" style="color:#ff7043">1<span class="mins"> h 26p</span></div>
+            </div>
+
+            <div class="app-row">
+                <div class="app-icon" style="background:rgba(33,150,243,0.18)">💬</div>
+                <div class="app-info">
+                    <div class="app-name">Facebook</div>
+                    <div class="app-bar-bg">
+                        <div class="app-bar-fill" data-w="52"
+                            style="background:linear-gradient(90deg,#1976d2,#64b5f6);width:0%"></div>
+                    </div>
+                </div>
+                <div class="app-time" style="color:#64b5f6">52<span class="mins"> phút</span></div>
+            </div>
+
+            <div class="app-row">
+                <div class="app-icon" style="background:rgba(0,229,200,0.14)">🎵</div>
+                <div class="app-info">
+                    <div class="app-name">TikTok</div>
+                    <div class="app-bar-bg">
+                        <div class="app-bar-fill" data-w="38"
+                            style="background:linear-gradient(90deg,#00bfa5,#00e5c8);width:0%"></div>
+                    </div>
+                </div>
+                <div class="app-time" style="color:var(--teal)">38<span class="mins"> phút</span></div>
+            </div>
+
+            <div class="app-row">
+                <div class="app-icon" style="background:rgba(176,127,255,0.16)">📸</div>
+                <div class="app-info">
+                    <div class="app-name">Instagram</div>
+                    <div class="app-bar-bg">
+                        <div class="app-bar-fill" data-w="24"
+                            style="background:linear-gradient(90deg,#8e24aa,#e040fb);width:0%"></div>
+                    </div>
+                </div>
+                <div class="app-time" style="color:#e040fb">24<span class="mins"> phút</span></div>
+            </div>
+
+            <div class="app-row">
+                <div class="app-icon" style="background:rgba(245,197,66,0.14)">🌐</div>
+                <div class="app-info">
+                    <div class="app-name">Chrome</div>
+                    <div class="app-bar-bg">
+                        <div class="app-bar-fill" data-w="18"
+                            style="background:linear-gradient(90deg,#f9a825,#ffd54f);width:0%"></div>
+                    </div>
+                </div>
+                <div class="app-time" style="color:var(--gold)">18<span class="mins"> phút</span></div>
+            </div>
+        </div>
+
+        <!-- BOTTOM NAV -->
         <div class="bottom-nav">
-
             <a href="/walk">
-                🚶<br>Đi bộ
+                <div class="nav-icon">🚶</div>Đi bộ
             </a>
-
             <a href="/sleep">
-                🌙<br>Giấc ngủ
+                <div class="nav-icon">🌙</div>Giấc ngủ
             </a>
-
             <a href="/index">
-                🏠<br>Trang chủ
+                <div class="nav-icon">🏠</div>Trang chủ
             </a>
-
-            <a href="/screen" class="active screen-active">
-                📱<br>Màn hình
+            <a href="/screen" class="active">
+                <div class="nav-icon">📱</div>Màn hình
             </a>
-
             <a href="/focus">
-                🎯<br>Tập trung
+                <div class="nav-icon">🎯</div>Tập trung
             </a>
-
         </div>
+
     </div>
-    <script src="./static/js/app.js"></script>
+    <script src="/js/screen.js"></script>
 </body>
 
 </html>

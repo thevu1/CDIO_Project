@@ -15,7 +15,8 @@ app.use(express.json())
 app.use(session({
     secret:"healthquest-secret",
     resave:false,
-    saveUninitialized:false
+    saveUninitialized:false,
+    cookie: { secure: false }
 }))
 
 app.use("/static", express.static("public"))

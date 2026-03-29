@@ -1,81 +1,108 @@
-let timer = null
-let seconds = 45 * 60
+let timerInterval = null;
+let timeLeft = 0;
+let focusMode = '';
+let workMinutes = 45;
+let breakMinutes = 15;
+let sessionCount = 0;
+let totalMinutes = 0;
 
-function formatTime(sec) {
-
-    let m = Math.floor(sec / 60)
-    let s = sec % 60
-
-    return m + ":" + (s < 10 ? "0" : "") + s
-
-}
-
-function startFocus(mode) {
-
-    /* Ẩn 2 card */
-
-    document.getElementById("modeGrid").style.display = "none"
-
-    /* Hiện thanh timer */
-
-    document.getElementById("focusBar").style.display = "flex"
-
-    timer = setInterval(() => {
-
-        seconds--
-
-        document.getElementById("timer").innerText =
-            formatTime(seconds)
-
-        if (seconds <= 0) {
-
-            clearInterval(timer)
-
-            alert("Hoàn thành 45 phút tập trung!")
-
-            stopFocus()
-
-        }
-
-    }, 1000)
-
-}
-
-function stopFocus() {
-    clearInterval(timer)
-    seconds = 45 * 60
-    document.getElementById("timer").innerText = "45:00"
-    /* Hiện lại card */
-    document.getElementById("modeGrid").style.display = "grid"
-    /* Ẩn timer */
-    document.getElementById("focusBar").style.display = "none"
-}
-
-// Dropdown chế độ tập trung
 function toggleMenu() {
-
-    const menu = document.getElementById("modeMenu");
-    const arrow = document.getElementById("arrow");
-
-    menu.classList.toggle("show");
-    arrow.classList.toggle("rotate");
+    const menu = document.getElementById('modeMenu');
+    const arrow = document.getElementById('arrow');
+    const isOpen = menu.classList.toggle('open');
+    arrow.classList.toggle('open', isOpen);
 }
 
 function selectMode(mode) {
+    document.querySelector('.mode-title').childNodes[0].textContent = mode + ' ';
+    document.getElementById('modeMenu').classList.remove('open');
+    document.getElementById('arrow').classList.remove('open');
 
-    document.querySelector(".mode-title").innerHTML =
-        "Chọn chế độ tập trung (" + mode + ") <span class='arrow rotate'>⌄</span>";
-
-    document.getElementById("modeMenu").classList.remove("show");
+    const parts = mode.match(/(\d+)\s*-\s*(\d+)/);
+    if (parts) {
+        workMinutes = parseInt(parts[1]);
+        breakMinutes = parseInt(parts[2]);
+    }
 }
 function openPopup() {
-
-    document.getElementById("focusPopup").style.display = "flex"
-
+    document.getElementById('focusPopup').classList.add('open');
 }
 
 function closePopup() {
-
-    document.getElementById("focusPopup").style.display = "none"
-
+    document.getElementById('focusPopup').classList.remove('open');
 }
+
+function startFocus(type) {
+    focusMode = type;
+    timeLeft = workMinutes * 60;
+    document.getElementById('focusBar').style.display = 'flex';
+    updateTimerDisplay();
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            completeFocus();
+        }
+    }, 1000);
+}
+
+function updateTimerDisplay() {
+    const m = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+    const s = String(timeLeft % 60).padStart(2, '0');
+    document.getElementById('timer').textContent = `${m}:${s}`;
+}
+
+function stopFocus() {
+    clearInterval(timerInterval);
+    document.getElementById('focusBar').style.display = 'none';
+    timeLeft = 0;
+}
+
+function completeFocus() {
+    sessionCount++;
+    totalMinutes += workMinutes;
+    document.getElementById('session').textContent = sessionCount;
+    document.getElementById('total').textContent = totalMinutes;
+    document.getElementById('completedSessions').textContent = sessionCount;
+    document.getElementById('focusTime').textContent = totalMinutes;
+    addHistory();
+    document.getElementById('focusBar').style.display = 'none';
+    alert(`✅ Hoàn thành ${workMinutes} phút tập trung!`);
+}
+
+function addHistory() {
+    const list = document.getElementById('historyList');
+    const now = new Date();
+    const time = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+    const icon = focusMode === 'screen' ? '🖥' : '📵';
+    const name = focusMode === 'screen' ? 'Trên màn hình' : 'Ngoài màn hình';
+
+    if (list.textContent.trim() === 'Chưa có phiên nào') list.innerHTML = '';
+
+    const item = document.createElement('div');
+    item.className = 'history-item';
+    item.innerHTML = `
+      <div class="hi-left">
+        <div class="hi-icon">${icon}</div>
+        <div>
+          <div class="hi-name">${name}</div>
+          <div class="hi-time">${time}</div>
+        </div>
+      </div>
+      <div class="hi-right">
+        <div class="hi-mins">${workMinutes}</div>
+        <div class="hi-unit">phút</div>
+      </div>`;
+    list.prepend(item);
+}
+
+/* Close menu on outside click */
+document.addEventListener('click', e => {
+    const row = document.querySelector('.focus-row');
+    if (!row.contains(e.target)) {
+        document.getElementById('modeMenu').classList.remove('open');
+        document.getElementById('arrow').classList.remove('open');
+    }
+});

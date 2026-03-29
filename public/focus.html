@@ -14,132 +14,137 @@
 
     <title>Chế độ Tập trung</title>
 </head>
-
 <body>
-
     <div class="container">
 
-        <div class="header"
-            style="background:#2e7d32; display: flex; align-items: center; justify-content: space-between;">
-            <div>
-                <h2>Chế độ Tập trung</h2>
-                <h3>Làm việc hiệu quả : tập trung và nghỉ ngơi</h3>
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-inner">
+                <div class="header-back">
+                    <a href="/index"><i class="fas fa-chevron-left"></i></a>
+                </div>
+                <div class="header-title">
+                    <h2>Chế độ Tập trung <span>🎯</span></h2>
+                    <h3>Làm việc hiệu quả: tập trung và nghỉ ngơi</h3>
+                </div>
+                <div class="header-settings"><i class="fas fa-cog"></i></div>
             </div>
         </div>
 
+        <!-- FOCUS BAR (timer — hidden by default) -->
         <div id="focusBar" class="focus-bar" style="display:none;">
-
             <div class="focus-timer" id="timer">45:00</div>
-
-            <button class="btn stop-btn" onclick="stopFocus()">
-                Kết thúc
-            </button>
-
-
+            <button class="btn stop-btn" onclick="stopFocus()">Kết thúc</button>
         </div>
-        <div class="focus-row">
 
+        <!-- MODE SELECTOR -->
+        <div class="focus-row">
             <h3 class="mode-title" onclick="toggleMenu()">
-                Chọn chế độ tập trung
+                Chọn chế độ làm việc
                 <span class="arrow" id="arrow">⌄</span>
             </h3>
-
             <div class="mode-menu" id="modeMenu">
-                <div onclick="selectMode('25 - 10')">Chế độ 1: 25 - 10</div>
-                <div onclick="selectMode('45 - 15')">Chế độ 2: 45 - 15</div>
-                <div onclick="selectMode('60 - 20')">Chế độ 3: 60 - 20</div>
+                <div onclick="selectMode(' Chế độ 1:25 - 10')">Chế độ 1: 25 - 10</div>
+                <div onclick="selectMode(' Chế độ 2:45 - 15')">Chế độ 2: 45 - 15</div>
+                <div onclick="selectMode(' Chế độ 3:60 - 20')">Chế độ 3: 60 - 20</div>
             </div>
-
-
             <i class="fas fa-comment-dots focus-icon" onclick="openPopup()"></i>
             <div id="focusPopup" class="popup">
-
                 <div class="popup-content">
-
                     <span class="close-btn" onclick="closePopup()">×</span>
-
                     <h3>Chọn thời gian làm việc bạn mong muốn</h3>
-                    <p>Chế độ 1:Làm việc 25 phút và nghỉ ngơi 10 phút</p>
-                    <p>Chế độ 2:Làm việc 45 phút và nghỉ ngơi 15 phút</p>
-                    <p>Chế độ 3:Làm việc 60 phút và nghỉ ngơi 20 phút</p>
-
+                    <p>Chế độ 1: Làm việc 25 phút và nghỉ ngơi 10 phút</p>
+                    <p>Chế độ 2: Làm việc 45 phút và nghỉ ngơi 15 phút</p>
+                    <p>Chế độ 3: Làm việc 60 phút và nghỉ ngơi 20 phút</p>
                 </div>
-
             </div>
         </div>
+
+        <!-- SCREEN / OFFLINE CARDS -->
+        <div class="section-label">Chọn chế độ làm việc</div>
         <div class="grid-card" id="modeGrid">
-
-            <div class="card">
-
+            <div class="mode-card screen">
+                <div class="info-badge"><i class="fas fa-info-circle"></i></div>
+                <div class="mode-icon">🖥</div>
                 <h3>Trên màn hình</h3>
-
-                <p>45:00</p>
-
-                <button class="btn" onclick="startFocus('screen')">
-                    Bắt đầu
-                </button>
-
+                <p id="screenTime">Làm việc với máy tính</p>
+                <button class="btn" onclick="startFocus('screen')">Bắt đầu</button>
             </div>
-
-            <div class="card">
-
+            <div class="mode-card offline">
+                <div class="info-badge"><i class="fas fa-info-circle"></i></div>
+                <div class="mode-icon">📵</div>
                 <h3>Ngoài màn hình</h3>
-
-                <p>45:00</p>
-
-                <button class="btn" onclick="startFocus('offline')">
-                    Bắt đầu
-                </button>
-
+                <p id="offlineTime">Đọc sách, học tập</p>
+                <button class="btn" onclick="startFocus('offline')">Bắt đầu</button>
             </div>
-
         </div>
 
-        <div class="grid">
-
-            <div class="card">
+        <!-- STATS -->
+        <div class="section-label">Thống kê</div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🏆</div>
                 <h3>Phiên hoàn thành</h3>
                 <p id="session">0</p>
+                <div class="stat-sub">phiên hôm nay</div>
             </div>
-
-            <div class="card">
+            <div class="stat-card">
+                <div class="stat-icon">⏱</div>
                 <h3>Tổng thời gian</h3>
-                <p id="total">0 phút</p>
+                <p id="total">0</p>
+                <div class="stat-sub">phút hôm nay</div>
             </div>
-
-            <div class="card">
-                <h3>Phiên đã làm</h3>
-                <p id="completedSessions">0</p>
-                <p id="focusTime">0 phút</p>
+            <div class="stat-card wide">
+                <div class="stat-icon" style="font-size:22px;">📈</div>
+                <div class="stat-body">
+                    <h3>Phiên đã làm</h3>
+                    <p id="completedSessions">0</p>
+                </div>
+                <div style="text-align:right">
+                    <div style="font-family:'Times New Roman',Times,serif;font-size:22px;font-weight:700;color:var(--teal)"
+                        id="focusTime">0</div>
+                    <div class="stat-sub">phút</div>
+                </div>
             </div>
-
         </div>
 
+        <!-- HISTORY -->
+        <div class="section-label">Lịch sử hôm nay</div>
         <div class="history">
-
-            <h4>Lịch sử hôm nay</h4>
-
-            <div id="historyList">
-                Chưa có phiên nào
+            <div class="history-header">
+                <span class="hist-icon">📋</span>
+                <h4>Lịch sử hôm nay</h4>
             </div>
-
+            <div id="historyList">Chưa có phiên nào</div>
         </div>
 
+        <!-- BOTTOM NAV -->
         <div class="bottom-nav">
-
-            <a href="/walk">🚶<br>Đi bộ</a>
-            <a href="/sleep">🌙<br>Giấc ngủ</a>
-            <a href="/index">🏠<br>Trang chủ</a>
-            <a href="/screen">📱<br>Màn hình</a>
-            <a href="/focus">🎯<br>Tập trung</a>
-
+            <a href="/walk">
+                <div class="nav-icon">🚶</div>
+                Đi bộ
+            </a>
+            <a href="/sleep">
+                <div class="nav-icon">🌙</div>
+                Giấc ngủ
+            </a>
+            <a href="/index">
+                <div class="nav-icon">🏠</div>
+                Trang chủ
+            </a>
+            <a href="/screen">
+                <div class="nav-icon">📱</div>
+                Màn hình
+            </a>
+            <a href="/focus" class="active">
+                <div class="nav-icon">🎯</div>
+                Tập trung
+            </a>
         </div>
 
     </div>
-
     <script src="./static/js/focus.js"></script>
     <script src="./static/js/app.js"></script>
-
 </body>
 
 </html>
