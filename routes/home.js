@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const db = require("../database/db");
+const db = require("../database/dbLocal");
 const bodyParser = require("body-parser");
 const session = require("express-session");
 const path = require("path");

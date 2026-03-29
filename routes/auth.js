@@ -5,7 +5,7 @@
     const bcrypt = require("bcrypt");
     const path = require("path");
     const fs = require("fs");
-    const db = require("../database/db");
+    const db = require("../database/dbLocal");
 
     const nodemailer = require("nodemailer"); // ✅ FIX
     const { v4: uuidv4 } = require("uuid");
