@@ -140,3 +140,19 @@ window.addEventListener('load', () => {
     drawChart();
     updateStats();
 });
+
+//  nhận data từ Flutter
+function updateFromApp(steps) {
+    const km = steps * 0.0008;
+
+    setHero(km, GOAL_KM);
+
+    // cập nhật chart
+    const today = new Date().getDay(); // CN = 0
+    const index = today === 0 ? 6 : today - 1;
+
+    weekData[index].km = km;
+
+    drawChart();
+    updateStats();
+}
