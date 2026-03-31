@@ -26,7 +26,9 @@ app.use("/static", express.static("static"))
 
 app.use("/", authRoutes)
 app.use("/", homeRoutes)
-
+console.log(process.env);
 app.listen(PORT,'0.0.0.0',()=>{
     console.log("Server running http://localhost:"+PORT)
+    
 })
+
