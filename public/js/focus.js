@@ -5,6 +5,9 @@ let workMinutes = 45;
 let breakMinutes = 15;
 let sessionCount = 0;
 let totalMinutes = 0;
+let startSeconds = 0;
+
+let prevDigits = { m1: -1, m2: -1, s1: -1, s2: -1 };
 
 function toggleMenu() {
     const menu = document.getElementById('modeMenu');
@@ -14,7 +17,11 @@ function toggleMenu() {
 }
 
 function selectMode(mode) {
-    document.querySelector('.mode-title').childNodes[0].textContent = mode + ' ';
+    const titleEl = document.querySelector('.mode-title');
+    if (titleEl.childNodes[0]) {
+        titleEl.childNodes[0].textContent = mode + ' ';
+    }
+
     document.getElementById('modeMenu').classList.remove('open');
     document.getElementById('arrow').classList.remove('open');
 
@@ -22,6 +29,153 @@ function selectMode(mode) {
     if (parts) {
         workMinutes = parseInt(parts[1]);
         breakMinutes = parseInt(parts[2]);
+    }
+}
+
+function startFocus(type) {
+    focusMode = type;
+    timeLeft = workMinutes * 60;
+    startSeconds = timeLeft;
+    prevDigits = { m1: -1, m2: -1, s1: -1, s2: -1 };
+
+    const fs = document.getElementById("focusFullscreen");
+    fs.style.display = "flex";
+
+    document.getElementById("focusModeText").textContent =
+        type === "screen" ? "Tập trung trên màn hình" : "Tập trung ngoại tuyến";
+
+    updateFlipClock();
+
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        updateFlipClock();
+
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            completeFocus();
+        }
+    }, 1000);
+}
+
+function updateFlipClock() {
+    const totalSec = Math.max(0, timeLeft);
+    const m = Math.floor(totalSec / 60);
+    const s = totalSec % 60;
+
+    const m1 = Math.floor(m / 10);
+    const m2 = m % 10;
+    const s1 = Math.floor(s / 10);
+    const s2 = s % 10;
+
+    if (m1 !== prevDigits.m1) { flipDigit('digitM1', m1); prevDigits.m1 = m1; }
+    if (m2 !== prevDigits.m2) { flipDigit('digitM2', m2); prevDigits.m2 = m2; }
+    if (s1 !== prevDigits.s1) { flipDigit('digitS1', s1); prevDigits.s1 = s1; }
+    if (s2 !== prevDigits.s2) { flipDigit('digitS2', s2); prevDigits.s2 = s2; }
+}
+
+function flipDigit(id, value) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('flip');
+    void el.offsetWidth;
+    el.textContent = value;
+    el.classList.add('flip');
+}
+
+function stopFocus() {
+    if (timeLeft > 0) {
+        document.getElementById("confirmPopup").style.display = "flex";
+        return;
+    }
+    confirmStopFocus();
+}
+
+function confirmStopFocus() {
+    document.getElementById("confirmPopup").style.display = "none";
+    clearInterval(timerInterval);
+    saveFocusSession(false);
+    document.getElementById("focusFullscreen").style.display = "none";
+}
+
+function completeFocus() {
+    sessionCount++;
+    totalMinutes += workMinutes;
+
+    document.getElementById('session').textContent = sessionCount;
+    document.getElementById('total').textContent = totalMinutes;
+    document.getElementById('completedSessions').textContent = sessionCount;
+    document.getElementById('focusTime').textContent = totalMinutes;
+
+    addHistory();
+    saveFocusSession(true);
+
+    document.getElementById("focusFullscreen").style.display = "none";
+    document.getElementById("doneText").innerText = `Hoàn thành ${workMinutes} phút tập trung!`;
+    document.getElementById("donePopup").style.display = "flex";
+}
+function saveFocusSession(completed) {
+    const usedSeconds = startSeconds - timeLeft;
+
+    const currentUserId = localStorage.getItem("userId");
+
+    fetch("/api/focus/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            user_id: currentUserId,
+            focus_mode: focusMode,
+            focus_duration_seconds: usedSeconds,
+            time_remaining_seconds: timeLeft,
+            status: completed ? "completed" : "unfinished"
+        })
+    }).catch(err => console.error("Lỗi lưu phiên:", err));
+    fetch("/api/focus/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ /* dữ liệu */ })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log("Đã lưu vào DB!");
+                loadHistoryFromDB();
+            }
+        })
+        .catch(err => console.error("Lỗi lưu phiên:", err));
+}
+
+async function loadHistoryFromDB() {
+    try {
+        const response = await fetch("/api/focus/history");
+        const sessions = await response.json();
+
+        const list = document.getElementById('historyList');
+        list.innerHTML = '';
+
+        sessions.forEach(session => {
+            const date = new Date(session.created_at);
+            const timeStr = `${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
+            const icon = session.focus_mode === '🖥';
+            const name = session.focus_mode === 'screen' ;
+
+            const item = document.createElement('div');
+            item.className = 'history-item';
+            item.innerHTML = `
+                <div class="hi-left">
+                    <div class="hi-icon">${icon}</div>
+                    <div>
+                        <div class="hi-name">${name}</div>
+                        <div class="hi-time">${timeStr}</div>
+                    </div>
+                </div>
+                <div class="hi-right">
+                        <div class="hi-mins">${session.duration_formatted}</div>
+                </div>`;
+            list.appendChild(item);
+        });
+    } catch (err) {
+        console.error("Lỗi tải lịch sử:", err);
     }
 }
 function openPopup() {
@@ -32,77 +186,23 @@ function closePopup() {
     document.getElementById('focusPopup').classList.remove('open');
 }
 
-function startFocus(type) {
-    focusMode = type;
-    timeLeft = workMinutes * 60;
-    document.getElementById('focusBar').style.display = 'flex';
-    updateTimerDisplay();
-    clearInterval(timerInterval);
-    timerInterval = setInterval(() => {
-        timeLeft--;
-        updateTimerDisplay();
-        if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            completeFocus();
-        }
-    }, 1000);
+function closeConfirm() {
+    document.getElementById("confirmPopup").style.display = "none";
 }
 
-function updateTimerDisplay() {
-    const m = String(Math.floor(timeLeft / 60)).padStart(2, '0');
-    const s = String(timeLeft % 60).padStart(2, '0');
-    document.getElementById('timer').textContent = `${m}:${s}`;
+function closeDone() {
+    document.getElementById("donePopup").style.display = "none";
 }
 
-function stopFocus() {
-    clearInterval(timerInterval);
-    document.getElementById('focusBar').style.display = 'none';
-    timeLeft = 0;
-}
-
-function completeFocus() {
-    sessionCount++;
-    totalMinutes += workMinutes;
-    document.getElementById('session').textContent = sessionCount;
-    document.getElementById('total').textContent = totalMinutes;
-    document.getElementById('completedSessions').textContent = sessionCount;
-    document.getElementById('focusTime').textContent = totalMinutes;
-    addHistory();
-    document.getElementById('focusBar').style.display = 'none';
-    alert(`✅ Hoàn thành ${workMinutes} phút tập trung!`);
-}
-
-function addHistory() {
-    const list = document.getElementById('historyList');
-    const now = new Date();
-    const time = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
-    const icon = focusMode === 'screen' ? '🖥' : '📵';
-    const name = focusMode === 'screen' ? 'Trên màn hình' : 'Ngoài màn hình';
-
-    if (list.textContent.trim() === 'Chưa có phiên nào') list.innerHTML = '';
-
-    const item = document.createElement('div');
-    item.className = 'history-item';
-    item.innerHTML = `
-      <div class="hi-left">
-        <div class="hi-icon">${icon}</div>
-        <div>
-          <div class="hi-name">${name}</div>
-          <div class="hi-time">${time}</div>
-        </div>
-      </div>
-      <div class="hi-right">
-        <div class="hi-mins">${workMinutes}</div>
-        <div class="hi-unit">phút</div>
-      </div>`;
-    list.prepend(item);
-}
-
-/* Close menu on outside click */
 document.addEventListener('click', e => {
     const row = document.querySelector('.focus-row');
-    if (!row.contains(e.target)) {
-        document.getElementById('modeMenu').classList.remove('open');
-        document.getElementById('arrow').classList.remove('open');
+    if (row && !row.contains(e.target)) {
+        const menu = document.getElementById('modeMenu');
+        const arrow = document.getElementById('arrow');
+        if (menu) menu.classList.remove('open');
+        if (arrow) arrow.classList.remove('open');
     }
+});
+document.addEventListener('DOMContentLoaded', () => {
+    loadHistoryFromDB();
 });

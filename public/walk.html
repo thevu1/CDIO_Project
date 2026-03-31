@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <title>Đi bộ & Vận động</title>
-    <link rel="stylesheet" href="/css/walk.css">
+    <link rel="stylesheet" href="/static/css/walk.css">
 </head>
 
 <body>
@@ -20,7 +20,6 @@
             <h2>Đi bộ &amp; Vận động 🚶</h2>
         </div>
 
-        <!-- HERO CARD -->
         <div class="hero-card">
             <div class="hero-label">Hôm nay</div>
             <div class="hero-main-row">
@@ -103,29 +102,33 @@
                 </div>
             </div>
         </div>
+        <!-- LOG BUTTON -->
+        <button class="log-btn" onclick="openLogModal()">
+            + &nbsp;Ghi nhận hoạt động hôm nay
+        </button>
 
         <!-- BOTTOM NAV -->
         <div class="bottom-nav">
             <a href="/walk" class="active">
                 <div class="nav-icon">🚶</div>Đi bộ
             </a>
-            <a href="/sleep">
-                <div class="nav-icon">🌙</div>Giấc ngủ
+            <a href="/focus" >
+                <div class="nav-icon">🎯</div>Tập trung
             </a>
             <a href="/index">
                 <div class="nav-icon">🏠</div>Trang chủ
             </a>
-            <a href="/screen">
-                <div class="nav-icon">📱</div>Màn hình
+            <a href="/group">
+                <div class="nav-icon">🤝</div>Bang hội
             </a>
-            <a href="/focus">
-                <div class="nav-icon">🎯</div>Tập trung
+            <a href="/tasks">
+                <div class="nav-icon">📋</div>Nhiệm vụ
             </a>
         </div>
 
-    </div>
 
-    <script src="/js/walk.js"></script>
+    </div>
+    <script src="/static/js/walk.js"></script>
 </body>
 
 </html>

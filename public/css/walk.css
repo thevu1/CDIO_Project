@@ -86,7 +86,7 @@ body::before {
     height: 34px;
     border-radius: 10px;
     flex-shrink: 0;
-    background:rgba(255, 255, 255, 0.927);
+    background: rgba(255, 255, 255, 0.927);
     border: 1px solid rgba(255, 255, 255, 0.15);
     display: flex;
     align-items: center;
@@ -571,4 +571,31 @@ body::before {
 .bottom-nav a.active .nav-icon {
     background: rgba(41, 121, 255, 0.2);
     box-shadow: 0 0 10px rgba(41, 121, 255, 0.3);
+}
+
+/* ── LOG BUTTON ── */
+.log-btn {
+    margin: 14px 16px 0;
+    background: linear-gradient(135deg, #a855f7, #ec4899);
+    border: none;
+    border-radius: 16px;
+    padding: 17px;
+    font-family: var(--font);
+    font-size: 15px;
+    font-weight: 800;
+    color: #fff;
+    cursor: pointer;
+    width: calc(100% - 32px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 6px 24px rgba(168, 85, 247, 0.45);
+    transition: opacity 0.2s, transform 0.15s;
+    animation: fadeUp 0.5s 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.log-btn:hover {
+    opacity: 0.88;
+    transform: scale(0.98);
 }
