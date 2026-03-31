@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Room - HealthQuest</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.app {
+  width: 100%;
+  max-width: 420px;
+  min-height: 100vh;
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 30px;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.5s ease;
+  position: relative;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #f0f0f0;
+  position: relative;
+}
+
+.back {
+  font-size: 24px;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  transition: all 0.3s ease;
+  color: #374151;
+  font-weight: bold;
+}
+
+.back:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  transform: translateX(-4px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.back:active {
+  transform: translateX(-2px) scale(0.95);
+}
+
+.title {
+  margin-left: 12px;
+  font-weight: 800;
+  font-size: 20px;
+  color: #1f2937;
+  flex: 1;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.menu-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.menu-btn:hover {
+  transform: rotate(90deg) scale(1.1);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+.menu-btn:active {
+  transform: rotate(90deg) scale(1);
+}
+
+/* MENU */
+.menu {
+  position: absolute;
+  right: 24px;
+  top: 90px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 100;
+  border: 2px solid #f0f0f0;
+  animation: menuSlideIn 0.3s ease;
+  min-width: 200px;
+}
+
+@keyframes menuSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.menu-item {
+  padding: 14px 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  color: #374151;
+  font-size: 15px;
+}
+
+.menu-item:hover {
+  background: linear-gradient(90deg, #f0f4ff 0%, #faf5ff 100%);
+  color: #667eea;
+  transform: translateX(4px);
+}
+
+.menu-item:active {
+  transform: translateX(2px) scale(0.98);
+}
+
+.menu-item:not(:last-child) {
+  border-bottom: 1px solid #f3f4f6;
+}
+
+/* CARD */
+.card {
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+  padding: 20px;
+  border-radius: 20px;
+  margin-top: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border: 2px solid #f0f0f0;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+  border-color: #e0e7ff;
+}
+
+.card h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card h3::before {
+  content: "📊";
+  font-size: 20px;
+}
+
+/* MEMBER */
+#members h3::before {
+  content: "👥";
+}
+
+.member {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid #f3f4f6;
+  transition: all 0.2s ease;
+  border-radius: 10px;
+  margin-bottom: 4px;
+}
+
+.member:hover {
+  background: linear-gradient(90deg, #f0f4ff 0%, #faf5ff 100%);
+  transform: translateX(4px);
+}
+
+.member:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.member-name {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.member-name::before {
+  content: "👤";
+  font-size: 16px;
+}
+
+.member-steps {
+  font-weight: 700;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 15px;
+}
+
+.member-steps::after {
+  content: " 👟";
+  -webkit-text-fill-color: initial;
+}
+
+/* CHART CONTAINER */
+#chart {
+  border-radius: 12px;
+  padding: 10px;
+}
+
+/* MODAL */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-box {
+  background: white;
+  padding: 28px 24px 24px;
+  border-radius: 24px;
+  width: 90%;
+  max-width: 360px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  animation: modalSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-box::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  border-radius: 24px 24px 0 0;
+}
+
+.modal-box h3 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-box h3::before {
+  content: "👥";
+  font-size: 24px;
+}
+
+.modal-box::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-box::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.modal-box::-webkit-scrollbar-thumb {
+  background: #667eea;
+  border-radius: 10px;
+}
+
+/* FRIEND ITEM */
+.friend {
+  padding: 14px 16px;
+  border-bottom: 1px solid #f3f4f6;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 10px;
+  margin-bottom: 4px;
+  font-weight: 500;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.friend::before {
+  content: "👤";
+  font-size: 18px;
+}
+
+.friend:hover {
+  background: linear-gradient(90deg, #f0f4ff 0%, #faf5ff 100%);
+  transform: translateX(4px);
+  color: #667eea;
+}
+
+.friend:active {
+  transform: translateX(2px) scale(0.98);
+}
+
+.friend:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.friend.added {
+  color: #10b981;
+  font-weight: 700;
+  background: linear-gradient(90deg, #d1fae5 0%, #d1fae5 100%);
+  cursor: not-allowed;
+}
+
+.friend.added::before {
+  content: "✅";
+}
+
+.friend.added:hover {
+  transform: translateX(0);
+}
+
+/* CLOSE BUTTON FOR MODAL */
+.close-modal-btn {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  font-size: 18px;
+  cursor: pointer;
+  background: #f3f4f6;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  color: #6b7280;
+  font-weight: bold;
+  z-index: 10;
+}
+
+.close-modal-btn:hover {
+  background: #ef4444;
+  color: white;
+  transform: rotate(90deg);
+  border-color: #dc2626;
+}
+
+/* RESPONSIVE */
+@media (max-width: 480px) {
+  body {
+    padding: 0;
+  }
+  
+  .app {
+    border-radius: 0;
+    min-height: 100vh;
+  }
+  
+  .menu {
+    right: 10px;
+  }
+}
+
+/* LOADING ANIMATION */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.loading {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="back" onclick="goBack()">←</div>
+    <div class="title" id="groupName"></div>
+    <div class="menu-btn" onclick="toggleMenu()">⋯</div>
+  </div>
+
+  <!-- MENU -->
+  <div id="menu" class="menu">
+    <div class="menu-item" onclick="openAdd()">➕ Thêm thành viên</div>
+    <div class="menu-item" onclick="renameGroup()">✏️ Đổi tên nhóm</div>
+    <div class="menu-item" onclick="leaveGroup()">🚪 Rời nhóm</div>
+  </div>
+
+  <!-- CHART -->
+  <div class="card">
+    <h3>Thống kê bước chân</h3>
+    <canvas id="chart"></canvas>
+  </div>
+
+  <!-- MEMBERS -->
+  <div class="card">
+    <h3>Thành viên</h3>
+    <div id="members"></div>
+  </div>
+
+</div>
+
+<!-- MODAL ADD MEMBER -->
+<div id="addModal" class="modal" onclick="clickOutside(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="close-modal-btn" onclick="closeAddModal()">✖</div>
+    <h3>Chọn bạn bè</h3>
+    <div id="friendList"></div>
+  </div>
+</div>
+
+<script>
+
+/* PARAM */
+const params = new URLSearchParams(window.location.search)
+const groupID = params.get("group_id")
+const groupName = params.get("name")
+
+document.getElementById("groupName").innerText = decodeURIComponent(groupName)
+
+/* MEMBERS */
+let members = [
+  {name: "Bạn", steps: 8000},
+  {name: "An", steps: 7000}
+]
+
+/* FRIEND LIST */
+let friends = ["Bình", "Cường", "Dũng", "Huy"]
+
+let addedMembers = []
+
+/* RENDER MEMBERS */
+function renderMembers() {
+  let html = ""
+  members.forEach(m => {
+    html += `
+    <div class="member">
+      <div class="member-name">${m.name}</div>
+      <div class="member-steps">${m.steps}</div>
+    </div>`
+  })
+  document.getElementById("members").innerHTML = html
+}
+
+/* CHART */
+let chartInstance = null
+
+function renderChart() {
+  const ctx = document.getElementById("chart")
+  
+  // Destroy previous chart if exists
+  if (chartInstance) {
+    chartInstance.destroy()
+  }
+  
+  chartInstance = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: members.map(m => m.name),
+      datasets: [{
+        data: members.map(m => m.steps),
+        backgroundColor: [
+          'rgba(102, 126, 234, 0.8)',
+          'rgba(118, 75, 162, 0.8)',
+          'rgba(16, 185, 129, 0.8)',
+          'rgba(251, 146, 60, 0.8)',
+          'rgba(239, 68, 68, 0.8)',
+          'rgba(59, 130, 246, 0.8)'
+        ],
+        borderColor: [
+          'rgba(102, 126, 234, 1)',
+          'rgba(118, 75, 162, 1)',
+          'rgba(16, 185, 129, 1)',
+          'rgba(251, 146, 60, 1)',
+          'rgba(239, 68, 68, 1)',
+          'rgba(59, 130, 246, 1)'
+        ],
+        borderWidth: 2,
+        borderRadius: 8
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {display: false},
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          padding: 12,
+          titleFont: {size: 14, weight: 'bold'},
+          bodyFont: {size: 13},
+          cornerRadius: 8
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: {
+            color: 'rgba(0, 0, 0, 0.05)'
+          },
+          ticks: {
+            font: {size: 11}
+          }
+        },
+        x: {
+          grid: {
+            display: false
+          },
+          ticks: {
+            font: {size: 11, weight: 'bold'}
+          }
+        }
+      }
+    }
+  })
+}
+
+renderMembers()
+renderChart()
+
+/* MENU */
+function toggleMenu() {
+  let m = document.getElementById("menu")
+  m.style.display = m.style.display === "flex" ? "none" : "flex"
+}
+
+// Close menu when clicking outside
+document.addEventListener('click', function(event) {
+  const menu = document.getElementById("menu")
+  const menuBtn = document.querySelector(".menu-btn")
+  
+  if (!menu.contains(event.target) && !menuBtn.contains(event.target)) {
+    menu.style.display = "none"
+  }
+})
+
+/* ADD MEMBER */
+function openAdd() {
+  document.getElementById("menu").style.display = "none"
+  
+  let html = ""
+  friends.forEach(f => {
+    let added = addedMembers.includes(f)
+    
+    html += `
+    <div class="friend ${added ? "added" : ""}" onclick="addFriend('${f}')">
+      ${f} ${added ? "(Đã thêm)" : ""}
+    </div>`
+  })
+  
+  document.getElementById("friendList").innerHTML = html
+  document.getElementById("addModal").style.display = "flex"
+}
+
+function addFriend(name) {
+  if (addedMembers.includes(name)) {
+    alert("Đã thêm rồi")
+    return
+  }
+  
+  if (confirm("Thêm " + name + " vào nhóm?")) {
+    addedMembers.push(name)
+    
+    members.push({
+      name: name,
+      steps: Math.floor(Math.random() * 5000 + 3000)
+    })
+    
+    renderMembers()
+    renderChart()
+    openAdd()
+  }
+}
+
+/* RENAME */
+function renameGroup() {
+  document.getElementById("menu").style.display = "none"
+  
+  let newName = prompt("Nhập tên mới:")
+  
+  if (newName) {
+    document.getElementById("groupName").innerText = newName
+    
+    let groups = JSON.parse(localStorage.getItem("groups")) || []
+    
+    groups.forEach(g => {
+      if (g.group_id === groupID) {
+        g.name = newName
+      }
+    })
+    
+    localStorage.setItem("groups", JSON.stringify(groups))
+  }
+}
+
+/* LEAVE */
+function leaveGroup() {
+  document.getElementById("menu").style.display = "none"
+  
+  if (confirm("Bạn chắc chắn rời nhóm?")) {
+    
+    let groups = JSON.parse(localStorage.getItem("groups")) || []
+    
+    groups = groups.filter(g => g.group_id !== groupID)
+    
+    localStorage.setItem("groups", JSON.stringify(groups))
+    
+    window.location.href = "groups.html"
+  }
+}
+
+/* CLOSE MODAL */
+function clickOutside(e) {
+  if (e.target.classList.contains("modal")) {
+    e.target.style.display = "none"
+  }
+}
+
+function closeAddModal() {
+  document.getElementById("addModal").style.display = "none"
+}
+
+/* NAV */
+function goBack() {
+  window.location.href = "groups.html"
+}
+
+</script>
+
+</body>
+</html>
