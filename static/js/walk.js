@@ -156,3 +156,24 @@ function updateFromApp(steps) {
     drawChart();
     updateStats();
 }
+function updateSteps(steps) {
+    // đổi bước → km (giả sử 1000 bước = 0.8 km)
+    let km = (steps * 0.0008).toFixed(2);
+
+    document.getElementById("steps").innerText = km;
+
+    // update text phụ
+    document.getElementById("kmSub").innerText = km + " km / 5 km";
+
+    // update progress %
+    let percent = Math.min((km / 5) * 100, 100);
+    document.getElementById("pctDisplay").innerText = Math.floor(percent);
+
+    // update thanh progress
+    document.getElementById("heroBar").style.width = percent + "%";
+}
+document.addEventListener('touchmove', function(event) {
+    if (event.scale !== 1) {
+        event.preventDefault();
+    }
+}, { passive: false });

@@ -289,6 +289,11 @@ app.post("/check-level", (req, res) => {
     );
 
 });
+app.post('/api/steps', (req, res) => {
+  const steps = req.body.steps;
+  console.log("Steps:", steps);
+  res.send("OK");
+});
 
 
 

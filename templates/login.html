@@ -2,9 +2,13 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Đăng nhập - HealthQuest</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/login.css">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="HealthQuest">
 </head>
 <body class="app-preview-body">
     <div class="mobile-preview">
@@ -33,6 +37,11 @@
                 <div class="mobile-input-group">
                     <label>Mật khẩu</label>
                     <input type="password" name="password" placeholder="Nhập mật khẩu" required>
+                </div>
+                <div style="text-align: right; margin-top: -6px; margin-bottom: 14px;">
+                    <a href="/forgot-password" style="font-size: 13px; color: #2b7de9; text-decoration: none;">
+                        Quên mật khẩu?
+                    </a>
                 </div>
             <div id="error-message" style="color:red; margin-bottom:10px;"></div>   
 

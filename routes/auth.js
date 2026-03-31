@@ -16,19 +16,6 @@
     /* =========================
     CONFIG MAIL (GMAIL)
     ========================= */
-    // const transporter = nodemailer.createTransport({
-    //     service: "gmail",
-    //     auth: {
-    //         user: "nguyenthevu4@dtu.edu.vn",
-    //         pass: "cunmvjdcmrixmpcl" // app password (không có khoảng trắng)
-    //     }
-    // });
-
-
-    // /* =========================
-    //    CLEAN EXPIRED USERS
-    // ========================= */
-
     setInterval(() => {
         db.query(
             "DELETE FROM users WHERE is_verified = 0 AND verify_expires < NOW()",
@@ -55,9 +42,6 @@
     ROUTES
     ========================= */
 
-    // app.get("/", (req, res) => {
-    //     res.redirect("/login");
-    // });
     app.get("/", (req, res) => {
         if (!req.session.user) {
             return res.redirect("/login");
@@ -71,6 +55,17 @@
     app.get("/register", (req, res) => {
         res.sendFile(path.join(__dirname, "../templates/register.html"));
     });
+
+    // /* =========================
+    //    forgot password and reset password
+    // ========================= */
+    app.get("/forgot-password", (req, res) => {
+    res.sendFile(path.join(__dirname, "../templates/forgot-password.html"));
+    });
+    app.get("/reset-password", (req, res) => {
+      res.sendFile(path.join(__dirname, "../templates/reset-password.html"));
+    });
+
     // /* =========================
     //    SETUP PROFILE
     // ========================= */
@@ -125,61 +120,6 @@
     /* =========================
     REGISTER
     ========================= */
-    // app.post("/register", async (req, res) => {
-    //     const { name, email, password, username } = req.body;
-
-    //     const hash = await bcrypt.hash(password, 10);
-
-    //     db.query(
-    //         "SELECT * FROM users WHERE email = ?",
-    //         [email],
-    //         async (err, results) => {
-
-    //             // 👉 Nếu đã tồn tại
-    //             if (results.length > 0) {
-    //                 const user = results[0];
-
-    //                 // ❌ Chưa verify → cho resend
-    //                 if (!user.is_verified) {
-    //                     return res.redirect(`/register?error=unverified&email=${email}`);
-    //                 }
-
-    //                 // ❌ Đã verify → chặn
-    //                 return res.send("Email đã tồn tại!");
-    //             }
-
-    //             // 👉 Tạo user mới
-    //             const token = uuidv4();
-    //             const expires = new Date(Date.now() + 15 * 60 * 1000);
-
-    //             db.query(
-    //                 `INSERT INTO users 
-    //                 (name, email, password, nickname, is_verified, verify_token, verify_expires) 
-    //                 VALUES (?, ?, ?, ?, ?, ?, ?)`,
-    //                 [name, email, hash, username, false, token, expires],
-    //                 async (err) => {
-
-    //                     if (err) return res.send("Lỗi server");
-
-    //                     const link = `http://localhost:3000/verify/${token}`;
-
-    //                     try {
-    //                         await transporter.sendMail({
-    //                             to: email,
-    //                             subject: "Xác minh",
-    //                             html: getVerifyEmailHTML(link, name)
-    //                         });
-
-    //                         res.redirect(`/register?success=1&email=${email}`);
-    //                     } catch (e) {
-    //                         console.log(e);
-    //                         res.redirect(`/register?error=mailfail&email=${email}`);
-    //                     }
-    //                 }
-    //             );
-    //         }
-    //     );
-    // });
 
     app.post("/register", async (req, res) => {
         const { name, email, password, username } = req.body;
@@ -251,44 +191,69 @@
             );
         });
     });
+    
+    // ===============================
+    // FORGOT PASSWORD APIs
+    // ===============================
+
+    // API 1: kiểm tra email
+    app.post("/api/auth/check-email", (req, res) => {
+    const { email } = req.body;
+
+    if (!email) {
+        return res.status(400).json({ message: "Email không được để trống." });
+    }
+
+    const sql = "SELECT * FROM users WHERE email = ?";
+    db.query(sql, [email], (err, result) => {
+        if (err) {
+        return res.status(500).json({ message: "Lỗi server." });
+        }
+
+        if (result.length === 0) {
+        return res.status(404).json({ message: "Email chưa được đăng ký." });
+        }
+
+        return res.status(200).json({ message: "Email hợp lệ." });
+    });
+    });
+
+
+    // API 2: reset password
+    app.post("/api/auth/reset-password", async (req, res) => {
+    try {
+        const { email, newPassword } = req.body;
+
+        if (!email || !newPassword) {
+        return res.status(400).json({ message: "Thiếu thông tin." });
+        }
+
+        if (newPassword.length < 6) {
+        return res.status(400).json({ message: "Mật khẩu phải có ít nhất 6 ký tự." });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        const sql = "UPDATE users SET password = ? WHERE email = ?";
+        db.query(sql, [hashedPassword, email], (err, result) => {
+        if (err) {
+            return res.status(500).json({ message: "Lỗi server." });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "Không tìm thấy tài khoản." });
+        }
+
+        return res.status(200).json({ message: "Đặt lại mật khẩu thành công." });
+        });
+
+    } catch (error) {
+        return res.status(500).json({ message: "Có lỗi xảy ra." });
+    }
+    });
     // /* =========================
     //    RESEND MAIL
     // ========================= */
-    // app.get("/resend", (req, res) => {
-    //     const email = req.query.email;
-
-    //     db.query(
-    //         "SELECT * FROM users WHERE email = ?",
-    //         [email],
-    //         async (err, results) => {
-    //             if (!results[0]) return res.send("Không tìm thấy user");
-
-    //             const user = results[0];
-
-    //             const token = uuidv4();
-    //             const expires = new Date(Date.now() + 15 * 60 * 1000);
-
-    //             db.query(
-    //                 "UPDATE users SET verify_token=?, verify_expires=? WHERE id=?",
-    //                 [token, expires, user.id]
-    //             );
-
-    //             const link = `http://localhost:3000/verify/${token}`;
-
-    //             try {
-    //                 await transporter.sendMail({
-    //                     to: email,
-    //                     subject: "Gửi lại xác minh",
-    //                     html: getVerifyEmailHTML(link, user.name)
-    //                 });
-
-    //                 res.send("📩 Đã gửi lại email!");
-    //             } catch (e) {
-    //                 res.send("❌ Gửi lại thất bại");
-    //             }
-    //         }
-    //     );
-    // });
 
     app.post("/resend", (req, res) => {
         const { email } = req.body;
@@ -337,44 +302,6 @@
     /* =========================
     VERIFY
     ========================= */
-    // app.get("/verify/:token", (req, res) => {
-    //     const token = req.params.token;
-        
-
-    //     db.query(
-    //         "SELECT * FROM users WHERE verify_token = ?",
-    //         [token],
-    //         (err, results) => {
-    //             if (!results[0]) return res.send("Link không hợp lệ");
-
-    //             const user = results[0];
-
-    //             if (new Date() > new Date(user.verify_expires)) {
-    //                 return res.send(`
-    //                     Link hết hạn 😢 <br><br>
-    //                     <a href="/resend?email=${user.email}">
-    //                         Gửi lại email
-    //                     </a>
-    //                 `);
-    //             }
-
-    //             const now = new Date();
-
-    //             db.query(
-    //                 `UPDATE users 
-    //                 SET is_verified = TRUE, 
-    //                     verify_token = NULL, 
-    //                     verify_expires = NULL,
-    //                     join_date = ?
-    //                 WHERE id = ?`,
-    //                 [now, user.id],
-    //                 () => {
-    //                     res.redirect("/login?verified=1");
-    //                 }
-    //             );
-    //         }
-    //     );
-    // });
 
     app.get("/verify/:token", (req, res) => {
         const token = req.params.token;
@@ -425,47 +352,6 @@
     });
     
 
-    // /* =========================
-    //    RESEND MAIL
-    // ========================= */
-    // app.get("/resend", (req, res) => {
-    //     const email = req.query.email;
-
-    //     db.query(
-    //         "SELECT * FROM users WHERE email = ?",
-    //         [email],
-    //         async (err, results) => {
-    //             const user = results[0];
-    //             if (!user) return res.send("Không tìm thấy user");
-
-    //             const token = uuidv4();
-    //             const expires = new Date(Date.now() + 15 * 60 * 1000);
-
-    //             db.query(
-    //                 `UPDATE users 
-    //                  SET verify_token = ?, verify_expires = ? 
-    //                  WHERE id = ?`,
-    //                 [token, expires, user.id]
-    //             );
-
-    //             const link = `http://localhost:3000/verify/${token}`;
-
-    //             try {
-    //                 await transporter.sendMail({
-    //                     from: '"HealthQuest" <nguyenthevu4@dtu.edu.vn>',
-    //                     to: email,
-    //                     subject: "Gửi lại xác minh",
-    //                     html: getVerifyEmailHTML(link, user.name)
-    //                 });
-
-    //                 res.send("📩 Đã gửi lại email!");
-    //             } catch (e) {
-    //                 console.log("MAIL ERROR:", e);
-    //                 res.send("❌ Gửi lại mail thất bại");
-    //             }
-    //         }
-    //     );
-    // });
 
     /* =========================
     LOGIN
