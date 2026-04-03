@@ -2,74 +2,148 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HealthQuest - Bạn bè</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>HealthQuest · Bạn bè</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="app-container">
-        <!-- Top bar với avatar, tên và streak lửa -->
-        <div class="top-bar">
-            <div class="user-info">
-                <div class="avatar">👤</div>
-                <div class="greeting">
-                    <span class="hello">Xin chào,</span>
-                    <span class="username" id="username"></span>
+<div class="phone">
+    <div class="app" id="app">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="logo"><span class="icon">👥</span> Bạn bè</h1>
+            <div class="gear-btn" id="gearBtn">⚙️</div>
+            <div class="gear-dropdown" id="gearDropdown">
+                <a href="#">⚙️ Cài đặt</a>
+                <a href="#">📊 Thống kê</a>
+                <hr>
+                <a href="#" class="dropdown-logout">🚪 Đăng xuất</a>
+            </div>
+        </header>
+
+        <!-- Hero card -->
+        <div class="hero" id="heroCard">
+            <div class="hero-avatar" id="heroAvatar">A</div>
+            <div class="hero-info">
+                <div class="hero-name" id="heroName">Nguyễn Văn A</div>
+                <div class="hero-level">Cấp <span id="heroLevel">3</span></div>
+                <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
+                <div class="xp-text"><span id="heroXp">0</span>/100 XP</div>
+            </div>
+            <div class="hero-streak">🔥 <span id="heroStreak">0</span></div>
+        </div>
+
+        <!-- CARD 1: DANH SÁCH BẠN BÈ (phân trang + phóng to) -->
+        <div class="card" id="friendsCard">
+            <div class="section-title">
+                <span>👥 Danh sách bạn bè</span>
+                <div style="display: flex; gap: 8px;">
+                    <span class="badge" id="friendCount">0</span>
+                    <button class="btn-icon expand-btn" id="expandFriendsBtn" title="Phóng to">⤢</button>
                 </div>
             </div>
-            <div class="top-streak">
-                <span class="streak-icon">🔥</span>
-                <span class="streak-number" id="top-streak">0</span>
+            <div id="friendsList" class="friends-list"></div>
+            <!-- Phân trang cho danh sách bạn bè -->
+            <div class="pagination" id="friendsPagination">
+                <button id="prevPageBtn" class="page-btn" disabled>◀ Trước</button>
+                <span id="pageInfo" class="page-info">Trang 1 / 1</span>
+                <button id="nextPageBtn" class="page-btn" disabled>Sau ▶</button>
             </div>
         </div>
 
-        <!-- Ngày hiện tại -->
-        <div class="date" id="current-date"></div>
-
-        <!-- Tìm kiếm bạn bè -->
-        <div class="search-section">
-            <div class="search-image">
-                <img src="/images/image.jpg" alt="Tìm bạn bè">
-            </div>      
-            <h3>Tìm bạn mới</h3>
+        <!-- Tìm kiếm bạn mới -->
+        <div class="section">
+            <h2>🔍 Tìm bạn mới</h2>
             <div class="search-box">
-                <input type="text" id="search-keyword" placeholder="UID, tên hoặc số điện thoại...">
-                <button id="search-btn">Tìm</button>
+                <input type="text" id="searchInput" placeholder="Tên, số điện thoại hoặc ID...">
+                <button id="searchBtn">Tìm</button>
             </div>
-            <div id="search-results" class="results-list"></div>
+            <div id="searchResults" class="search-results"></div>
         </div>
 
-        <!-- Danh sách bạn bè -->
-        <div class="friends-section">
-            <h3>Bạn bè <span class="badge">(streak)</span></h3>
-            <div id="friends-list" class="friends-list"></div>
+        <!-- CARD 2: BẢNG XẾP HẠNG (phân trang + phóng to) -->
+        <div class="card" id="leaderboardCard">
+            <div class="section-title">
+                <span>🏆 Bảng xếp hạng bạn bè</span>
+                <button class="btn-icon expand-btn" id="expandLeaderboardBtn" title="Phóng to">⤢</button>
+            </div>
+            <div id="leaderboard" class="leaderboard"></div>
+            <!-- Phân trang cho bảng xếp hạng -->
+            <div class="pagination" id="leaderboardPagination">
+                <button id="lbPrevPageBtn" class="page-btn" disabled>◀ Trước</button>
+                <span id="lbPageInfo" class="page-info">Trang 1 / 1</span>
+                <button id="lbNextPageBtn" class="page-btn" disabled>Sau ▶</button>
+            </div>
         </div>
 
-        <!-- Thanh điều hướng dưới cùng -->
+        <!-- Thống kê -->
+        <div class="stats-row">
+            <div class="stat-card"><div class="stat-label">📈 Tổng streak</div><div class="stat-value" id="statTotal">0</div></div>
+            <div class="stat-card"><div class="stat-label">📊 Trung bình</div><div class="stat-value" id="statAvg">0</div></div>
+            <div class="stat-card"><div class="stat-label">🏅 Cao nhất</div><div class="stat-value" id="statMax">0</div></div>
+        </div>
+
+        <!-- Bottom navigation -->
         <div class="bottom-nav">
-            <div class="nav-item">
-                <span class="nav-icon">🚶</span>
-                <span class="nav-label">Đi bộ</span>
-            </div>
-            <div class="nav-item">
-                <span class="nav-icon">😴</span>
-                <span class="nav-label">Giấc ngủ</span>
-            </div>
-            <div class="nav-item active">
-                <span class="nav-icon">🏠</span>
-                <span class="nav-label">Trang chủ</span>
-            </div>
-            <div class="nav-item">
-                <span class="nav-icon">📱</span>
-                <span class="nav-label">Màn hình</span>
-            </div>
-            <div class="nav-item">
-                <span class="nav-icon">🎯</span>
-                <span class="nav-label">Tập trung</span>
-            </div>
+            <a href="#" class="nav-item">🏠 Trang chủ</a>
+            <a href="#" class="nav-item active">👥 Bạn bè</a>
+            <a href="#" class="nav-item">🏆 Thử thách</a>
+            <a href="#" class="nav-item">🔔 Thông báo</a>
+            <a href="#" class="nav-item">👤 Cá nhân</a>
         </div>
     </div>
+</div>
 
-    <script src="script.js"></script>
+<!-- Modal Fullscreen cho Danh sách bạn bè -->
+<div id="friendsFullscreenModal" class="fullscreen-modal">
+    <div class="fullscreen-header">
+        <h3>👥 Danh sách bạn bè</h3>
+        <button id="closeFriendsFullscreenBtn" class="close-fullscreen">&times;</button>
+    </div>
+    <div class="fullscreen-content">
+        <div class="search-box fullscreen-search">
+            <input type="text" id="fullscreenFriendsSearch" placeholder="Tìm kiếm bạn bè...">
+            <button id="fullscreenFriendsSearchBtn">🔍</button>
+        </div>
+        <div id="fullscreenFriendsList" class="friends-list"></div>
+    </div>
+</div>
+
+<!-- Modal Fullscreen cho Bảng xếp hạng -->
+<div id="leaderboardFullscreenModal" class="fullscreen-modal">
+    <div class="fullscreen-header">
+        <h3>🏆 Bảng xếp hạng bạn bè</h3>
+        <button id="closeLeaderboardFullscreenBtn" class="close-fullscreen">&times;</button>
+    </div>
+    <div class="fullscreen-content">
+        <div class="search-box fullscreen-search">
+            <input type="text" id="fullscreenLeaderboardSearch" placeholder="Tìm kiếm trong xếp hạng...">
+            <button id="fullscreenLeaderboardSearchBtn">🔍</button>
+        </div>
+        <div id="fullscreenLeaderboardList" class="leaderboard"></div>
+    </div>
+</div>
+
+<!-- Profile Modal -->
+<div class="modal-overlay" id="profileModal">
+    <div class="modal">
+        <div class="modal-header"><h3>Hồ sơ của tôi</h3><button class="close-modal" id="closeModalBtn">&times;</button></div>
+        <div class="modal-body">
+            <div class="profile-avatar" id="modalAvatar">A</div>
+            <div class="profile-name" id="modalName">Nguyễn Văn A</div>
+            <div class="profile-email" id="modalEmail">a@example.com</div>
+            <div class="profile-level">Cấp <span id="modalLevel">3</span><div class="xp-bar small"><div class="xp-fill" id="modalXpFill"></div></div><span id="modalXpText">0/100 XP</span></div>
+            <div class="profile-stats">
+                <div><span>🔥 Streak</span><strong id="modalStreak">0</strong></div>
+                <div><span>👥 Bạn bè</span><strong id="modalFriends">0</strong></div>
+                <div><span>🏅 Xếp hạng</span><strong id="modalRank">#0</strong></div>
+            </div>
+            <div class="modal-actions"><button class="btn-edit">✏️ Chỉnh sửa</button><button class="btn-logout">🚪 Đăng xuất</button></div>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
