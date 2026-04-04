@@ -1,0 +1,666 @@
+:root {
+    --font: 'Times New Roman', Times, serif;
+    --bg: #1b0e3d;
+    --surface: #241354;
+    --surface2: #2e1866;
+    --border: rgba(180, 130, 255, 0.18);
+    --blue: #1e66d4;
+    --blue2: #2979ff;
+    --blue-lt: #64b5f6;
+    --green: #00c853;
+    --green2: #69f0ae;
+    --purple-lt: #b07fff;
+    --gold: #f5c542;
+    --teal: #00e5c8;
+    --text: #f0eaff;
+    --muted: #9b87be;
+    --red: #ff4d6d;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(30, 80, 220, 0.35) 0%, transparent 65%), radial-gradient(ellipse 55% 40% at 85% 85%, rgba(120, 40, 220, 0.22) 0%, transparent 55%), radial-gradient(ellipse 40% 35% at 5% 65%, rgba(0, 180, 100, 0.1) 0%, transparent 55%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 420px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 80px;
+}
+
+
+/* ── HEADER ── */
+
+.header {
+    padding: 20px 20px 16px;
+    background: linear-gradient(160deg, #1a2d80 0%, #0d1a55 100%);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+}
+
+.header::after {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(100, 180, 255, 0.18) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.back-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.927);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #aac6ff;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.header h2 {
+    font-size: 18px;
+    font-weight: 700;
+    flex: 1;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+
+/* ── HERO CARD ── */
+
+.hero-card {
+    margin: 14px 14px 0;
+    background: linear-gradient(135deg, #1941a8 0%, #2462d4 55%, #1b52c0 100%);
+    border-radius: 20px;
+    padding: 20px 20px 16px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(30, 80, 200, 0.4);
+    animation: fadeUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.hero-card::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    pointer-events: none;
+}
+
+.hero-card::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: -20px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.04);
+    pointer-events: none;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-label {
+    font-size: 12px;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.72);
+    margin-bottom: 10px;
+}
+
+.hero-main-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.hero-km {
+    font-size: 52px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+.hero-km-unit {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 4px;
+    margin-left: 3px;
+}
+
+.hero-km-sub {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.65);
+    margin-top: 2px;
+    font-style: italic;
+}
+
+
+/* Circle */
+
+.circle-wrap {
+    position: relative;
+    width: 72px;
+    height: 72px;
+    flex-shrink: 0;
+}
+
+.circle-wrap svg {
+    transform: rotate(-90deg);
+}
+
+.circle-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.2);
+    stroke-width: 5;
+}
+
+.circle-fill {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 5;
+    stroke-linecap: round;
+    stroke-dasharray: 183;
+    stroke-dashoffset: 183;
+    transition: stroke-dashoffset 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.circle-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+}
+
+.circle-text .big-pct {
+    font-size: 20px;
+}
+
+.circle-text .sm-pct {
+    font-size: 10px;
+    opacity: 0.8;
+}
+
+
+/* Progress bar */
+
+.hero-bar-bg {
+    height: 7px;
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 99px;
+    overflow: hidden;
+    margin: 12px 0;
+}
+
+.hero-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    background: linear-gradient(90deg, #00c853, #69f0ae);
+    width: 0%;
+    transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 0 0 10px rgba(0, 200, 83, 0.6);
+}
+
+
+/* Congrats banner */
+
+.congrats-banner {
+    background: rgba(0, 200, 83, 0.15);
+    border: 1px solid rgba(0, 200, 83, 0.35);
+    border-radius: 11px;
+    padding: 9px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #69f0ae;
+    margin-bottom: 10px;
+}
+
+.congrats-banner i {
+    font-size: 13px;
+}
+
+
+/* Mission badge */
+
+.mission-badge {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1.5px solid rgba(255, 255, 255, 0.25);
+    border-radius: 12px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.mission-badge:hover {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.mission-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gold);
+}
+
+.xp-chip {
+    background: var(--gold);
+    color: #1a0840;
+    border-radius: 20px;
+    padding: 2px 9px;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+
+/* ── SECTION LABEL ── */
+
+.section-label {
+    font-size: 11px;
+    font-weight: 700;
+    font-style: italic;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--muted);
+    margin: 18px 16px 10px;
+}
+
+
+/* ── GOAL CARD ── */
+
+.goal-card {
+    margin: 0 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 14px 16px;
+    animation: fadeUp 0.55s 0.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.goal-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.goal-top-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.goal-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #3949ab, #7c4dff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.goal-info-title {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.goal-info-sub {
+    font-size: 11px;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: 1px;
+}
+
+.edit-btn {
+    color: var(--muted);
+    font-size: 14px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.edit-btn:hover {
+    color: var(--text);
+}
+
+.goal-value {
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+}
+
+.goal-value .unit {
+    font-size: 14px;
+    color: var(--muted);
+    font-weight: 500;
+}
+
+
+/* ── STATS ROW ── */
+
+.stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 0 14px;
+    animation: fadeUp 0.55s 0.15s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px;
+    transition: border-color 0.2s;
+}
+
+.stat-card:hover {
+    border-color: rgba(176, 127, 255, 0.4);
+}
+
+.stat-top {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 8px;
+}
+
+.stat-top i {
+    font-size: 11px;
+}
+
+.stat-val {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--purple-lt);
+    line-height: 1;
+}
+
+.stat-val .unit {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.stat-val.orange {
+    color: #ff9100;
+}
+
+
+/* ── CHART CARD ── */
+
+.chart-card {
+    margin: 0 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    overflow: hidden;
+    animation: fadeUp 0.55s 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.chart-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 16px 10px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.chart-header span {
+    font-size: 16px;
+}
+
+.chart-area {
+    padding: 0 16px 14px;
+    position: relative;
+}
+
+
+/* SVG Bar Chart */
+
+.chart-svg-wrap {
+    width: 100%;
+    position: relative;
+}
+
+.chart-svg-wrap svg {
+    width: 100%;
+    overflow: visible;
+}
+
+.bar-group rect {
+    transition: opacity 0.2s;
+}
+
+.bar-group:hover rect {
+    opacity: 0.8;
+}
+
+.y-label {
+    fill: var(--muted, #9b87be);
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 10px;
+}
+
+.x-label {
+    fill: var(--muted, #9b87be);
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 10px;
+    text-anchor: middle;
+}
+
+.grid-line {
+    stroke: rgba(180, 130, 255, 0.1);
+    stroke-width: 1;
+}
+
+.axis-line {
+    stroke: rgba(180, 130, 255, 0.25);
+    stroke-width: 1;
+}
+
+
+/* ── BOTTOM NAV ── */
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 420px;
+    height: 68px;
+    background: rgba(15, 5, 40, 0.97);
+    border-top: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    z-index: 50;
+}
+
+.bottom-nav a {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    text-decoration: none;
+    color: var(--muted);
+    font-family: var(--font);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 6px 2px;
+    border-radius: 12px;
+    transition: color 0.2s;
+}
+
+.bottom-nav a .nav-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: background 0.2s;
+}
+
+.bottom-nav a:hover {
+    color: var(--text);
+}
+
+.bottom-nav a.active {
+    color: var(--blue-lt);
+}
+
+.bottom-nav a.active .nav-icon {
+    background: rgba(41, 121, 255, 0.2);
+    box-shadow: 0 0 10px rgba(41, 121, 255, 0.3);
+}
+
+.google-fit-btn {
+    background: #4285F4;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    justify-content: center;
+    transition: background 0.3s;
+}
+
+.google-fit-btn:hover {
+    background: #3367D6;
+}
+
+.google-fit-btn i {
+    font-size: 18px;
+}
+/* Steps row inside hero card */
+.steps-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 10px 16px;
+    margin: 12px 0 8px;
+    backdrop-filter: blur(4px);
+}
+
+.steps-icon {
+    font-size: 28px;
+    background: rgba(0, 0, 0, 0.2);
+    width: 48px;
+    height: 48px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.steps-info {
+    flex: 1;
+}
+
+.steps-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 0.5px;
+}
+
+.steps-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+}
+
+.steps-value::after {
+    content: " bước";
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.6);
+    margin-left: 5px;
+}

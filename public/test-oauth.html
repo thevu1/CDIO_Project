@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://accounts.google.com/gsi/client"></script>
+</head>
+
+<body>
+    <button id="testBtn">Test OAuth</button>
+    <script>
+        const clientId = '409914804325-0kutml0nq17dv14eru8vjsb6f2k8cjun.apps.googleusercontent.com'; // ID thật
+        const tokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: clientId,
+            scope: 'https://www.googleapis.com/auth/fitness.activity.read',
+            callback: (resp) => {
+                console.log('Token:', resp);
+                alert('Đã nhận token!');
+            }
+        });
+        document.getElementById('testBtn').onclick = () => {
+            tokenClient.requestAccessToken();
+        };
+    </script>
+</body>
+
+</html>
