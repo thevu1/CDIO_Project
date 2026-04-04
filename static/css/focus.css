@@ -33,7 +33,6 @@ body {
     min-height: 100vh;
 }
 
-/* ── Purple radial glow background ── */
 body::before {
     content: '';
     position: fixed;
@@ -123,21 +122,6 @@ body::before {
     margin-top: 3px;
 }
 
-.header-settings {
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    cursor: pointer;
-    color: var(--muted);
-    font-size: 14px;
-}
-
-/* ── FOCUS BAR (timer) ── */
 #focusBar {
     margin: 16px 16px 0;
     background: linear-gradient(135deg, rgba(180, 100, 255, 0.18), rgba(0, 229, 200, 0.07));
@@ -148,19 +132,6 @@ body::before {
     align-items: center;
     justify-content: space-between;
     gap: 14px;
-    animation: slideDown 0.4s ease;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-12px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 .focus-timer {
@@ -182,13 +153,7 @@ body::before {
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
-    transition: opacity 0.2s, transform 0.15s;
     white-space: nowrap;
-}
-
-.stop-btn:hover {
-    opacity: 0.85;
-    transform: scale(0.97);
 }
 
 /* ── MODE SELECTOR ROW ── */
@@ -358,7 +323,7 @@ body::before {
     margin: 20px 20px 10px;
 }
 
-/* ── MODE GRID (2 big cards) ── */
+/* ── MODE GRID ── */
 .grid-card {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -367,13 +332,14 @@ body::before {
 }
 
 .mode-card {
+    grid-column: span 2;
     background: var(--card-bg);
     border: 1px solid var(--border);
     border-radius: 18px;
     padding: 18px 14px 16px;
     display: flex;
-    flex-direction: column;
-    gap: 8px;
+    flex-direction: row;
+    gap: 12px;
     position: relative;
     overflow: hidden;
     cursor: pointer;
@@ -394,17 +360,13 @@ body::before {
     background: linear-gradient(90deg, #7c4dff, #e040fb);
 }
 
-.mode-card.offline::before {
-    background: linear-gradient(90deg, var(--teal), #4dd0e1);
-}
-
 .mode-card:hover {
     border-color: rgba(176, 127, 255, 0.45);
     box-shadow: 0 8px 28px rgba(80, 0, 160, 0.3);
 }
 
 .mode-icon {
-    width: 38px;
+    width: 70px;
     height: 38px;
     border-radius: 12px;
     display: flex;
@@ -418,13 +380,9 @@ body::before {
     background: rgba(124, 77, 255, 0.18);
 }
 
-.mode-card.offline .mode-icon {
-    background: var(--teal-dim);
-}
-
 .mode-card h3 {
     font-family: var(--font);
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 700;
 }
 
@@ -454,20 +412,6 @@ body::before {
 .mode-card.screen .btn:hover {
     background: rgba(124, 77, 255, 0.3);
     border-color: #9c6fff;
-}
-
-.mode-card.offline .btn:hover {
-    background: var(--teal-dim);
-    border-color: var(--teal);
-}
-
-.mode-card .info-badge {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 11px;
-    color: var(--muted);
-    cursor: pointer;
 }
 
 /* ── STATS GRID ── */
@@ -520,14 +464,6 @@ body::before {
     color: var(--muted);
     margin-top: 2px;
     font-style: italic;
-}
-
-/* wide third stat card */
-.stats-grid-3 {
-    grid-column: span 2;
-    display: flex;
-    gap: 20px;
-    align-items: center;
 }
 
 .stat-card.wide {
@@ -699,4 +635,294 @@ body::before {
 .bottom-nav a.active .nav-icon {
     background: rgba(176, 127, 255, 0.2);
     box-shadow: 0 0 10px rgba(176, 127, 255, 0.3);
+}
+
+
+.focus-fullscreen {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    display: none;
+    /* JS sets to flex */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    background: #020617;
+    background-image:
+        radial-gradient(ellipse 80% 50% at 50% 0%, rgba(70, 15, 170, 0.6) 0%, transparent 65%),
+        radial-gradient(ellipse 60% 40% at 50% 100%, rgba(0, 140, 120, 0.2) 0%, transparent 55%);
+}
+
+.focus-mode {
+    font-family: var(--font);
+    font-size: 11px; 
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 32px;
+    font-style: italic;
+}
+
+.flip-clock {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.flip-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+}
+.flip-group .cards-row {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+
+.flip-card {
+    position: relative;
+    width: 19vw;
+    max-width: 88px;
+    height: 26vw;
+    max-height: 120px;
+    perspective: 700px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow:
+        0 10px 36px rgba(0, 0, 0, 0.75),
+        inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+/* Mid-card divider */
+.flip-card::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: rgba(0, 0, 0, 0.65);
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* Digit */
+.flip-card-inner {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    background: linear-gradient(160deg, #1c2b4e 0%, #0c1422 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 12vw;
+    font-weight: 800;
+    color: var(--teal);
+    text-shadow:
+        0 0 28px rgba(0, 229, 200, 0.75),
+        0 0 56px rgba(0, 229, 200, 0.25);
+    user-select: none;
+    letter-spacing: -1px;
+}
+
+/* Group label */
+.flip-label {
+    font-family: var(--font);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 7px;
+    font-style: italic;
+}
+
+/* Colon separator */
+.flip-colon {
+    font-size: clamp(24px, 7vw, 50px);
+    font-weight: 800;
+    color: var(--teal);
+    line-height: 1;
+    align-self: center;
+    margin-bottom: 22px;
+    /* push up to visually center vs cards */
+    opacity: 0.5;
+    animation: blink 1s step-start infinite;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 0.1;
+    }
+}
+
+/* ── Flip animation ── */
+.flip-card-inner.flip {
+    animation: flipDown 0.4s cubic-bezier(0.3, 0, 0.2, 1);
+}
+
+@keyframes flipDown {
+    0% {
+        transform: rotateX(0deg);
+        opacity: 1;
+    }
+
+    45% {
+        transform: rotateX(-85deg);
+        opacity: 0.25;
+    }
+
+    100% {
+        transform: rotateX(0deg);
+        opacity: 1;
+    }
+}
+
+/* ── End button ── */
+.focus-footer {
+    margin-top: 44px;
+}
+
+.end-focus-btn {
+    background: transparent;
+    border: 2px solid rgba(255, 77, 109, 0.5);
+    color: var(--red);
+    font-family: var(--font);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 12px 42px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
+}
+
+.end-focus-btn:hover,
+.end-focus-btn:active {
+    background: rgba(255, 77, 109, 0.12);
+    border-color: var(--red);
+    color: #fff;
+    transform: scale(0.97);
+}
+
+/* ═══════════════════════════════════════════════
+   LANDSCAPE — cards bigger, tighter spacing
+   ═══════════════════════════════════════════════ */
+@media screen and (orientation: landscape) {
+    .focus-mode {
+        font-size: 9px;
+        margin-bottom: 10px;
+        letter-spacing: 3px;
+    }
+
+    /* Landscape: height is the constraint — use vh */
+    .flip-card {
+        width: 14vw;
+        max-width: 120px;
+        height: 26vh;
+        max-height: 140px;
+    }
+
+    .flip-card-inner {
+        font-size: 14vh;
+    }
+
+    .flip-colon {
+        font-size: clamp(18px, 12vh, 60px);
+        margin-bottom: 20px;
+    }
+
+    .flip-label {
+        font-size: 8px;
+        margin-top: 5px;
+    }
+
+    .flip-clock {
+        gap: 6px;
+    }
+
+    .flip-group .cards-row {
+        gap: 4px;
+    }
+
+    .focus-footer {
+        margin-top: 16px;
+    }
+
+    .end-focus-btn {
+        padding: 9px 32px;
+        font-size: 10px;
+    }
+}
+
+/* ── Confirm / Done Popups ── */
+.confirm-popup {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+.confirm-box {
+    background: #111827;
+    border-radius: 14px;
+    padding: 30px;
+    width: 85%;
+    max-width: 380px;
+    text-align: center;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+}
+
+.confirm-text {
+    font-size: 18px;
+    margin-bottom: 20px;
+    font-family: var(--font);
+}
+
+.confirm-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.btn-confirm {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.btn-cancel {
+    background: #374151;
+    color: white;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 700;
 }

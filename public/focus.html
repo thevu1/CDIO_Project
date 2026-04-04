@@ -14,6 +14,7 @@
 
     <title>Chế độ Tập trung</title>
 </head>
+
 <body>
     <div class="container">
 
@@ -27,7 +28,6 @@
                     <h2>Chế độ Tập trung <span>🎯</span></h2>
                     <h3>Làm việc hiệu quả: tập trung và nghỉ ngơi</h3>
                 </div>
-                <div class="header-settings"><i class="fas fa-cog"></i></div>
             </div>
         </div>
 
@@ -64,18 +64,10 @@
         <div class="section-label">Chọn chế độ làm việc</div>
         <div class="grid-card" id="modeGrid">
             <div class="mode-card screen">
-                <div class="info-badge"><i class="fas fa-info-circle"></i></div>
                 <div class="mode-icon">🖥</div>
                 <h3>Trên màn hình</h3>
                 <p id="screenTime">Làm việc với máy tính</p>
                 <button class="btn" onclick="startFocus('screen')">Bắt đầu</button>
-            </div>
-            <div class="mode-card offline">
-                <div class="info-badge"><i class="fas fa-info-circle"></i></div>
-                <div class="mode-icon">📵</div>
-                <h3>Ngoài màn hình</h3>
-                <p id="offlineTime">Đọc sách, học tập</p>
-                <button class="btn" onclick="startFocus('offline')">Bắt đầu</button>
             </div>
         </div>
 
@@ -108,7 +100,6 @@
             </div>
         </div>
 
-        <!-- HISTORY -->
         <div class="section-label">Lịch sử hôm nay</div>
         <div class="history">
             <div class="history-header">
@@ -118,33 +109,76 @@
             <div id="historyList">Chưa có phiên nào</div>
         </div>
 
-        <!-- BOTTOM NAV -->
-        <div class="bottom-nav">
-            <a href="/walk">
-                <div class="nav-icon">🚶</div>
-                Đi bộ
-            </a>
-            <a href="/sleep">
-                <div class="nav-icon">🌙</div>
-                Giấc ngủ
-            </a>
-            <a href="/index">
-                <div class="nav-icon">🏠</div>
-                Trang chủ
-            </a>
-            <a href="/screen">
-                <div class="nav-icon">📱</div>
-                Màn hình
-            </a>
-            <a href="/focus" class="active">
-                <div class="nav-icon">🎯</div>
-                Tập trung
-            </a>
+        <div id="bottomNavContainer"></div>
+        <script src="./static/js/loadComponent.js"></script>
+
+        <div class="focus-fullscreen" id="focusFullscreen">
+
+            <div class="focus-mode" id="focusModeText">FOCUS MODE</div>
+
+            <div class="flip-clock">
+
+                <!-- MINUTES group -->
+                <div class="flip-group">
+                    <div class="cards-row">
+                        <div class="flip-card">
+                            <div class="flip-card-inner" id="digitM1">4</div>
+                        </div>
+                        <div class="flip-card">
+                            <div class="flip-card-inner" id="digitM2">5</div>
+                        </div>
+                    </div>
+                    <div class="flip-label">phút</div>
+                </div>
+
+                <div class="flip-colon">:</div>
+
+                <div class="flip-group">
+                    <div class="cards-row">
+                        <div class="flip-card">
+                            <div class="flip-card-inner" id="digitS1">0</div>
+                        </div>
+                        <div class="flip-card">
+                            <div class="flip-card-inner" id="digitS2">0</div>
+                        </div>
+                    </div>
+                    <div class="flip-label">giây</div>
+                </div>
+
+            </div>
+
+            <div class="focus-footer">
+                <button class="end-focus-btn" onclick="stopFocus()">Kết thúc</button>
+            </div>
+
         </div>
 
     </div>
-    <script src="./static/js/focus.js"></script>
+
+    <div id="confirmPopup" class="confirm-popup">
+        <div class="confirm-box">
+            <div class="confirm-text" id="confirmText">
+                Bạn chưa hết thời gian. Bạn chắc chắn muốn kết thúc?
+            </div>
+            <div class="confirm-buttons">
+                <button class="btn-cancel" onclick="closeConfirm()">Tiếp tục</button>
+                <button class="btn-confirm" onclick="confirmStopFocus()">Kết thúc</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="donePopup" class="confirm-popup">
+        <div class="confirm-box">
+            <div class="confirm-text" id="doneText">
+                Hoàn thành phiên tập trung!
+            </div>
+            <div class="confirm-buttons">
+                <button class="btn-confirm" onclick="closeDone()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/focus.js"></script>
     <script src="./static/js/app.js"></script>
 </body>
-
 </html>

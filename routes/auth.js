@@ -12,8 +12,14 @@
     const { v4: uuidv4 } = require("uuid");
 
     const app = express.Router();
+    
+    const { google } = require("googleapis");
 
-
+    const oauth2Client = new google.auth.OAuth2(
+        process.env.GOOGLE_CLIENT_ID,
+        process.env.GOOGLE_CLIENT_SECRET,
+        "http://localhost:3000/auth/google-fit/callback"
+    );
     /* =========================
     CONFIG MAIL (GMAIL)
     ========================= */
@@ -114,7 +120,7 @@
                 // 🔥 update session luôn
                 req.session.user.profile_completed = true;
 
-                res.redirect("/index");
+                res.redirect("/index?askGoogleFit=1");
             }
         );
     });
@@ -193,6 +199,175 @@
         });
     });
     
+    // ===============================
+    // FORGOT PASSWORD APIs
+    // ===============================
+
+    // API 1: kiểm tra email
+    app.post("/api/auth/check-email", (req, res) => {
+    const { email } = req.body;
+
+    if (!email) {
+        return res.status(400).json({ message: "Email không được để trống." });
+    }
+
+    const sql = "SELECT * FROM users WHERE email = ?";
+    db.query(sql, [email], (err, result) => {
+        if (err) {
+        return res.status(500).json({ message: "Lỗi server." });
+        }
+
+        if (result.length === 0) {
+        return res.status(404).json({ message: "Email chưa được đăng ký." });
+        }
+
+        return res.status(200).json({ message: "Email hợp lệ." });
+    });
+    });
+
+
+    // API 2: reset password
+    app.post("/api/auth/reset-password", async (req, res) => {
+    try {
+        const { email, newPassword } = req.body;
+
+        if (!email || !newPassword) {
+        return res.status(400).json({ message: "Thiếu thông tin." });
+        }
+
+        if (newPassword.length < 6) {
+        return res.status(400).json({ message: "Mật khẩu phải có ít nhất 6 ký tự." });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        const sql = "UPDATE users SET password = ? WHERE email = ?";
+        db.query(sql, [hashedPassword, email], (err, result) => {
+        if (err) {
+            return res.status(500).json({ message: "Lỗi server." });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "Không tìm thấy tài khoản." });
+        }
+
+        return res.status(200).json({ message: "Đặt lại mật khẩu thành công." });
+        });
+
+    } catch (error) {
+        return res.status(500).json({ message: "Có lỗi xảy ra." });
+    }
+    });
+    // /* =========================
+    //    Google Fit Connection
+    // ========================= */
+    app.post("/auth/google-fit/send-confirm", (req, res) => {
+
+        const user = req.session.user;
+
+        if (!user) return res.status(401).json({ error: "Not login" });
+
+        const token = uuidv4();
+
+        db.query(
+            "UPDATE users SET google_verify_token=? WHERE id=?",
+            [token, user.id]
+        );
+
+        const link = `http://localhost:3000/auth/google-fit/confirm/${token}`;
+
+        transporter.sendMail({
+            to: user.email,
+            subject: "Xác nhận Google Fit",
+            html: `
+                <h3>Xin chào ${user.name}</h3>
+                <p>Click để kết nối Google Fit:</p>
+                <a href="${link}">Xác nhận</a>
+            `
+        }).then(() => {
+            res.json({ status: "sent" });
+        }).catch(err => {
+            console.error(err);
+            res.json({ status: "error" });
+        });
+    });
+    // /* =========================
+    //    Google Fit Callback
+    // ========================= */
+    app.get("/auth/google-fit/confirm/:token", (req, res) => {
+
+        const token = req.params.token;
+
+        db.query(
+            "SELECT * FROM users WHERE google_verify_token=?",
+            [token],
+            (err, results) => {
+
+                if (!results[0]) {
+                    return res.send("Token không hợp lệ");
+                }
+
+                const url = oauth2Client.generateAuthUrl({
+                    access_type: "offline",
+                    scope: [
+                        "https://www.googleapis.com/auth/fitness.activity.read"
+                    ]
+                });
+
+                res.redirect(url);
+            }
+        );
+    }); 
+    // /* =========================
+    //    Other google kit
+    // ========================= */
+    app.get("/auth/google-fit", (req, res) => {
+
+        const url = oauth2Client.generateAuthUrl({
+            access_type: "offline",
+            prompt: "select_account", // 👈 cho chọn account khác
+            scope: [
+                "https://www.googleapis.com/auth/fitness.activity.read"
+            ]
+        });
+
+        res.redirect(url);
+    });
+    // /* =========================
+    //    Google Fit Callback
+    // ========================= */
+    app.get("/auth/google-fit/callback", async (req, res) => {
+
+        const code = req.query.code;
+
+        if (!code) return res.send("Missing code");
+
+        try {
+            const { tokens } = await oauth2Client.getToken(code);
+
+            oauth2Client.setCredentials(tokens);
+
+            const userId = req.session.user?.id;
+
+            if (!userId) return res.redirect("/login");
+
+            db.query(
+                "UPDATE users SET google_token=? WHERE id=?",
+                [JSON.stringify(tokens), userId]
+            );
+
+            res.send(`
+                <script>
+                    alert("Kết nối Google Fit thành công 🎉");
+                    window.location.href="/index";
+                </script>
+            `);
+
+        } catch (err) {
+            console.error(err);
+            res.send("Google OAuth lỗi");
+        }
+    });
     // ===============================
     // FORGOT PASSWORD APIs
     // ===============================

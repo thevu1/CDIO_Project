@@ -12,6 +12,10 @@
     <title>Đi bộ & Vận động</title>
 </head>
 <body>
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="https://accounts.google.com/gsi/client"></script>
+    <script src="/js/google-fit-config.js"></script>
+    <script src="/js/google-fit.js"></script>
     <div class="container">
 
         <!-- HEADER -->
@@ -107,23 +111,8 @@
         </div>
 
         <!-- BOTTOM NAV -->
-        <div class="bottom-nav">
-            <a href="/walk" class="active">
-                <div class="nav-icon">🚶</div>Đi bộ
-            </a>
-            <a href="/sleep">
-                <div class="nav-icon">🌙</div>Giấc ngủ
-            </a>
-            <a href="/index">
-                <div class="nav-icon">🏠</div>Trang chủ
-            </a>
-            <a href="/screen">
-                <div class="nav-icon">📱</div>Màn hình
-            </a>
-            <a href="/focus">
-                <div class="nav-icon">🎯</div>Tập trung
-            </a>
-        </div>
+        <div id="bottomNavContainer"></div>
+        <script src="./static/js/loadComponent.js"></script>
 
     </div>
 

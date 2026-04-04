@@ -40,6 +40,7 @@ function checkLogin(req,res,next){
 // });
 
 app.use(checkLogin);
+
 app.get("/index", (req,res)=>{
     res.sendFile(path.join(__dirname, "../public/index.html"));
 });
@@ -48,21 +49,17 @@ app.get("/walk", (req, res) => {
     res.sendFile(path.join(__dirname, "../public/walk.html"));
 });
 
-app.get("/sleep", (req, res) => {
-    res.sendFile(path.join(__dirname, "../public/sleep.html"));
-});
-
-app.get("/screen", (req, res) => {
-    res.sendFile(path.join(__dirname, "../public/screen.html"));
-});
-
 app.get("/focus", (req, res) => {
     res.sendFile(path.join(__dirname, "../public/focus.html"));
 });
+
 app.get("/profile", (req, res) => {
     res.sendFile(path.join(__dirname, "../public/profile.html"));
 });
 
+app.get("/group", (req, res) => {
+    res.sendFile(path.join(__dirname, "../public/group.html"));
+});
 
 /* ======================
    LEADERBOARD API
@@ -175,7 +172,9 @@ app.post("/complete-task", (req, res) => {
     );
 
 });
-
+// /* ======================
+//    API EXAMPLE
+// ====================== */
 function checkAllTasks(res) {
 
     db.query(

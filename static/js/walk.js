@@ -125,55 +125,44 @@ function drawChart() {
     }, 400);
 }
 
-/* ── Stats ── */
-function updateStats() {
-    const activeDays = weekData.filter(d => d.km > 0);
-    const total = weekData.reduce((s, d) => s + d.km, 0);
+/* ── Cập nhật thống kê ── */
+function updateStats(weeklyKm) {
+    const activeDays = weeklyKm.filter(km => km > 0);
+    const total = weeklyKm.reduce((s, km) => s + km, 0);
     const avg = activeDays.length > 0 ? (total / 7).toFixed(1) : '0.0';
     document.getElementById('avg7d').innerHTML = `${avg} <span class="unit">km</span>`;
     document.getElementById('totalDays').innerHTML = `${activeDays.length} <span class="unit">ngày</span>`;
 }
 
-/* ── Init ── */
-window.addEventListener('load', () => {
-    setTimeout(() => { setHero(5, GOAL_KM); }, 200);
-    drawChart();
-    updateStats();
-});
+/* ── Khởi tạo toàn bộ với dữ liệu từ Google Fit ── */
+async function initWalkPage() {
+    const hasToken = window.googleFitToken && window.googleFitToken !== '';
 
-//  nhận data từ Flutter
-function updateFromApp(steps) {
-    const km = steps * 0.0008;
-
-    setHero(km, GOAL_KM);
-
-    // cập nhật chart
-    const today = new Date().getDay(); // CN = 0
-    const index = today === 0 ? 6 : today - 1;
-
-    weekData[index].km = km;
-
-    drawChart();
-    updateStats();
-}
-function updateSteps(steps) {
-    // đổi bước → km (giả sử 1000 bước = 0.8 km)
-    let km = (steps * 0.0008).toFixed(2);
-
-    document.getElementById("steps").innerText = km;
-
-    // update text phụ
-    document.getElementById("kmSub").innerText = km + " km / 5 km";
-
-    // update progress %
-    let percent = Math.min((km / 5) * 100, 100);
-    document.getElementById("pctDisplay").innerText = Math.floor(percent);
-
-    // update thanh progress
-    document.getElementById("heroBar").style.width = percent + "%";
-}
-document.addEventListener('touchmove', function(event) {
-    if (event.scale !== 1) {
-        event.preventDefault();
+    if (typeof getWeeklyDistance !== 'undefined' && hasToken) {
+        try {
+            const weeklyKm = await getWeeklyDistance();
+            weekData = weeklyKm;
+            drawChart(weekData);
+            updateStats(weekData);
+        } catch (e) {
+            console.warn('Không thể lấy dữ liệu tuần, dùng mảng rỗng', e);
+            weekData = new Array(7).fill(0);
+            drawChart(weekData);
+            updateStats(weekData);
+        }
+    } else {
+        weekData = new Array(7).fill(0);
+        drawChart(weekData);
+        updateStats(weekData);
     }
-}, { passive: false });
+
+    const todayKm = parseFloat(document.getElementById('kmDisplay').textContent) || 0;
+    const goal = parseFloat(document.getElementById('goalVal').textContent) || 5;
+    setHero(todayKm, goal);
+}
+// Gọi init khi trang tải, sau khi google-fit.js đã load
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        initWalkPage();
+    }, 500);
+});
