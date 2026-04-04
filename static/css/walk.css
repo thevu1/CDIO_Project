@@ -38,10 +38,7 @@ body::before {
     content: '';
     position: fixed;
     inset: 0;
-    background:
-        radial-gradient(ellipse 70% 50% at 50% 0%, rgba(30, 80, 220, 0.35) 0%, transparent 65%),
-        radial-gradient(ellipse 55% 40% at 85% 85%, rgba(120, 40, 220, 0.22) 0%, transparent 55%),
-        radial-gradient(ellipse 40% 35% at 5% 65%, rgba(0, 180, 100, 0.1) 0%, transparent 55%);
+    background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(30, 80, 220, 0.35) 0%, transparent 65%), radial-gradient(ellipse 55% 40% at 85% 85%, rgba(120, 40, 220, 0.22) 0%, transparent 55%), radial-gradient(ellipse 40% 35% at 5% 65%, rgba(0, 180, 100, 0.1) 0%, transparent 55%);
     pointer-events: none;
     z-index: 0;
 }
@@ -57,7 +54,9 @@ body::before {
     padding-bottom: 80px;
 }
 
+
 /* ── HEADER ── */
+
 .header {
     padding: 20px 20px 16px;
     background: linear-gradient(160deg, #1a2d80 0%, #0d1a55 100%);
@@ -86,7 +85,7 @@ body::before {
     height: 34px;
     border-radius: 10px;
     flex-shrink: 0;
-    background:rgba(255, 255, 255, 0.927);
+    background: rgba(255, 255, 255, 0.927);
     border: 1px solid rgba(255, 255, 255, 0.15);
     display: flex;
     align-items: center;
@@ -106,7 +105,9 @@ body::before {
     gap: 8px;
 }
 
+
 /* ── HERO CARD ── */
+
 .hero-card {
     margin: 14px 14px 0;
     background: linear-gradient(135deg, #1941a8 0%, #2462d4 55%, #1b52c0 100%);
@@ -147,7 +148,6 @@ body::before {
         opacity: 0;
         transform: translateY(18px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
@@ -190,7 +190,9 @@ body::before {
     font-style: italic;
 }
 
+
 /* Circle */
+
 .circle-wrap {
     position: relative;
     width: 72px;
@@ -239,7 +241,9 @@ body::before {
     opacity: 0.8;
 }
 
+
 /* Progress bar */
+
 .hero-bar-bg {
     height: 7px;
     background: rgba(255, 255, 255, 0.18);
@@ -257,7 +261,9 @@ body::before {
     box-shadow: 0 0 10px rgba(0, 200, 83, 0.6);
 }
 
+
 /* Congrats banner */
+
 .congrats-banner {
     background: rgba(0, 200, 83, 0.15);
     border: 1px solid rgba(0, 200, 83, 0.35);
@@ -276,7 +282,9 @@ body::before {
     font-size: 13px;
 }
 
+
 /* Mission badge */
+
 .mission-badge {
     background: rgba(255, 255, 255, 0.1);
     border: 1.5px solid rgba(255, 255, 255, 0.25);
@@ -311,7 +319,9 @@ body::before {
     font-weight: 800;
 }
 
+
 /* ── SECTION LABEL ── */
+
 .section-label {
     font-size: 11px;
     font-weight: 700;
@@ -322,7 +332,9 @@ body::before {
     margin: 18px 16px 10px;
 }
 
+
 /* ── GOAL CARD ── */
+
 .goal-card {
     margin: 0 14px;
     background: rgba(255, 255, 255, 0.05);
@@ -395,7 +407,9 @@ body::before {
     font-weight: 500;
 }
 
+
 /* ── STATS ROW ── */
+
 .stats-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -445,7 +459,9 @@ body::before {
     color: #ff9100;
 }
 
+
 /* ── CHART CARD ── */
+
 .chart-card {
     margin: 0 14px;
     background: rgba(255, 255, 255, 0.04);
@@ -473,7 +489,9 @@ body::before {
     position: relative;
 }
 
+
 /* SVG Bar Chart */
+
 .chart-svg-wrap {
     width: 100%;
     position: relative;
@@ -515,7 +533,9 @@ body::before {
     stroke-width: 1;
 }
 
+
 /* ── BOTTOM NAV ── */
+
 .bottom-nav {
     position: fixed;
     bottom: 0;
@@ -571,4 +591,76 @@ body::before {
 .bottom-nav a.active .nav-icon {
     background: rgba(41, 121, 255, 0.2);
     box-shadow: 0 0 10px rgba(41, 121, 255, 0.3);
+}
+
+.google-fit-btn {
+    background: #4285F4;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    justify-content: center;
+    transition: background 0.3s;
+}
+
+.google-fit-btn:hover {
+    background: #3367D6;
+}
+
+.google-fit-btn i {
+    font-size: 18px;
+}
+/* Steps row inside hero card */
+.steps-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 10px 16px;
+    margin: 12px 0 8px;
+    backdrop-filter: blur(4px);
+}
+
+.steps-icon {
+    font-size: 28px;
+    background: rgba(0, 0, 0, 0.2);
+    width: 48px;
+    height: 48px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.steps-info {
+    flex: 1;
+}
+
+.steps-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 0.5px;
+}
+
+.steps-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+}
+
+.steps-value::after {
+    content: " bước";
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.6);
+    margin-left: 5px;
 }

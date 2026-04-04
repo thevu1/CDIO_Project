@@ -1,20 +1,12 @@
-/* ── Data ── */
+/* ── Dữ liệu toàn cục ── */
+let weekData = [];
 const GOAL_KM = 5;
-const weekData = [
-    { day: 'T2', km: 0 },
-    { day: 'T3', km: 0 },
-    { day: 'T4', km: 0 },
-    { day: 'T5', km: 5 },
-    { day: 'T6', km: 0 },
-    { day: 'T7', km: 0 },
-    { day: 'CN', km: 0 },
-];
 
 /* ── Hero circle ── */
 function setHero(km, goal) {
     const pct = Math.min(Math.round((km / goal) * 100), 100);
     document.getElementById('kmDisplay').textContent = km.toFixed(1);
-    document.getElementById('kmSub').textContent = `${km} km / ${goal} km`;
+    document.getElementById('kmSub').textContent = `${km.toFixed(1)} km / ${goal} km`;
     document.getElementById('pctDisplay').textContent = pct;
 
     const circ = 2 * Math.PI * 29;
@@ -43,72 +35,68 @@ function editGoal() {
     const val = prompt('Nhập mục tiêu km mỗi ngày:', GOAL_KM);
     if (val && !isNaN(val) && +val > 0) {
         document.getElementById('goalVal').textContent = +val;
+        const currentKm = parseFloat(document.getElementById('kmDisplay').textContent);
+        setHero(currentKm, +val);
     }
 }
 
-/* ── Bar Chart (pure SVG) ── */
-function drawChart() {
+/* ── Vẽ biểu đồ ── */
+function drawChart(weeklyKm) {
     const svg = document.getElementById('barChart');
     const W = 340, H = 160;
     const padL = 28, padR = 10, padT = 10, padB = 28;
     const chartW = W - padL - padR;
     const chartH = H - padT - padB;
 
-    const maxKm = Math.max(...weekData.map(d => d.km), GOAL_KM, 1);
+    const maxKm = Math.max(...weeklyKm, GOAL_KM, 1);
     const ySteps = 5;
     const yStep = Math.ceil(maxKm / ySteps);
 
     let html = '';
 
-    // Grid lines + Y labels
+    // Grid + Y labels
     for (let i = 0; i <= ySteps; i++) {
         const val = i * yStep;
         const y = padT + chartH - (val / (ySteps * yStep)) * chartH;
         html += `<line class="grid-line" x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}"/>`;
-        if (i > 0 || i === 0) {
-            html += `<text class="y-label" x="${padL - 4}" y="${y + 3}" text-anchor="end">${val}</text>`;
-        }
+        html += `<text class="y-label" x="${padL - 4}" y="${y + 3}" text-anchor="end">${val}</text>`;
     }
 
-    // X axis line
+    // X axis
     html += `<line class="axis-line" x1="${padL}" y1="${padT + chartH}" x2="${W - padR}" y2="${padT + chartH}"/>`;
 
     // Bars
-    const barW = (chartW / weekData.length) * 0.55;
-    const barGap = chartW / weekData.length;
+    const barW = (chartW / 7) * 0.55;
+    const barGap = chartW / 7;
+    const days = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
 
-    weekData.forEach((d, i) => {
+    weeklyKm.forEach((km, i) => {
         const x = padL + i * barGap + (barGap - barW) / 2;
-        const barH = d.km > 0 ? (d.km / (ySteps * yStep)) * chartH : 0;
+        const barH = km > 0 ? (km / (ySteps * yStep)) * chartH : 0;
         const y = padT + chartH - barH;
-        const isToday = d.km > 0;
-        const fill = isToday
-            ? 'url(#greenGrad)'
-            : 'rgba(100,80,180,0.25)';
+        const isToday = (i === 6);
+        const fill = isToday ? 'url(#greenGrad)' : 'rgba(100,80,180,0.25)';
         const rx = 5;
 
         html += `
         <g class="bar-group">
           <rect x="${x}" y="${y}" width="${barW}" height="${Math.max(barH, 2)}"
-                rx="${rx}" fill="${fill}" class="bar-rect" data-km="${d.km}"/>
+                rx="${rx}" fill="${fill}" class="bar-rect" data-km="${km}"/>
         </g>`;
-
-        // X label
-        html += `<text class="x-label" x="${x + barW / 2}" y="${padT + chartH + 16}">${d.day}</text>`;
+        html += `<text class="x-label" x="${x + barW / 2}" y="${padT + chartH + 16}">${days[i]}</text>`;
     });
 
-    // Gradient def
     const defs = `
       <defs>
         <linearGradient id="greenGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%"   stop-color="#69f0ae"/>
+          <stop offset="0%" stop-color="#69f0ae"/>
           <stop offset="100%" stop-color="#00c853"/>
         </linearGradient>
       </defs>`;
 
     svg.innerHTML = defs + html;
 
-    // Animate bars
+    // Animation
     setTimeout(() => {
         svg.querySelectorAll('.bar-rect').forEach(rect => {
             const finalH = parseFloat(rect.getAttribute('height'));
@@ -160,6 +148,7 @@ async function initWalkPage() {
     const goal = parseFloat(document.getElementById('goalVal').textContent) || 5;
     setHero(todayKm, goal);
 }
+
 // Gọi init khi trang tải, sau khi google-fit.js đã load
 window.addEventListener('load', () => {
     setTimeout(() => {
