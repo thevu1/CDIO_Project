@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Setup Profile</title>
+
+    <!-- dùng chung UI -->
+    <link rel="stylesheet" href="/static/css/main.css" >
+    <link rel="stylesheet" href="/static/css/setup.css">
+
+    <!-- font -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="phone">
+    <div class="scroll">
+
+        <!-- TOP -->
+        <div class="topbar">
+            <div class="avatar">🌿</div>
+            <div class="gear-btn">⚙️</div>
+        </div>
+
+        <!-- HEADER -->
+        <div class="profile">
+            <h1>Thiết lập hồ sơ</h1>
+            <p style="color: var(--muted); font-size:13px; margin-top:4px;">
+                Chỉ vài bước để bắt đầu hành trình 💪
+            </p>
+        </div>
+
+        <!-- FORM CARD -->
+        <div class="card">
+            <div class="section-title">📋 Thông tin cá nhân</div>
+
+            <form action="/setup-profile" method="POST" class="setup-form">
+
+                <!-- birth -->
+                <div class="input-group">
+                    <label>Ngày sinh</label>
+                    <input type="date" name="birthdate">
+                </div>
+
+                <!-- city -->
+                <div class="input-group">
+                    <label>Thành phố</label>
+                    <select name="city_id">
+                        <option value="">-- Chọn thành phố --</option>
+                    </select>
+                </div>
+
+                <!-- phone -->
+                <div class="input-group">
+                    <label>Số điện thoại *</label>
+                    <input name="phone_number" required placeholder="Bắt buộc">
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    🚀 Bắt đầu
+                </button>
+                <button type="button" onclick="history.back()"><i class="fas fa-chevron-left"></i>
+                    Trở Về
+                </button>
+
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<script>
+fetch("/api/cities")
+.then(res => res.json())
+.then(data => {
+    const select = document.querySelector("select[name='city_id']");
+    data.forEach(city => {
+        const option = document.createElement("option");
+        option.value = city.id;
+        option.textContent = city.name;
+        select.appendChild(option);
+    });
+});
+</script>
+
+</body>
+</html>

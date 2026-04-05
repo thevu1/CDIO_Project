@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giao diện App Bạn Bè</title>
+    <link rel="stylesheet" href="/static/css/group.css">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="app-container">
+        <header class="header">
+            <div class="user-info">
+                <div class="avatar-circle">
+                    <img src="https://via.placeholder.com/40" alt="User">
+                </div>
+                <span class="user-name">Người dùng</span>
+            </div>
+            <div class="streak-badge">
+                🔥 12
+            </div>
+        </header>
+
+        <div class="search-container">
+            <input type="text" placeholder="Tìm kiếm bạn bè hoặc nhóm...">
+        </div>
+
+        <section class="section">
+            <div class="section-header">
+                <h2>Hội nhóm</h2>
+                <a href="#" class="view-all">Xem tất cả</a>
+            </div>
+            <div class="horizontal-scroll">
+                <div class="card group-card">
+                    <div class="icon-circle walking">🚶</div>
+                    <h3>CLB Marathon</h3>
+                    <p>1,240 thành viên</p>
+                    <div class="member-stack">
+                        <div class="m-avatar"></div>
+                        <div class="m-avatar"></div>
+                        <div class="m-avatar more">+12</div>
+                    </div>
+                </div>
+                <div class="card group-card">
+                    <div class="icon-circle focus">🎯</div>
+                    <h3>Tập Trung Cao</h3>
+                    <p>856 thành viên</p>
+                    <div class="member-stack">
+                        <div class="m-avatar"></div>
+                        <div class="m-avatar"></div>
+                        <div class="m-avatar more">+5</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-header">
+                <h2>Bạn bè</h2>
+            </div>
+
+            <div class="card friend-card">
+                <div class="friend-info">
+                    <div class="avatar-circle active-status">
+                        <img src="https://via.placeholder.com/50" alt="Minh Anh">
+                    </div>
+                    <div>
+                        <h4>Minh Anh</h4>
+                    </div>
+                </div>
+                <div class="friend-streak">
+                    <span class="fire">🔥 24</span>
+                    <span class="label">STREAK</span>
+                </div>
+            </div>
+
+            <div class="card friend-card">
+                <div class="friend-info">
+                    <div class="avatar-circle">
+                        <img src="https://via.placeholder.com/50" alt="Đức Tuấn">
+                    </div>
+                    <div>
+                        <h4>Đức Tuấn</h4>
+                    </div>
+                </div>
+                <div class="friend-streak">
+                    <span class="fire">🔥 8</span>
+                    <span class="label">STREAK</span>
+                </div>
+            </div>
+        </section>
+
+        <div id="bottomNavContainer"></div>
+        <script src="/static/js/loadComponent.js"></script>
+    </div>
+    <script src="/static/js/main.js"></script>
+</body>
+
+</html>
