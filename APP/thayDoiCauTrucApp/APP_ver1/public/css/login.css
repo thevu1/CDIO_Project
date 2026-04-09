@@ -1,0 +1,332 @@
+:root {
+    --primary1: #19c37d;
+    --primary2: #3b82f6;
+    --bg: #eef5ff;
+    --card: #ffffff;
+    --text: #183153;
+    --muted: #7b8aa0;
+    --border: #e7edf5;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+}
+
+/* Nền ngoài */
+.app-preview-body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    background:
+        radial-gradient(circle at top left, #dff8ee, transparent 25%),
+        radial-gradient(circle at bottom right, #dfeaff, transparent 30%),
+        linear-gradient(135deg, #eef8ff, #f5f1ff);
+}
+
+/* Khung preview theo tỉ lệ điện thoại */
+.mobile-preview {
+    width: 100%;
+    max-width: 420px;
+}
+
+.mobile-screen {
+    width: 100%;
+    min-height: 812px;
+    background: linear-gradient(180deg, #f8fbff, #f3f8ff);
+    border-radius: 34px;
+    padding: 24px 18px 28px;
+    box-shadow: 0 24px 60px rgba(23, 51, 92, 0.12);
+    border: 1px solid rgba(255,255,255,0.7);
+}
+
+/* Header */
+.app-top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 22px;
+}
+
+.app-logo {
+    width: 54px;
+    height: 54px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, var(--primary1), var(--primary2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+    box-shadow: 0 12px 24px rgba(59, 130, 246, 0.2);
+}
+
+.app-top h1 {
+    font-size: 24px;
+    color: var(--text);
+    font-weight: 800;
+}
+
+.app-top p {
+    color: var(--muted);
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+/* Hero */
+.hero-card {
+    background: linear-gradient(135deg, #ffffff, #f6fbff);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 20px;
+    box-shadow: 0 12px 30px rgba(20, 40, 80, 0.06);
+    margin-bottom: 18px;
+}
+
+.chip {
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(59, 130, 246, 0.1);
+    color: #2563eb;
+    font-size: 12px;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+
+.hero-card h2 {
+    font-size: 34px;
+    color: #19376d;
+    font-weight: 900;
+    margin-bottom: 8px;
+}
+
+.hero-card p {
+    color: var(--muted);
+    line-height: 1.6;
+    font-size: 15px;
+}
+
+/* Form */
+.mobile-form {
+    display: grid;
+    gap: 16px;
+}
+
+.mobile-input-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #213b63;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.mobile-input-group input {
+    width: 100%;
+    height: 56px;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    background: white;
+    padding: 0 16px;
+    font-size: 16px;
+    outline: none;
+    transition: 0.2s ease;
+}
+
+.mobile-input-group input:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.12);
+}
+
+.app-btn {
+    height: 56px;
+    border: none;
+    border-radius: 18px;
+    background: linear-gradient(90deg, var(--primary1), var(--primary2));
+    color: white;
+    font-size: 20px;
+    font-weight: 800;
+    box-shadow: 0 14px 28px rgba(59, 130, 246, 0.22);
+    cursor: pointer;
+}
+
+/* Info cards */
+.info-cards {
+    display: grid;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.info-card {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 14px;
+}
+
+.info-card span {
+    font-size: 24px;
+}
+
+.info-card strong {
+    display: block;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+
+.info-card p {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.mobile-switch {
+    text-align: center;
+    margin-top: 18px;
+    color: var(--muted);
+    font-size: 15px;
+}
+
+.mobile-switch a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 800;
+}
+
+.error-message {
+    margin-bottom: 14px;
+    padding: 13px 14px;
+    background: #ffe7e7;
+    color: #c62828;
+    border: 1px solid #f5b8b8;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+/* HOME */
+.app-home {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.home-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hello {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.home-top h1 {
+    font-size: 28px;
+    color: var(--text);
+    font-weight: 900;
+}
+
+.logout-mini {
+    text-decoration: none;
+    background: #fff1f2;
+    color: #dc2626;
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.score-card {
+    background: linear-gradient(135deg, var(--primary1), var(--primary2));
+    color: white;
+    border-radius: 24px;
+    padding: 22px;
+    box-shadow: 0 18px 30px rgba(59, 130, 246, 0.2);
+}
+
+.score-card p {
+    opacity: 0.9;
+    margin-bottom: 8px;
+}
+
+.score-card h2 {
+    font-size: 40px;
+    margin-bottom: 12px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 12px;
+    background: rgba(255,255,255,0.28);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: white;
+    border-radius: 999px;
+}
+
+.section-title h3 {
+    color: var(--text);
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.task-list-mobile {
+    display: grid;
+    gap: 12px;
+}
+
+.task-card-mobile {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 14px;
+}
+
+.task-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.task-left span {
+    font-size: 24px;
+}
+
+.task-left strong {
+    display: block;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+
+.task-left p {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.task-badge {
+    background: #eef6ff;
+    color: #2563eb;
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+}

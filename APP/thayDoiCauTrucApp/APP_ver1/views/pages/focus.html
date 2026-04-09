@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="/static/css/focus.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="HealthQuest">
+
+    <title>Chế độ Tập trung</title>
+</head>
+
+<body>
+    <div class="container">
+
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-inner">
+                <div class="header-back">
+                    <a href="/index"><i class="fas fa-chevron-left"></i></a>
+                </div>
+                <div class="header-title">
+                    <h2>Chế độ Tập trung <span>🎯</span></h2>
+                    <h3>Làm việc hiệu quả: tập trung và nghỉ ngơi</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOCUS BAR (timer — hidden by default) -->
+        <div id="focusBar" class="focus-bar" style="display:none;">
+            <div class="focus-timer" id="timer">45:00</div>
+            <button class="btn stop-btn" onclick="stopFocus()">Kết thúc</button>
+        </div>
+
+        <!-- MODE SELECTOR -->
+        <div class="focus-row">
+            <h3 class="mode-title" onclick="toggleMenu()">
+                Chọn chế độ làm việc
+                <span class="arrow" id="arrow">⌄</span>
+            </h3>
+            <div class="mode-menu" id="modeMenu">
+                <div onclick="selectMode(' Chế độ 1:25 - 10')">Chế độ 1: 25 - 10</div>
+                <div onclick="selectMode(' Chế độ 2:45 - 15')">Chế độ 2: 45 - 15</div>
+                <div onclick="selectMode(' Chế độ 3:60 - 20')">Chế độ 3: 60 - 20</div>
+            </div>
+            <i class="fas fa-comment-dots focus-icon" onclick="openPopup()"></i>
+            <div id="focusPopup" class="popup">
+                <div class="popup-content">
+                    <span class="close-btn" onclick="closePopup()">×</span>
+                    <h3>Chọn thời gian làm việc bạn mong muốn</h3>
+                    <p>Chế độ 1: Làm việc 25 phút và nghỉ ngơi 10 phút</p>
+                    <p>Chế độ 2: Làm việc 45 phút và nghỉ ngơi 15 phút</p>
+                    <p>Chế độ 3: Làm việc 60 phút và nghỉ ngơi 20 phút</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN / OFFLINE CARDS -->
+        <div class="section-label">Chọn chế độ làm việc</div>
+        <div class="grid-card" id="modeGrid">
+            <div class="mode-card screen">
+                <div class="mode-icon">🖥</div>
+                <h3>Trên màn hình</h3>
+                <p id="screenTime">Làm việc với máy tính</p>
+                <button class="btn" onclick="startFocus('screen')">Bắt đầu</button>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="section-label">Thống kê</div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🏆</div>
+                <h3>Phiên hoàn thành</h3>
+                <p id="session">0</p>
+                <div class="stat-sub">phiên hôm nay</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⏱</div>
+                <h3>Tổng thời gian</h3>
+                <p id="total">0</p>
+                <div class="stat-sub">phút hôm nay</div>
+            </div>
+            <div class="stat-card wide">
+                <div class="stat-icon" style="font-size:22px;">📈</div>
+                <div class="stat-body">
+                    <h3>Phiên đã làm</h3>
+                    <p id="completedSessions">0</p>
+                </div>
+                <div style="text-align:right">
+                    <div style="font-family:'Times New Roman',Times,serif;font-size:22px;font-weight:700;color:var(--teal)"
+                        id="focusTime">0</div>
+                    <div class="stat-sub">phút</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-label">Lịch sử hôm nay</div>
+        <div class="history">
+            <div class="history-header">
+                <span class="hist-icon">📋</span>
+                <h4>Lịch sử hôm nay</h4>
+            </div>
+            <div id="historyList">Chưa có phiên nào</div>
+        </div>
+
+        <div id="bottomNavContainer"></div>
+        <script src="/static/js/loadComponent.js"></script>
+
+        <div class="focus-fullscreen" id="focusFullscreen">
+
+            <div class="focus-mode" id="focusModeText">FOCUS MODE</div>
+
+            <div class="flip-clock">
+
+                <!-- MINUTES group -->
+                <div class="flip-group">
+                    <div class="cards-row">
+                        <div class="flip-card">
+                            <div class="flip-card-inner" id="digitM1">4</div>
+                        </div>
+                        <div class="flip-card">
+                            <div class="flip-card-inner" id="digitM2">5</div>
+                        </div>
+                    </div>
+                    <div class="flip-label">phút</div>
+                </div>
+
+                <div class="flip-colon">:</div>
+
+                <div class="flip-group">
+                    <div class="cards-row">
+                        <div class="flip-card">
+                            <div class="flip-card-inner" id="digitS1">0</div>
+                        </div>
+                        <div class="flip-card">
+                            <div class="flip-card-inner" id="digitS2">0</div>
+                        </div>
+                    </div>
+                    <div class="flip-label">giây</div>
+                </div>
+
+            </div>
+
+            <div class="focus-footer">
+                <button class="end-focus-btn" onclick="stopFocus()">Kết thúc</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="confirmPopup" class="confirm-popup">
+        <div class="confirm-box">
+            <div class="confirm-text" id="confirmText">
+                Bạn chưa hết thời gian. Bạn chắc chắn muốn kết thúc?
+            </div>
+            <div class="confirm-buttons">
+                <button class="btn-cancel" onclick="closeConfirm()">Tiếp tục</button>
+                <button class="btn-confirm" onclick="confirmStopFocus()">Kết thúc</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="donePopup" class="confirm-popup">
+        <div class="confirm-box">
+            <div class="confirm-text" id="doneText">
+                Hoàn thành phiên tập trung!
+            </div>
+            <div class="confirm-buttons">
+                <button class="btn-confirm" onclick="closeDone()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/focus.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
