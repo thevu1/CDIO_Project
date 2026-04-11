@@ -12,6 +12,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "axios": "^1.15.0",
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.2",
     "cors": "^2.8.6",
@@ -21,6 +22,8 @@
     "googleapis": "^171.4.0",
     "mysql2": "^3.20.0",
     "nodemailer": "^8.0.4",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
     "resend": "^6.9.4",
     "uuid": "^13.0.0"
   }

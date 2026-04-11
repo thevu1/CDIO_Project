@@ -28,6 +28,9 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
 }
 
 /* Khung điện thoại */
@@ -450,7 +453,7 @@ body {
 }
 
 /* Bottom navigation */
-/* .bottom-nav {
+.bottom-nav {
     position: fixed;
     bottom: 0;
     left: 0;
@@ -465,65 +468,6 @@ body {
     border-top: 1px solid var(--border);
     border-radius: 20px 20px 0 0;
     z-index: 100;
-} */
-
-
-/* ── BOTTOM NAV ── */
-.bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    max-width: 420px;
-    height: 68px;
-    background: rgba(15, 5, 40, 0.97);
-    border-top: 1px solid var(--border);
-    backdrop-filter: blur(12px);
-    display: flex;
-    align-items: center;
-    z-index: 50;
-}
-
-.bottom-nav a {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
-    text-decoration: none;
-    color: var(--muted);
-    font-family: var(--font);
-    font-size: 10px;
-    font-weight: 600;
-    padding: 6px 2px;
-    border-radius: 12px;
-    transition: color 0.2s;
-}
-
-.bottom-nav a .nav-icon {
-    width: 30px;
-    height: 30px;
-    border-radius: 9px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    transition: background 0.2s;
-}
-
-.bottom-nav a:hover {
-    color: var(--text);
-}
-
-.bottom-nav a.active {
-    color: var(--blue-lt);
-}
-
-.bottom-nav a.active .nav-icon {
-    background: rgba(41, 121, 255, 0.2);
-    box-shadow: 0 0 10px rgba(41, 121, 255, 0.3);
 }
 .nav-item {
     display: flex;
@@ -992,4 +936,97 @@ body {
 }
 .fullscreen-search {
     margin-bottom: 16px;
+}
+/* ===== UI IMPROVEMENT (SAFE OVERRIDE) ===== */
+
+/* 1. Màu tổng thể sáng và dễ nhìn hơn */
+:root {
+    --bg: #0f0c24;              /* sáng hơn chút */
+    --surface: #18153a;
+    --surface-light: #242052;
+
+    --primary: #ff8c42;         /* cam dịu hơn */
+    --primary-dark: #e66a2c;
+
+    --secondary: #a970ff;
+
+    --text: #f5f3ff;            /* sáng hơn */
+    --text-muted: #b0a8d9;
+
+    --border: rgba(155, 77, 255, 0.25);
+}
+
+/* 2. Body fix lỗi nền bị lộ */
+body {
+    background: linear-gradient(180deg, #05030f, #0f0c24);
+}
+
+/* 3. Card nổi bật hơn */
+.card {
+    padding: 18px;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+}
+
+/* 4. Hero đẹp hơn */
+.hero {
+    padding: 16px;
+    border-radius: 22px;
+}
+
+/* 5. Item spacing thoáng hơn */
+.friend-item,
+.leaderboard-item,
+.search-item {
+    padding: 12px;
+    border-radius: 16px;
+}
+
+/* 6. Text dễ đọc hơn */
+.friend-name,
+.lb-name {
+    font-size: 0.95rem;
+}
+
+.friend-detail {
+    font-size: 0.7rem;
+}
+
+/* 7. Button rõ ràng hơn */
+.page-btn {
+    padding: 8px 18px;
+    font-size: 0.85rem;
+}
+
+/* 8. Pagination dễ nhìn */
+.pagination {
+    margin-top: 20px;
+}
+
+/* 9. Stats card nổi hơn */
+.stat-card {
+    padding: 14px 8px;
+    border-radius: 18px;
+    background: linear-gradient(145deg, #18153a, #100d2a);
+}
+
+/* 10. Bottom nav fix lỗi chồng nền */
+.bottom-nav {
+    background: rgba(19,16,43,0.98);
+    backdrop-filter: blur(16px);
+}
+
+/* 11. Modal mượt hơn */
+.modal {
+    border-radius: 24px 24px 0 0;
+}
+
+/* 12. Fix lỗi hiển thị ảnh nền bị vỡ (QUAN TRỌNG) */
+.phone {
+    background: var(--bg);
+}
+
+.app {
+    background: var(--bg);
+    min-height: 100%;
 }

@@ -1,3 +1,4 @@
+<!-- // friend.html -->
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -6,6 +7,55 @@
     <title>HealthQuest · Bạn bè</title>
     <link rel="stylesheet" href="/static/css/friend.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* CSS bổ sung cho privacy icon và dropdown */
+        .privacy-icon {
+            margin-left: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .privacy-icon:hover {
+            opacity: 1;
+        }
+        .privacy-menu {
+            position: absolute;
+            background: #1e1e2f;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            padding: 8px 0;
+            z-index: 1000;
+            min-width: 140px;
+            border: 1px solid #2a2a40;
+        }
+        .privacy-menu div {
+            padding: 10px 16px;
+            color: #e0e0ff;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .privacy-menu div:hover {
+            background: #2a2a45;
+        }
+        .profile-field-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .field-label {
+            color: #a0a0c0;
+            font-size: 14px;
+        }
+        .field-value {
+            color: #ffffff;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+    </style>
 </head>
 <body>
 <div class="phone">
@@ -84,11 +134,12 @@
             <div class="stat-card"><div class="stat-label">🏅 Cao nhất</div><div class="stat-value" id="statMax">0</div></div>
         </div>
 
-        <div id="bottomNavContainer"></div>
-        <script src="/static/js/loadComponent.js"></script>
+        
         
     </div>
 </div>
+<div id="bottomNavContainer"></div>
+<script src="/static/js/loadComponent.js"></script>
 
 <!-- Modal Fullscreen cho Danh sách bạn bè -->
 <div id="friendsFullscreenModal" class="fullscreen-modal">
@@ -120,7 +171,7 @@
     </div>
 </div>
 
-<!-- Profile Modal -->
+<!-- Profile Modal - ĐÃ CHỈNH SỬA ĐỂ BAO GỒM CÀI ĐẶT QUYỀN RIÊNG TƯ -->
 <div class="modal-overlay" id="profileModal">
     <div class="modal">
         <div class="modal-header"><h3>Hồ sơ của tôi</h3><button class="close-modal" id="closeModalBtn">&times;</button></div>
@@ -129,6 +180,37 @@
             <div class="profile-name" id="modalName">Nguyễn Văn A</div>
             <div class="profile-email" id="modalEmail">a@example.com</div>
             <div class="profile-level">Cấp <span id="modalLevel">3</span><div class="xp-bar small"><div class="xp-fill" id="modalXpFill"></div></div><span id="modalXpText">0/100 XP</span></div>
+            
+            <!-- Phần cài đặt quyền riêng tư (THÊM MỚI) -->
+            <div style="margin: 20px 0; border-top: 1px solid #2a2a40; padding-top: 16px;">
+                <h4 style="color: #c0c0e0; margin-bottom: 12px; font-size: 16px;">🔒 Quyền riêng tư</h4>
+                
+                <!-- Email -->
+                <div class="profile-field-row">
+                    <span class="field-label">📧 Email</span>
+                    <span class="field-value">
+                        <span id="displayEmail">—</span>
+                        <span class="privacy-icon" id="privacyEmail" data-field="email">🌐</span>
+                    </span>
+                </div>
+                <!-- Số điện thoại -->
+                <div class="profile-field-row">
+                    <span class="field-label">📞 Điện thoại</span>
+                    <span class="field-value">
+                        <span id="displayPhone">—</span>
+                        <span class="privacy-icon" id="privacyPhone" data-field="phone_number">🌐</span>
+                    </span>
+                </div>
+                <!-- Ngày sinh -->
+                <div class="profile-field-row">
+                    <span class="field-label">🎂 Ngày sinh</span>
+                    <span class="field-value">
+                        <span id="displayBirthdate">—</span>
+                        <span class="privacy-icon" id="privacyBirthdate" data-field="birthdate">🌐</span>
+                    </span>
+                </div>
+            </div>
+
             <div class="profile-stats">
                 <div><span>🔥 Streak</span><strong id="modalStreak">0</strong></div>
                 <div><span>👥 Bạn bè</span><strong id="modalFriends">0</strong></div>
@@ -139,7 +221,8 @@
     </div>
 </div>
 
-<script src="/static/js/friend.js"></script>
-<script src="/static/js/app.js"></script>
+
+<script src="/static/js/friends.js"></script>
+<!-- <script src="/static/js/app.js"></script> -->
 </body>
 </html>

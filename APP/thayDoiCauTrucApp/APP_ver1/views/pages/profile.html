@@ -1,3 +1,4 @@
+<!-- //profile.html - Trang hồ sơ cá nhân của HealthQuest -->
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -70,98 +71,99 @@
         <div class="section" style="animation-delay:.05s">
             <div class="section-title">📋 Thông tin cá nhân</div>
 
-            <div class="info-row" onclick="editField('name')">
+            <!-- Mỗi dòng có data-privacy-field để xác định trường dữ liệu -->
+            <div class="info-row" data-privacy-field="name" style="cursor: pointer;">
                 <div class="info-icon"><i class="fas fa-user"></i></div>
                 <div class="info-body">
                     <div class="info-label">Tên</div>
                     <div class="info-value" id="infoName">—</div>
                 </div>
-                <div class="info-right">
-                    <span class="privacy-badge pub">Công khai</span>
+                <div class="info-right" data-privacy-field="name">
+                    <span class="privacy-badge pub" id="privacyBadge_name">Công khai</span>
                     <i class="fas fa-chevron-right info-chevron"></i>
                 </div>
             </div>
 
-            <div class="info-row" onclick="editField('nickname')">
+            <div class="info-row" data-privacy-field="nickname" style="cursor: pointer;">
                 <div class="info-icon"><i class="fas fa-id-badge"></i></div>
                 <div class="info-body">
                     <div class="info-label">Biệt danh</div>
                     <div class="info-value" id="infoNickname">—</div>
                 </div>
-                <div class="info-right">
-                    <span class="privacy-badge pub">Công khai</span>
+                <div class="info-right" data-privacy-field="nickname">
+                    <span class="privacy-badge pub" id="privacyBadge_nickname">Công khai</span>
                     <i class="fas fa-chevron-right info-chevron"></i>
                 </div>
             </div>
 
-            <div class="info-row" onclick="editField('birthday')">
+            <div class="info-row" data-privacy-field="birthdate" style="cursor: pointer;">
                 <div class="info-icon"><i class="fas fa-birthday-cake"></i></div>
                 <div class="info-body">
                     <div class="info-label">Ngày sinh</div>
                     <div class="info-value" id="infoBirthday">—</div>
                 </div>
-                <div class="info-right">
-                    <span class="privacy-badge fri">Bạn bè</span>
+                <div class="info-right" data-privacy-field="birthdate">
+                    <span class="privacy-badge pub" id="privacyBadge_birthdate">Công khai</span>
                     <i class="fas fa-chevron-right info-chevron"></i>
                 </div>
             </div>
 
-            <div class="info-row" onclick="editField('join_date')">
+            <div class="info-row" data-privacy-field="created_at" style="cursor: pointer;">
                 <div class="info-icon"><i class="fas fa-calendar-check"></i></div>
                 <div class="info-body">
                     <div class="info-label">Ngày gia nhập</div>
                     <div class="info-value" id="infoJoined">—</div>
                 </div>
-                <div class="info-right">
-                    <span class="privacy-badge pub">Công khai</span>
+                <div class="info-right" data-privacy-field="created_at">
+                    <span class="privacy-badge pub" id="privacyBadge_created_at">Công khai</span>
                     <i class="fas fa-chevron-right info-chevron"></i>
                 </div>
             </div>
 
-            <div class="info-row">
+            <div class="info-row" data-privacy-field="friends_count" style="cursor: pointer;">
                 <div class="info-icon"><i class="fas fa-user-friends"></i></div>
                 <div class="info-body">
                     <div class="info-label">Bạn bè</div>
                     <div class="info-value" id="infoFriends">0</div>
                 </div>
-                <div class="info-right">
-                    <span class="privacy-badge fri">Bạn bè</span>
+                <div class="info-right" data-privacy-field="friends_count">
+                    <span class="privacy-badge pub" id="privacyBadge_friends_count">Công khai</span>
                     <i class="fas fa-chevron-right info-chevron"></i>
                 </div>
             </div>
 
-            <div class="info-row">
+            <div class="info-row" data-privacy-field="tasks_count" style="cursor: pointer;">
                 <div class="info-icon"><i class="fas fa-tasks"></i></div>
                 <div class="info-body">
                     <div class="info-label">Nhiệm vụ hoàn thành</div>
                     <div class="info-value" id="infoTasks">0</div>
                 </div>
-                <div class="info-right">
-                    <span class="privacy-badge pub">Công khai</span>
+                <div class="info-right" data-privacy-field="tasks_count">
+                    <span class="privacy-badge pub" id="privacyBadge_tasks_count">Công khai</span>
                     <i class="fas fa-chevron-right info-chevron"></i>
                 </div>
             </div>
 
-            <div class="info-row" onclick="editField('city')">
+            <div class="info-row" data-privacy-field="city_name" style="cursor: pointer;">
                 <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
                 <div class="info-body">
                     <div class="info-label">Thành phố</div>
                     <div class="info-value" id="infoCity">—</div>
                 </div>
-                <div class="info-right">
-                    <span class="privacy-badge fri">Bạn bè</span>
+                <div class="info-right" data-privacy-field="city_name">
+                    <span class="privacy-badge pub" id="privacyBadge_city_name">Công khai</span>
                     <i class="fas fa-chevron-right info-chevron"></i>
                 </div>
             </div>
 
-            <div class="info-row" onclick="editField('phone')">
+            <div class="info-row" data-privacy-field="phone_number" style="cursor: pointer;">
                 <div class="info-icon"><i class="fas fa-phone"></i></div>
                 <div class="info-body">
                     <div class="info-label">Số điện thoại</div>
                     <div class="info-value" id="infoPhone">—</div>
                 </div>
-                <div class="info-right">
-                    <span class="privacy-badge priv">Riêng tư</span>
+                <div class="info-right" data-privacy-field="phone_number">
+                    <span class="privacy-badge pub" id="privacyBadge_phone_number">Công khai</span>
                     <i class="fas fa-chevron-right info-chevron"></i>
                 </div>
             </div>
@@ -171,19 +173,19 @@
         <div class="section" style="animation-delay:.1s;margin-bottom:14px">
             <div class="section-title">📧 Tài khoản</div>
 
-            <div class="info-row" onclick="editField('email')">
+            <div class="info-row" data-privacy-field="email" style="cursor: pointer;">
                 <div class="info-icon"><i class="fas fa-envelope"></i></div>
                 <div class="info-body">
                     <div class="info-label">Email</div>
                     <div class="info-value" id="infoEmail">—</div>
                 </div>
-                <div class="info-right">
-                    <span class="privacy-badge priv">Riêng tư</span>
+                <div class="info-right" data-privacy-field="email">
+                    <span class="privacy-badge pub" id="privacyBadge_email">Công khai</span>
                     <i class="fas fa-chevron-right info-chevron"></i>
                 </div>
             </div>
 
-            <div class="info-row" onclick="location.href='/logout'">
+            <div class="info-row"  onclick="location.href='/logout'" style="cursor: pointer;">
                 <div class="info-icon" style="background:rgba(239,68,68,.12);color:#f87171"><i
                         class="fas fa-sign-out-alt"></i></div>
                 <div class="info-body">
@@ -196,10 +198,8 @@
             </div>
         </div>
 
-        
         <div id="bottomNavContainer"></div>
         <script src="/static/js/loadComponent.js"></script>
-
     </div>
 
     <script src="/static/js/profile.js"></script>

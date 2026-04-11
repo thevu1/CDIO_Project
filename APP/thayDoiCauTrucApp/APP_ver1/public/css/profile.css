@@ -412,7 +412,7 @@ body::before {
 
 .privacy-badge {
     font-size: 10px;
-    font-weight: 800;
+    font-weight: 200;
     border-radius: 6px;
     padding: 2px 7px;
     white-space: nowrap;
@@ -514,10 +514,10 @@ body::before {
     animation: fadeUp .3s ease;
     white-space: nowrap;
 }
-.privacy-menu {
+/* .privacy-menu {
     position: fixed;
     bottom: 20px;
-    left: 50%;
+    right: 50%;
     transform: translateX(-50%);
     background: #1f2937;
     border-radius: 12px;
@@ -533,4 +533,17 @@ body::before {
 
 .privacy-item:hover {
     background: #374151;
+} */
+.privacy-overlay {
+    animation: fadeIn 0.15s ease;
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+.privacy-menu {
+    font-family: 'Nunito', sans-serif;
+}
+.privacy-option {
+    -webkit-tap-highlight-color: transparent;
 }

@@ -1,24 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
+
 <head>
     <script src="https://accounts.google.com/gsi/client"></script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="stylesheet" href="/static/css/walk.css">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="HealthQuest">
-
     <title>Đi bộ & Vận động</title>
+    <link rel="stylesheet" href="/static/css/walk.css">
 </head>
+
 <body>
-    <script src="https://apis.google.com/js/api.js"></script>
     <script src="https://accounts.google.com/gsi/client"></script>
-    <script src="/js/google-fit-config.js"></script>
-    <script src="/js/google-fit.js"></script>
-    
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="/static/js/google-fit-config.js"></script>
+    <script src="/static/js/google-fit.js"></script>
     <div class="container">
 
         <!-- HEADER -->
@@ -127,7 +123,63 @@
 
     </div>
 
-    <script src="/static/js/walk.js"></script>
+    <script src="static/js/walk.js"></script>
+    <script>
+    // Hàm kiểm tra và hiển thị banner kết nối Google Fit
+         async function checkGoogleFitConnection() {
+            try {
+                const res = await fetch('/api/google-fit/status');
+                const data = await res.json();
+                if (!data.connected && !localStorage.getItem('dismiss_google_fit_permanently')) {
+                    showConnectBanner();
+                }
+            } catch (err) {
+                console.error('Lỗi kiểm tra kết nối:', err);
+            }
+        }
+
+        function showConnectBanner() {
+            if (document.getElementById('google-fit-banner')) return;
+            const banner = document.createElement('div');
+            banner.id = 'google-fit-banner';
+            banner.style.cssText = 'position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: #4285F4; color: white; padding: 12px 16px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 1000;';
+            banner.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fab fa-google" style="font-size: 24px;"></i>
+                    <div style="font-size: 13px;">Kết nối Google Fit để tự động đồng bộ số bước và nhận thêm XP!</div>
+                </div>
+                <div>
+                    <button id="connectFitBtn" style="background: white; color: #4285F4; border: none; padding: 6px 12px; border-radius: 20px; font-weight: bold; margin-right: 8px; cursor: pointer;">Kết nối</button>
+                    <button id="dismissFitBtn" style="background: transparent; border: 1px solid white; color: white; padding: 6px 12px; border-radius: 20px; cursor: pointer;">Bỏ qua</button>
+                </div>
+            `;
+            document.body.appendChild(banner);
+
+            const connectBtn = document.getElementById('connectFitBtn');
+            const dismissBtn = document.getElementById('dismissFitBtn');
+
+            connectBtn.onclick = async () => {
+                if (typeof window.connectGoogleFit === 'function') {
+                    await window.connectGoogleFit();
+                    // Xóa banner sau khi kết nối (hàm connectGoogleFit đã xóa)
+                } else {
+                    alert('Chức năng kết nối chưa sẵn sàng. Vui lòng tải lại trang.');
+                    // Fallback: chuyển đến trang walk nếu cần
+                    window.location.href = '/walk';
+                }
+            };
+
+            dismissBtn.onclick = () => {
+                banner.remove();
+                localStorage.setItem('dismiss_google_fit_permanently', 'true');
+            };
+        }
+
+        // Chạy kiểm tra khi trang tải (chỉ chạy nếu không phải trang login)
+        if (window.location.pathname !== '/login') {
+            checkGoogleFitConnection();
+        }
+        </script>
 </body>
 
 </html>

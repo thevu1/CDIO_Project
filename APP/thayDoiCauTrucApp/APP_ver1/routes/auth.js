@@ -31,10 +31,8 @@ const oauth2Client = new google.auth.OAuth2(
 ========================================================= */
 setInterval(() => {
     db.query(
-        "DELETE FROM users WHERE is_verified = 0 AND verify_expires < NOW()",
-        (err) => {
-            if (!err) console.log("[AutoClean] Đã xoá user hết hạn xác minh");
-        }
+        "DELETE FROM accounts WHERE is_verified = 0 AND verify_expires < NOW()",
+        () => console.log("[AutoClean] Clean accounts")
     );
 }, 5 * 60 * 1000);
 
@@ -120,16 +118,14 @@ app.post("/setup-profile", (req, res) => {
          SET birthdate         = ?,
              city_id           = ?,
              phone_number      = ?,
-             profile_completed = TRUE
+             profile_completed = 1
          WHERE id = ?`,
         [birthdate || null, city_id || null, phone_number, req.session.user.id],
         (err) => {
             if (err) return res.status(500).send("Lỗi server");
 
-            // Cập nhật session để middleware không redirect nữa
-            req.session.user.profile_completed = true;
+            req.session.user.profile_completed = 1;
 
-            // askGoogleFit=1 → frontend hỏi có muốn kết nối Google Fit không
             res.redirect("/index?askGoogleFit=1");
         }
     );
@@ -146,76 +142,72 @@ app.post("/setup-profile", (req, res) => {
 app.post("/register", async (req, res) => {
     const { name, email, password, username } = req.body;
 
-    // Kiểm tra email đã tồn tại chưa
     db.query(
-        "SELECT id, is_verified, verify_expires FROM users WHERE email = ?",
+        "SELECT id, is_verified, verify_expires FROM accounts WHERE email = ?",
         [email],
         async (err, results) => {
             if (err) return res.json({ status: "error" });
 
             if (results.length > 0) {
-                const user = results[0];
+                const acc = results[0];
 
-                if (!user.is_verified) {
+                if (!acc.is_verified) {
                     const now = new Date();
 
-                    // Token cũ còn hiệu lực → báo frontend cho resend
-                    if (new Date(user.verify_expires) > now) {
-                        return res.json({
-                            status: "exists_unverified",
-                            message: "Token cũ vẫn còn hiệu lực"
-                        });
+                    if (new Date(acc.verify_expires) > now) {
+                        return res.json({ status: "exists_unverified" });
                     }
 
-                    // Token hết hạn → tạo token mới
-                    const newToken   = uuidv4();
-                    const newExpires = new Date(Date.now() + 15 * 60 * 1000);
+                    const token = uuidv4();
+                    const expires = new Date(Date.now() + 15 * 60 * 1000);
 
                     db.query(
-                        "UPDATE users SET verify_token = ?, verify_expires = ? WHERE id = ?",
-                        [newToken, newExpires, user.id]
+                        "UPDATE accounts SET verify_token=?, verify_expires=? WHERE id=?",
+                        [token, expires, acc.id]
                     );
 
-                    return res.json({ status: "reset_token", message: "Token mới đã được tạo" });
+                    return res.json({ status: "reset_token" });
                 }
 
-                // Email đã tồn tại và đã verify
                 return res.json({ status: "exists" });
             }
 
-            // Tạo user mới
-            const hash    = await bcrypt.hash(password, 10);
-            const token   = uuidv4();
+            const hash = await bcrypt.hash(password, 10);
+            const token = uuidv4();
             const expires = new Date(Date.now() + 15 * 60 * 1000);
 
-            // name = username (tên đăng nhập), nickname = name (tên hiển thị)
+            // 👉 INSERT account trước
             db.query(
-                `INSERT INTO users
-                    (name, email, password, nickname,
-                     is_verified, verify_token, verify_expires)
-                 VALUES (?, ?, ?, ?, 0, ?, ?)`,
-                [username, email, hash, name, token, expires],
-                async (err2) => {
+                `INSERT INTO accounts 
+                (tenDangNhap, email, password, is_verified, verify_token, verify_expires)
+                VALUES (?, ?, ?, 0, ?, ?)`,
+                [username, email, hash, token, expires],
+                (err2, result) => {
                     if (err2) return res.json({ status: "error" });
+
+                    const accountId = result.insertId;
+
+                    // 👉 tạo user tương ứng
+                    db.query(
+                        `INSERT INTO users (account_id, name)
+                         VALUES (?, ?)`,
+                        [accountId, name]
+                    );
 
                     const link = `http://localhost:3000/verify/${token}`;
 
-                    try {
-                        await transporter.sendMail({
-                            to:      email,
-                            subject: "Xác minh tài khoản HealthQuest",
-                            html:    getVerifyEmailHTML(link, name)
-                        });
-                        res.json({ status: "success" });
-                    } catch {
-                        res.json({ status: "error" });
-                    }
+                    transporter.sendMail({
+                        to: email,
+                        subject: "Xác minh tài khoản",
+                        html: getVerifyEmailHTML(link, name)
+                    });
+
+                    res.json({ status: "success" });
                 }
             );
         }
     );
 });
-
 
 /* =========================================================
    🔑 MODULE: FORGOT PASSWORD – QUÊN MẬT KHẨU
@@ -229,45 +221,30 @@ app.post("/register", async (req, res) => {
 app.post("/api/auth/check-email", (req, res) => {
     const { email } = req.body;
 
-    if (!email) return res.status(400).json({ message: "Email không được để trống." });
-
     db.query(
-        "SELECT id FROM users WHERE email = ? AND is_verified = 1",
+        "SELECT id FROM accounts WHERE email=? AND is_verified=1",
         [email],
         (err, result) => {
-            if (err)           return res.status(500).json({ message: "Lỗi server." });
-            if (!result.length) return res.status(404).json({ message: "Email chưa được đăng ký." });
-            res.status(200).json({ message: "Email hợp lệ." });
+            if (!result.length) return res.status(404).json({ message: "Không tồn tại" });
+            res.json({ message: "OK" });
         }
     );
 });
 
 // Bước 2: Đặt lại mật khẩu mới
 app.post("/api/auth/reset-password", async (req, res) => {
-    try {
-        const { email, newPassword } = req.body;
+    const { email, newPassword } = req.body;
 
-        if (!email || !newPassword) {
-            return res.status(400).json({ message: "Thiếu thông tin." });
+    const hash = await bcrypt.hash(newPassword, 10);
+
+    db.query(
+        "UPDATE accounts SET password=? WHERE email=?",
+        [hash, email],
+        (err) => {
+            if (err) return res.status(500).json({ message: "Lỗi" });
+            res.json({ message: "OK" });
         }
-        if (newPassword.length < 6) {
-            return res.status(400).json({ message: "Mật khẩu phải từ 6 ký tự trở lên." });
-        }
-
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-        db.query(
-            "UPDATE users SET password = ? WHERE email = ?",
-            [hashedPassword, email],
-            (err, result) => {
-                if (err)               return res.status(500).json({ message: "Lỗi server." });
-                if (!result.affectedRows) return res.status(404).json({ message: "Không tìm thấy tài khoản." });
-                res.status(200).json({ message: "Đặt lại mật khẩu thành công." });
-            }
-        );
-    } catch {
-        res.status(500).json({ message: "Có lỗi xảy ra." });
-    }
+    );
 });
 
 
@@ -281,44 +258,39 @@ app.post("/resend", (req, res) => {
     const { email } = req.body;
 
     db.query(
-        "SELECT id, name, verify_token, verify_expires FROM users WHERE email = ?",
+        `SELECT a.id, a.verify_token, a.verify_expires, u.name 
+         FROM accounts a 
+         JOIN users u ON u.account_id = a.id 
+         WHERE a.email = ?`,
         [email],
         async (err, results) => {
             if (!results || !results[0]) return res.json({ status: "notfound" });
 
-            const user = results[0];
-            const now  = new Date();
+            const acc = results[0];
+            const now = new Date();
 
-            let token   = user.verify_token;
-            let expires = user.verify_expires;
+            let token   = acc.verify_token;
+            let expires = acc.verify_expires;
 
-            // Token hết hạn → tạo token mới
             if (!token || new Date(expires) < now) {
                 token   = uuidv4();
                 expires = new Date(Date.now() + 15 * 60 * 1000);
-
                 db.query(
-                    "UPDATE users SET verify_token = ?, verify_expires = ? WHERE id = ?",
-                    [token, expires, user.id]
+                    "UPDATE accounts SET verify_token = ?, verify_expires = ? WHERE id = ?",
+                    [token, expires, acc.id]
                 );
             }
 
             const link = `http://localhost:3000/verify/${token}`;
-
-            try {
-                await transporter.sendMail({
-                    to:      email,
-                    subject: "Gửi lại xác minh HealthQuest",
-                    html:    getVerifyEmailHTML(link, user.name)
-                });
-                res.json({ status: "resent" });
-            } catch {
-                res.json({ status: "error" });
-            }
+            await transporter.sendMail({
+                to: email,
+                subject: "Gửi lại xác minh HealthQuest",
+                html: getVerifyEmailHTML(link, acc.name)
+            });
+            res.json({ status: "resent" });
         }
     );
 });
-
 
 /* =========================================================
    ✅ MODULE: VERIFY ACCOUNT – XÁC MINH TÀI KHOẢN QUA LINK
@@ -331,29 +303,22 @@ app.get("/verify/:token", (req, res) => {
     const { token } = req.params;
 
     db.query(
-        "SELECT id, verify_expires FROM users WHERE verify_token = ?",
+        "SELECT id, verify_expires FROM accounts WHERE verify_token = ?",
         [token],
         (err, results) => {
-            if (!results || !results[0]) {
+            if (!results.length) {
                 return res.send(`<script>alert("Link không hợp lệ");location="/login"</script>`);
             }
 
-            const user = results[0];
-
-            if (new Date() > new Date(user.verify_expires)) {
-                return res.send(`<script>alert("Link đã hết hạn, vui lòng đăng ký lại");location="/login"</script>`);
+            const acc = results[0];
+            if (new Date() > new Date(acc.verify_expires)) {
+                return res.send(`<script>alert("Link hết hạn");location="/login"</script>`);
             }
 
             db.query(
-                `UPDATE users
-                 SET is_verified    = 1,
-                     verify_token   = NULL,
-                     verify_expires = NULL
-                 WHERE id = ?`,
-                [user.id],
-                () => {
-                    res.send(`<script>alert("Xác minh thành công 🎉");location="/login?verified=1"</script>`);
-                }
+                `UPDATE accounts SET is_verified=1, verify_token=NULL, verify_expires=NULL WHERE id=?`,
+                [acc.id],
+                () => res.redirect("/login?verified=1")
             );
         }
     );
@@ -371,7 +336,16 @@ app.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
     db.query(
-        "SELECT * FROM users WHERE email = ? OR name = ?",
+        `SELECT 
+            a.id as account_id,
+            a.password,
+            a.is_verified,
+            u.id as user_id,
+            u.name,
+            u.profile_completed
+         FROM accounts a
+         JOIN users u ON u.account_id = a.id
+         WHERE a.email = ? OR a.tenDangNhap = ?`,
         [email, email],
         async (err, results) => {
             if (err) return res.send("Lỗi server");
@@ -381,15 +355,12 @@ app.post("/login", async (req, res) => {
             const user = results[0];
 
             const match = await bcrypt.compare(password, user.password);
-            if (!match)            return res.redirect("/login?error=wrongpass");
+            if (!match) return res.redirect("/login?error=wrongpass");
             if (!user.is_verified) return res.redirect("/login?error=notverified");
 
-            // Lưu session — chỉ giữ trường cần thiết, KHÔNG lưu password
             req.session.user = {
-                id:                user.id,
-                name:              user.name,
-                email:             user.email,
-                nickname:          user.nickname,
+                id: user.user_id,
+                name: user.name,
                 profile_completed: user.profile_completed
             };
 

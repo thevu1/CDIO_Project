@@ -11,11 +11,33 @@
  Target Server Version : 80408 (8.4.8)
  File Encoding         : 65001
 
- Date: 09/04/2026 18:17:17
+ Date: 11/04/2026 20:33:20
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for accounts
+-- ----------------------------
+DROP TABLE IF EXISTS `accounts`;
+CREATE TABLE `accounts`  (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `tenDangNhap` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `email` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `is_verified` tinyint(1) NOT NULL DEFAULT 0,
+  `verify_token` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `verify_expires` datetime NULL DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `uq_tenDangNhap`(`tenDangNhap` ASC) USING BTREE,
+  UNIQUE INDEX `uq_email`(`email` ASC) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of accounts
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for cities
@@ -53,7 +75,7 @@ CREATE TABLE `focus_sessions`  (
   INDEX `idx_focus_user`(`user_id` ASC) USING BTREE,
   INDEX `idx_focus_created`(`created_at` ASC) USING BTREE,
   CONSTRAINT `fk_focus_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of focus_sessions
@@ -73,7 +95,7 @@ CREATE TABLE `friends`  (
   INDEX `idx_friend_id`(`friend_id` ASC) USING BTREE,
   CONSTRAINT `fk_friends_friend` FOREIGN KEY (`friend_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `fk_friends_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of friends
@@ -147,12 +169,8 @@ CREATE TABLE `tasks`  (
   `user_id` int UNSIGNED NOT NULL,
   `task_date` date NOT NULL DEFAULT (curdate()),
   `walk_completed` tinyint(1) NOT NULL DEFAULT 0,
-  `sleep_completed` tinyint(1) NOT NULL DEFAULT 0,
-  `screen_completed` tinyint(1) NOT NULL DEFAULT 0,
-  `focus_completed` tinyint(1) NOT NULL DEFAULT 0,
   `walk_xp_claimed` tinyint(1) NOT NULL DEFAULT 0,
-  `sleep_xp_claimed` tinyint(1) NOT NULL DEFAULT 0,
-  `screen_xp_claimed` tinyint(1) NOT NULL DEFAULT 0,
+  `focus_completed` tinyint(1) NOT NULL DEFAULT 0,
   `focus_xp_claimed` tinyint(1) NOT NULL DEFAULT 0,
   `meditate_10min` tinyint(1) NOT NULL DEFAULT 0,
   `meditate_10min_xp_claimed` tinyint(1) NOT NULL DEFAULT 0,
@@ -165,7 +183,7 @@ CREATE TABLE `tasks`  (
   UNIQUE INDEX `uq_user_date`(`user_id` ASC, `task_date` ASC) USING BTREE,
   INDEX `idx_tasks_user`(`user_id` ASC) USING BTREE,
   CONSTRAINT `fk_tasks_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of tasks
@@ -177,13 +195,8 @@ CREATE TABLE `tasks`  (
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users`  (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `account_id` int UNSIGNED NOT NULL,
   `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `email` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `is_verified` tinyint(1) NOT NULL DEFAULT 0,
-  `verify_token` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `verify_expires` datetime NULL DEFAULT NULL,
-  `nickname` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   `avatar` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   `birthdate` date NULL DEFAULT NULL,
   `city_id` int UNSIGNED NULL DEFAULT NULL,
@@ -199,11 +212,11 @@ CREATE TABLE `users`  (
   `is_me` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `email`(`email` ASC) USING BTREE,
-  INDEX `idx_email`(`email` ASC) USING BTREE,
   INDEX `idx_city`(`city_id` ASC) USING BTREE,
-  CONSTRAINT `fk_users_city` FOREIGN KEY (`city_id`) REFERENCES `cities` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+  UNIQUE INDEX `uq_account`(`account_id` ASC) USING BTREE,
+  CONSTRAINT `fk_users_city` FOREIGN KEY (`city_id`) REFERENCES `cities` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `fk_users_account` FOREIGN KEY (`account_id`) REFERENCES `accounts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of users
@@ -219,12 +232,12 @@ CREATE ALGORITHM = UNDEFINED SQL SECURITY DEFINER VIEW `vw_focus_history` AS sel
 -- View structure for vw_leaderboard
 -- ----------------------------
 DROP VIEW IF EXISTS `vw_leaderboard`;
-CREATE ALGORITHM = UNDEFINED SQL SECURITY DEFINER VIEW `vw_leaderboard` AS select `users`.`id` AS `id`,`users`.`name` AS `name`,`users`.`nickname` AS `nickname`,`users`.`xp` AS `xp`,`users`.`level` AS `level`,`users`.`avatar` AS `avatar`,`users`.`is_me` AS `is_me`,`users`.`streak` AS `streak`,rank() OVER (ORDER BY `users`.`xp` desc )  AS `user_rank` from `users` order by `users`.`xp` desc;
+CREATE ALGORITHM = UNDEFINED SQL SECURITY DEFINER VIEW `vw_leaderboard` AS select `u`.`id` AS `id`,`a`.`tenDangNhap` AS `tenDangNhap`,`u`.`name` AS `name`,`u`.`xp` AS `xp`,`u`.`level` AS `level`,`u`.`avatar` AS `avatar`,`u`.`is_me` AS `is_me`,`u`.`streak` AS `streak`,rank() OVER (ORDER BY `u`.`xp` desc )  AS `user_rank` from (`users` `u` join `accounts` `a` on((`a`.`id` = `u`.`account_id`))) order by `u`.`xp` desc;
 
 -- ----------------------------
 -- View structure for vw_profile
 -- ----------------------------
 DROP VIEW IF EXISTS `vw_profile`;
-CREATE ALGORITHM = UNDEFINED SQL SECURITY DEFINER VIEW `vw_profile` AS select `u`.`id` AS `id`,`u`.`name` AS `name`,`u`.`email` AS `email`,`u`.`password` AS `password`,`u`.`is_verified` AS `is_verified`,`u`.`verify_token` AS `verify_token`,`u`.`verify_expires` AS `verify_expires`,`u`.`nickname` AS `nickname`,`u`.`avatar` AS `avatar`,`u`.`birthdate` AS `birthdate`,`u`.`city_id` AS `city_id`,`u`.`phone_number` AS `phone_number`,`u`.`profile_completed` AS `profile_completed`,`u`.`xp` AS `xp`,`u`.`level` AS `level`,`u`.`xp_to_next` AS `xp_to_next`,`u`.`streak` AS `streak`,`u`.`total_streak` AS `total_streak`,`u`.`last_completed` AS `last_completed`,`u`.`privacy_settings` AS `privacy_settings`,`u`.`is_me` AS `is_me`,`u`.`created_at` AS `created_at`,`c`.`name` AS `city_name`,(select count(0) from `friends` where (`friends`.`user_id` = `u`.`id`)) AS `friends`,(select count(0) from `tasks` where (`tasks`.`user_id` = `u`.`id`)) AS `tasks` from (`users` `u` left join `cities` `c` on((`c`.`id` = `u`.`city_id`)));
+CREATE ALGORITHM = UNDEFINED SQL SECURITY DEFINER VIEW `vw_profile` AS select `u`.`id` AS `id`,`a`.`tenDangNhap` AS `tenDangNhap`,`u`.`name` AS `name`,`a`.`email` AS `email`,`u`.`avatar` AS `avatar`,`u`.`birthdate` AS `birthdate`,`u`.`city_id` AS `city_id`,`c`.`name` AS `city_name`,`u`.`phone_number` AS `phone_number`,`u`.`profile_completed` AS `profile_completed`,`u`.`xp` AS `xp`,`u`.`level` AS `level`,`u`.`xp_to_next` AS `xp_to_next`,`u`.`streak` AS `streak`,`u`.`total_streak` AS `total_streak`,`u`.`last_completed` AS `last_completed`,`u`.`privacy_settings` AS `privacy_settings`,`u`.`is_me` AS `is_me`,`u`.`created_at` AS `created_at`,(select count(0) from `friends` where (`friends`.`user_id` = `u`.`id`)) AS `friends`,(select count(0) from `tasks` where (`tasks`.`user_id` = `u`.`id`)) AS `tasks` from ((`users` `u` join `accounts` `a` on((`a`.`id` = `u`.`account_id`))) left join `cities` `c` on((`c`.`id` = `u`.`city_id`)));
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -258,39 +258,11 @@
 
             </div>
         </div>
-
+        
         <div id="bottomNavContainer"></div>
         <script src="/static/js/loadComponent.js"></script>
-
     </div>
-
-    <script>
-        function askGoogleFit() {
-            const choice = confirm(
-                "Bạn muốn dùng email hiện tại để kết nối Google Fit?\nOK = dùng email này\nCancel = chọn tài khoản khác"
-            );
-
-            if (choice) {
-                fetch("/auth/google-fit/send-confirm", {
-                    method: "POST"
-                }).then(() => {
-                    alert("Đã gửi email xác nhận!");
-                });
-            } else {
-                window.location.href = "/auth/google-fit";
-            }
-        }
-
-        window.onload = () => {
-            const url = new URL(window.location.href);
-
-            if (url.searchParams.get("askGoogleFit")) {
-                askGoogleFit();
-            }
-        };
-    </script>
     <script src="/static/js/app.js"></script>
-    
 </body>
 
 </html>
