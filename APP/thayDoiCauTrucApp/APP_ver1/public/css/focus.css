@@ -45,6 +45,32 @@ body::before {
     z-index: 0;
 }
 
+.phone {
+    position: relative;
+    z-index: 1;
+    width: 390px;
+    background: linear-gradient(175deg, #1a1535 0%, #110d28 55%, #160e30 100%);
+    border-radius: 40px;
+    border: 1.5px solid rgba(168, 85, 247, .22);
+    box-shadow:
+        var(--glow),
+        0 40px 100px rgba(0, 0, 0, .75),
+        inset 0 1px 0 rgba(255, 255, 255, .06);
+    overflow: hidden;
+}
+
+.phone::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 250px 200px at 85% -5%, rgba(168, 85, 247, .2) 0%, transparent 65%),
+        radial-gradient(ellipse 200px 160px at -5% 55%, rgba(124, 58, 237, .15) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+
 .container {
     position: relative;
     z-index: 1;
@@ -657,7 +683,7 @@ body::before {
 
 .focus-mode {
     font-family: var(--font);
-    font-size: 11px; 
+    font-size: 11px;
     font-weight: 700;
     letter-spacing: 4px;
     text-transform: uppercase;
@@ -679,6 +705,7 @@ body::before {
     align-items: center;
     gap: 0;
 }
+
 .flip-group .cards-row {
     display: flex;
     flex-direction: row;
@@ -744,7 +771,6 @@ body::before {
     font-style: italic;
 }
 
-/* Colon separator */
 .flip-colon {
     font-size: clamp(24px, 7vw, 50px);
     font-weight: 800;
@@ -770,7 +796,6 @@ body::before {
     }
 }
 
-/* ── Flip animation ── */
 .flip-card-inner.flip {
     animation: flipDown 0.4s cubic-bezier(0.3, 0, 0.2, 1);
 }
@@ -792,7 +817,6 @@ body::before {
     }
 }
 
-/* ── End button ── */
 .focus-footer {
     margin-top: 44px;
 }
@@ -820,9 +844,6 @@ body::before {
     transform: scale(0.97);
 }
 
-/* ═══════════════════════════════════════════════
-   LANDSCAPE — cards bigger, tighter spacing
-   ═══════════════════════════════════════════════ */
 @media screen and (orientation: landscape) {
     .focus-mode {
         font-size: 9px;
@@ -830,7 +851,6 @@ body::before {
         letter-spacing: 3px;
     }
 
-    /* Landscape: height is the constraint — use vh */
     .flip-card {
         width: 14vw;
         max-width: 120px;

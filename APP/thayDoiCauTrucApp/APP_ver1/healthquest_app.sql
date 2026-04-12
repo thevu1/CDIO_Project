@@ -11,7 +11,7 @@
  Target Server Version : 80408 (8.4.8)
  File Encoding         : 65001
 
- Date: 11/04/2026 20:33:20
+ Date: 12/04/2026 07:35:41
 */
 
 SET NAMES utf8mb4;
@@ -33,11 +33,13 @@ CREATE TABLE `accounts`  (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uq_tenDangNhap`(`tenDangNhap` ASC) USING BTREE,
   UNIQUE INDEX `uq_email`(`email` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of accounts
 -- ----------------------------
+INSERT INTO `accounts` VALUES (1, 'he', 'temnguyenvu@gmail.com', '$2b$10$F8e/.DxUgkli4PIyJt/c3OALyOtBoFEnL9WEE9VKrJC0fBSNNReoG', 1, NULL, NULL, '2026-04-11 20:42:19');
+INSERT INTO `accounts` VALUES (2, 'vu', 'nguyenthevu4@dtu.edu.vn', '$2b$10$r31fbkJJfFXeVo0ZDjdP3uF5TD74BX9mNh.ZNV6V657ngrsXcmtuq', 1, NULL, NULL, '2026-04-11 23:38:04');
 
 -- ----------------------------
 -- Table structure for cities
@@ -75,11 +77,12 @@ CREATE TABLE `focus_sessions`  (
   INDEX `idx_focus_user`(`user_id` ASC) USING BTREE,
   INDEX `idx_focus_created`(`created_at` ASC) USING BTREE,
   CONSTRAINT `fk_focus_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of focus_sessions
 -- ----------------------------
+INSERT INTO `focus_sessions` VALUES (1, 1, 'screen', 3, 2697, 'unfinished', DEFAULT, '2026-04-12 07:16:10');
 
 -- ----------------------------
 -- Table structure for friends
@@ -95,11 +98,13 @@ CREATE TABLE `friends`  (
   INDEX `idx_friend_id`(`friend_id` ASC) USING BTREE,
   CONSTRAINT `fk_friends_friend` FOREIGN KEY (`friend_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `fk_friends_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 15 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of friends
 -- ----------------------------
+INSERT INTO `friends` VALUES (11, 1, 2, '2026-04-12 00:14:44');
+INSERT INTO `friends` VALUES (12, 2, 1, '2026-04-12 00:14:44');
 
 -- ----------------------------
 -- Table structure for group_members
@@ -154,11 +159,15 @@ CREATE TABLE `streak_history`  (
   UNIQUE INDEX `uq_streak_date`(`user_id` ASC, `streak_date` ASC) USING BTREE,
   INDEX `idx_streak_user`(`user_id` ASC) USING BTREE,
   CONSTRAINT `fk_streak_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of streak_history
 -- ----------------------------
+INSERT INTO `streak_history` VALUES (1, 1, '2026-04-12', 1);
+INSERT INTO `streak_history` VALUES (2, 1, '2026-04-11', 1);
+INSERT INTO `streak_history` VALUES (3, 1, '2026-04-10', 1);
+INSERT INTO `streak_history` VALUES (4, 1, '2026-04-09', 1);
 
 -- ----------------------------
 -- Table structure for tasks
@@ -183,11 +192,14 @@ CREATE TABLE `tasks`  (
   UNIQUE INDEX `uq_user_date`(`user_id` ASC, `task_date` ASC) USING BTREE,
   INDEX `idx_tasks_user`(`user_id` ASC) USING BTREE,
   CONSTRAINT `fk_tasks_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 112 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of tasks
 -- ----------------------------
+INSERT INTO `tasks` VALUES (1, 1, '2026-04-11', 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, '2026-04-11 20:42:38');
+INSERT INTO `tasks` VALUES (33, 2, '2026-04-11', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '2026-04-11 23:38:44');
+INSERT INTO `tasks` VALUES (100, 1, '2026-04-12', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '2026-04-12 07:15:46');
 
 -- ----------------------------
 -- Table structure for users
@@ -211,15 +223,41 @@ CREATE TABLE `users`  (
   `privacy_settings` json NULL,
   `is_me` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `google_fit_connected` tinyint(1) NULL DEFAULT 0,
+  `google_fit_token` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL,
+  `google_fit_refresh_token` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL,
+  `email` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `is_verified` tinyint(1) NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_city`(`city_id` ASC) USING BTREE,
   UNIQUE INDEX `uq_account`(`account_id` ASC) USING BTREE,
-  CONSTRAINT `fk_users_city` FOREIGN KEY (`city_id`) REFERENCES `cities` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  CONSTRAINT `fk_users_account` FOREIGN KEY (`account_id`) REFERENCES `accounts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+  INDEX `idx_city`(`city_id` ASC) USING BTREE,
+  CONSTRAINT `fk_users_account` FOREIGN KEY (`account_id`) REFERENCES `accounts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_users_city` FOREIGN KEY (`city_id`) REFERENCES `cities` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of users
+-- ----------------------------
+INSERT INTO `users` VALUES (1, 1, 'he', NULL, '2026-04-10', 3, '321', 1, 500, 3, 500, 0, 4, NULL, '{\"city_name\": \"friends\"}', 0, '2026-04-11 20:42:19', 0, NULL, NULL, NULL, NULL, 0);
+INSERT INTO `users` VALUES (2, 2, 'vu', NULL, '2026-04-10', 4, '123', 1, 0, 1, 100, 0, 0, NULL, NULL, 0, '2026-04-11 23:38:04', 0, NULL, NULL, NULL, NULL, 0);
+
+-- ----------------------------
+-- Table structure for walk_sessions
+-- ----------------------------
+DROP TABLE IF EXISTS `walk_sessions`;
+CREATE TABLE `walk_sessions`  (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NULL DEFAULT NULL,
+  `steps` int NULL DEFAULT NULL,
+  `distance_km` float NULL DEFAULT NULL,
+  `duration_seconds` int NULL DEFAULT NULL,
+  `created_at` datetime NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of walk_sessions
 -- ----------------------------
 
 -- ----------------------------

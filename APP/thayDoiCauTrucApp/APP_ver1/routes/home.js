@@ -17,9 +17,12 @@ passport.use('google-fit', new GoogleStrategy({
     ]
   },
   async (accessToken, refreshToken, profile, done) => {
-   
-    return done(null, profile);
-  }
+    return done(null, {
+        profile,
+        accessToken,
+        refreshToken
+    });
+}
 ));
 
 
@@ -670,23 +673,50 @@ app.get("/api/users/search", (req, res) => {
 ========================================================= */
 
 // Lưu phiên focus
-app.post("/api/focus/save", (req, res) => {
+app.post("/api/walk/save", (req, res) => {
     const userId = req.session.user?.id;
-    const {
-        focus_mode             = "unknown",
-        focus_duration_seconds = 0,
-        time_remaining_seconds = 0,
-        status                 = "unfinished"
-    } = req.body;
-
+    if (!userId) return res.status(401).json({ error: "Not logged in" });
+    
+    let { steps, distance_km, duration_seconds } = req.body;
+    steps = parseInt(steps) || 0;
+    
+    if (steps <= 0) return res.status(400).json({ error: "Số bước không hợp lệ" });
+    
+    // Lưu phiên đi bộ
     db.query(
-        `INSERT INTO focus_sessions
-            (user_id, focus_mode, focus_duration_seconds, time_remaining_seconds, status)
-         VALUES (?, ?, ?, ?, ?)`,
-        [userId, focus_mode, focus_duration_seconds, time_remaining_seconds, status],
+        `INSERT INTO walk_sessions (user_id, steps, distance_km, duration_seconds) 
+         VALUES (?, ?, ?, ?)`,
+        [userId, steps, distance_km || null, duration_seconds || null],
         (err) => {
-            if (err) return res.status(500).json({ success: false, error: err.message });
-            res.json({ success: true });
+            if (err) {
+                console.error("[Walk] Lỗi lưu phiên:", err);
+                return res.status(500).json({ error: "Không thể lưu phiên đi bộ" });
+            }
+            
+            // Kiểm tra xem đã đạt mục tiêu chưa (5000 bước)
+            const today = new Date().toISOString().slice(0, 10);
+            db.query(
+                `SELECT SUM(steps) AS total_steps 
+                 FROM walk_sessions 
+                 WHERE user_id = ? AND DATE(created_at) = ?`,
+                [userId, today],
+                (err2, rows) => {
+                    if (err2) {
+                        console.error("[Walk] Lỗi thống kê steps:", err2);
+                        return res.status(500).json({ error: "Lỗi thống kê bước" });
+                    }
+                    
+                    const totalSteps = rows[0]?.total_steps || 0;
+                    const GOAL_STEPS = 5000;
+                    
+                    if (totalSteps >= GOAL_STEPS) {
+                        // Hoàn thành task đi bộ
+                        completeWalkTask(userId, today, res, { steps, totalSteps });
+                    } else {
+                        res.json({ success: true, steps, totalSteps, goal_reached: false });
+                    }
+                }
+            );
         }
     );
 });
@@ -767,56 +797,125 @@ app.post("/api/walk/save", (req, res) => {
 });
 
 function completeWalkTask(userId, today, res, walkInfo) {
-    db.query(`SELECT id, walk_completed, walk_xp_claimed FROM tasks WHERE user_id = ? AND task_date = ?`, [userId, today], (err, rows) => {
-        if (err) return res.status(500).json({ error: err.message });
-        if (!rows.length) {
-            db.query(`INSERT IGNORE INTO tasks (user_id, task_date) VALUES (?, ?)`, [userId, today], (err2) => {
-                if (err2) return res.status(500).json({ error: err2.message });
-                completeWalkTask(userId, today, res, walkInfo);
-            });
-            return;
+    db.query(
+        `SELECT id, walk_completed, walk_xp_claimed 
+         FROM tasks 
+         WHERE user_id = ? AND task_date = ?`,
+        [userId, today],
+        (err, rows) => {
+            if (err) return res.status(500).json({ error: err.message });
+            
+            if (!rows.length) {
+                // Tạo task mới nếu chưa có
+                db.query(
+                    `INSERT IGNORE INTO tasks (user_id, task_date) VALUES (?, ?)`,
+                    [userId, today],
+                    (err2) => {
+                        if (err2) return res.status(500).json({ error: err2.message });
+                        completeWalkTask(userId, today, res, walkInfo);
+                    }
+                );
+                return;
+            }
+            
+            const task = rows[0];
+            if (task.walk_completed) {
+                return res.json({ 
+                    success: true, 
+                    steps: walkInfo.steps, 
+                    totalSteps: walkInfo.totalSteps, 
+                    goal_reached: true, 
+                    already_completed: true 
+                });
+            }
+            
+            // Đánh dấu task đi bộ đã hoàn thành và cộng XP
+            db.query(
+                `UPDATE tasks SET walk_completed = 1 WHERE id = ? AND user_id = ?`,
+                [task.id, userId],
+                (err3) => {
+                    if (err3) return res.status(500).json({ error: err3.message });
+                    
+                    db.query(
+                        `UPDATE users SET xp = xp + 20 WHERE id = ?`,
+                        [userId],
+                        (err4) => {
+                            if (err4) return res.status(500).json({ error: err4.message });
+                            
+                            // Kiểm tra các task khác để cập nhật streak
+                            checkAllTasks(userId, today, null);
+                            
+                            res.json({ 
+                                success: true, 
+                                steps: walkInfo.steps, 
+                                totalSteps: walkInfo.totalSteps, 
+                                goal_reached: true, 
+                                xp_gained: 20 
+                            });
+                        }
+                    );
+                }
+            );
         }
-        const task = rows[0];
-        if (task.walk_completed) {
-            return res.json({ success: true, steps: walkInfo.steps, totalSteps: walkInfo.totalSteps, goal_reached: true, already_completed: true });
-        }
-        db.query(`UPDATE tasks SET walk_completed = 1 WHERE id = ? AND user_id = ?`, [task.id, userId], (err3) => {
-            if (err3) return res.status(500).json({ error: err3.message });
-            db.query(`UPDATE users SET xp = xp + 20 WHERE id = ?`, [userId], (err4) => {
-                if (err4) return res.status(500).json({ error: err4.message });
-                checkAllTasks(userId, today, null);
-                res.json({ success: true, steps: walkInfo.steps, totalSteps: walkInfo.totalSteps, goal_reached: true, xp_gained: 20 });
-            });
-        });
-    });
+    );
 }
+
 app.get("/api/walk/today", (req, res) => {
     const userId = req.session.user?.id;
     if (!userId) return res.status(401).json({ error: "Not logged in" });
+    
     const today = new Date().toISOString().slice(0, 10);
-    db.query(`SELECT SUM(steps) AS total_steps FROM walk_sessions WHERE user_id = ? AND DATE(created_at) = ?`, [userId, today], (err, rows) => {
-        if (err) return res.status(500).json({ error: err.message });
-        const totalSteps = rows[0]?.total_steps || 0;
-        const distanceKm = (totalSteps / 1300).toFixed(1);
-        res.json({ totalSteps, distanceKm, goal: 5000 });
-    });
+    
+    db.query(
+        `SELECT SUM(steps) AS total_steps 
+         FROM walk_sessions 
+         WHERE user_id = ? AND DATE(created_at) = ?`,
+        [userId, today],
+        (err, rows) => {
+            if (err) return res.status(500).json({ error: err.message });
+            
+            const totalSteps = rows[0]?.total_steps || 0;
+            const distanceKm = (totalSteps / 1300).toFixed(1); // 1300 bước ≈ 1km
+            
+            res.json({ totalSteps, distanceKm, goal: 5000 });
+        }
+    );
 });
 app.get("/api/walk/weekly", (req, res) => {
     const userId = req.session.user?.id;
     if (!userId) return res.status(401).json({ error: "Not logged in" });
-    db.query(`SELECT DATE(created_at) as date, SUM(steps) as total_steps FROM walk_sessions WHERE user_id = ? AND created_at >= DATE_SUB(CURDATE(), INTERVAL 6 DAY) GROUP BY DATE(created_at) ORDER BY date ASC`, [userId], (err, rows) => {
-        if (err) return res.status(500).json({ error: err.message });
-        const stepMap = {};
-        rows.forEach(row => { stepMap[row.date] = row.total_steps; });
-        const weeklySteps = [];
-        for (let i = 6; i >= 0; i--) {
-            const d = new Date(); d.setDate(d.getDate() - i);
-            const dateStr = d.toISOString().slice(0, 10);
-            weeklySteps.push(stepMap[dateStr] || 0);
+    
+    db.query(
+        `SELECT DATE(created_at) as date, SUM(steps) as total_steps 
+         FROM walk_sessions 
+         WHERE user_id = ? 
+           AND created_at >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+         GROUP BY DATE(created_at) 
+         ORDER BY date ASC`,
+        [userId],
+        (err, rows) => {
+            if (err) return res.status(500).json({ error: err.message });
+            
+            // Tạo map dữ liệu
+            const stepMap = {};
+            rows.forEach(row => {
+                stepMap[row.date] = row.total_steps;
+            });
+            
+            // Tạo mảng 7 ngày (từ 6 ngày trước đến hôm nay)
+            const weeklySteps = [];
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const dateStr = d.toISOString().slice(0, 10);
+                weeklySteps.push(stepMap[dateStr] || 0);
+            }
+            
+            const weeklyKm = weeklySteps.map(s => (s / 1300).toFixed(1));
+            
+            res.json({ weeklySteps, weeklyKm });
         }
-        const weeklyKm = weeklySteps.map(s => (s / 1300).toFixed(1));
-        res.json({ weeklySteps, weeklyKm });
-    });
+    );
 });
 
 /* =========================================================
@@ -843,12 +942,40 @@ app.get("/auth/google-fit", (req, res, next) => {
     });
     authenticator(req, res, next);
 });
+app.get("/api/google-fit/token", (req, res) => {
+    const userId = req.session.user?.id;
 
+    db.query(
+        "SELECT google_fit_token FROM users WHERE id = ?",
+        [userId],
+        (err, rows) => {
+            if (err) return res.status(500).json({ error: err.message });
+
+            res.json({
+                token: rows[0]?.google_fit_token || null
+            });
+        }
+    );
+});
 // Callback sau khi Google cho phép
-app.get("/auth/google-fit/callback", passport.authenticate('google-fit', { failureRedirect: '/group' }), (req, res) => {
-    
-    const token = req.user?.token || req.user?.accessToken; 
-    res.redirect('/group?fit_connected=true');
+app.get("/auth/google-fit/callback",
+  passport.authenticate('google-fit', { failureRedirect: '/group' }),
+  (req, res) => {
+
+    const userId = req.session.user.id;
+    const { accessToken, refreshToken } = req.user;
+
+    db.query(
+        `UPDATE users 
+         SET google_fit_connected = 1,
+             google_fit_token = ?,
+             google_fit_refresh_token = ?
+         WHERE id = ?`,
+        [accessToken, refreshToken, userId],
+        () => {
+            res.redirect('/walk');
+        }
+    );
 });
 
 // API lưu token Google Fit từ frontend (sau khi người dùng cấp quyền qua popup)
@@ -943,7 +1070,7 @@ app.get("/api/friends/dashboard", (req, res) => {
             if (err) {
                 console.error("[Dashboard] Lỗi query user:", err);
                 return res.status(500).json({ error: "Lỗi truy vấn user" });
-            }
+            }   
             if (!userRows.length) {
                 return res.status(404).json({ error: "Không tìm thấy user" });
             }

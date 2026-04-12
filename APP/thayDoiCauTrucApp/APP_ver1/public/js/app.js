@@ -1,68 +1,48 @@
-// app.js
 const API = "";
 
-
-/* =========================================================
-   👤 MODULE: AVATAR & PROFILE OVERLAY
-   - avatarBtn: nút avatar góc trên, click mở overlay
-   - profileOverlay: panel trượt từ phải
-   - loadProfile(): gọi API /profile-data rồi điền UI
-========================================================= */
+// AVATAR & PROFILE
 function showStreak() { hideAll(); document.getElementById("streakSection").style.display = "block"; }
 function toggleMenu() { document.querySelector(".settings")?.classList.toggle("active"); }
-function logout()     { window.location.href = "/logout"; }
+function logout() { window.location.href = "/logout"; }
 
-const avatarBtn      = document.getElementById("avatarBtn");
+const avatarBtn = document.getElementById("avatarBtn");
 const profileOverlay = document.getElementById("profileOverlay");
-const pmClose        = document.getElementById("pmClose");
-
+const pmClose = document.getElementById("pmClose");
 if (avatarBtn && profileOverlay) {
-    avatarBtn.addEventListener("click", () => {
-        profileOverlay.classList.add("open");
-        loadProfile();
-    });
+    avatarBtn.addEventListener("click", () => { profileOverlay.classList.add("open"); loadProfile(); });
     pmClose?.addEventListener("click", () => profileOverlay.classList.remove("open"));
     profileOverlay.addEventListener("click", e => {
         if (e.target === profileOverlay) profileOverlay.classList.remove("open");
     });
 }
 
-
-/* =========================================================
-   👤 MODULE: LOAD PROFILE WITH DATA
-   - Nhận object player từ /profile-data
-   - Điền toàn bộ UI: avatar, level, XP bar, streak, rank
-   - Gọi thêm /leaderboardList để lấy rank của user
-   - Field từ DB: total_streak, xp_to_next, level, xp, nickname, name
-========================================================= */
 async function loadProfileWithData(player) {
-    const level   = player.level  ?? 0;
-    const totalXp = player.xp     ?? 0;
+    const totalXp = player.xp ?? 0;
+    const level = player.level ?? 1;
 
-    const { xpIn, xpToNext, pct } = _calcXP(totalXp, level, player.xp_to_next);
+    const xpFloor = _xpFloor(level - 1);
+
+    const xpToNext = level * 100;
+
+    const currentXp = totalXp - xpFloor;
+
+    const progressPct = Math.min(Math.round((currentXp / xpToNext) * 100), 100);
+
     const displayName = _pickDisplayName(player.nickname, player.name, "Warrior");
 
-    // Top bar
-    _set("avatarBtn",    player.avatar || "WA");
+    _set("avatarBtn", player.avatar || "WA");
     _set("profileLevel", "Level " + level);
-    _set("profileXpText", `${xpIn} / ${xpToNext} XP`);
-    _setBar("profileXpBar", pct);
+    _set("profileXpText", `${currentXp} / ${xpToNext} XP`);
+    _setBar("profileXpBar", progressPct);
 
-    // Streak pill (total_streak = streak dài nhất đạt được)
-    const firePill = document.querySelector(".day-pill.fire");
-    if (firePill) firePill.textContent = "🔥 " + (player.total_streak || 0);
 
-    // Profile mini panel (pmXxx)
-    _set("pmAvatar",   player.avatar || "WA");
-    _set("pmName",     displayName);
-    _set("pmEmail",    player.email  || "—");
-    _set("pmBadge",    "Level " + level);
-    _set("pmXpText",   `${xpIn} / ${xpToNext} XP`);
-    _set("pmStreak",   player.total_streak ? `🔥 ${player.total_streak} ngày` : "—");
-    _set("pmTotalXp",  totalXp);
-    _setBar("pmXpBar", pct);
+    _set("pmAvatar", player.avatar || "WA");
+    _set("pmName", displayName);
+    _set("pmBadge", "Level " + level);
+    _set("pmXpText", `${currentXp} / ${xpToNext} XP`);
+    _set("pmTotalStreak", player.total_streak || 0);
+    _setBar("pmXpBar", progressPct);
 
-    // Rank: lấy từ leaderboard, is_me = 1 được backend tính theo session
     try {
         const lb = await fetch("/leaderboardList").then(r => r.json());
         const me = Array.isArray(lb) ? lb.find(p => p.is_me == 1) : null;
@@ -70,30 +50,24 @@ async function loadProfileWithData(player) {
     } catch (_) { _set("pmRank", "#—"); }
 }
 
-// Gọi API rồi truyền vào loadProfileWithData
 async function loadProfile() {
     try {
         const player = await fetchJSON("/profile-data");
         await loadProfileWithData(player);
-    } catch (err) {
-        console.error("[loadProfile]", err.message);
-    }
+    } catch (err) { console.error("[loadProfile]", err.message); }
 }
 
+function _xpFloor(level) {
+    return level * (level + 1) / 2 * 100;
+}
 
-/* =========================================================
-   🔧 MODULE: PAGE UTILITIES – ẨN/HIỆN PAGE
-========================================================= */
+/* ════════════════════════════════════════
+   PAGE SWITCH & UTILITIES
+════════════════════════════════════════ */
 function hideAll() {
     document.querySelectorAll(".page").forEach(p => p.style.display = "none");
 }
 
-
-/* =========================================================
-   🔧 MODULE: DOM HELPERS – SET TEXT & WIDTH BAR
-   _set(id, val)     → gán textContent
-   _setBar(id, pct)  → animate thanh XP từ 0% → pct%
-========================================================= */
 function _set(id, val) {
     const el = document.getElementById(id);
     if (el) el.textContent = val;
@@ -110,22 +84,14 @@ function _setBar(id, pct) {
     }));
 }
 
-
-/* =========================================================
-   🔧 MODULE: FETCH HELPER – fetchJSON
-   - Wrapper fetch trả JSON, tự log lỗi nếu server trả HTML
-   - Dùng thay cho fetch() thô để dễ debug
-========================================================= */
 async function fetchJSON(url, options) {
     try {
         const res = await fetch(url, options);
-
         if (!res.ok) {
             const text = await res.text();
             console.error(`Lỗi Server ${res.status} tại ${url}:`, text);
             throw new Error(`HTTP ${res.status}`);
         }
-
         return await res.json();
     } catch (err) {
         console.error(`Lỗi fetch tại ${url}:`, err.message);
@@ -133,12 +99,9 @@ async function fetchJSON(url, options) {
     }
 }
 
-
-/* =========================================================
-   🔧 MODULE: DISPLAY HELPERS
-   _pickDisplayName: ưu tiên nickname → name → fallback
-   displayNickname:  cập nhật tên hiển thị trên top bar
-========================================================= */
+/* ════════════════════════════════════════
+   DISPLAY HELPERS
+════════════════════════════════════════ */
 function _pickDisplayName(nickname, name, fallback = "Warrior") {
     const nick = typeof nickname === "string" ? nickname.trim() : "";
     if (nick.length > 0) return nick;
@@ -147,35 +110,12 @@ function _pickDisplayName(nickname, name, fallback = "Warrior") {
 }
 
 function displayNickname(nickname) {
-    _set("profileName", typeof nickname === "string" && nickname.trim()
-        ? nickname.trim()
-        : "Warrior");
+    _set("profileName", typeof nickname === "string" && nickname.trim() ? nickname.trim() : "Warrior");
 }
 
-
-/* =========================================================
-   ⚡ MODULE: XP & LEVEL CALCULATION
-   - xpFloor = tổng XP tích lũy để đạt level hiện tại
-   - xpIn    = XP đang có trong level này
-   - pct     = % thanh XP (0–100)
-   - Dùng xp_to_next từ DB nếu có, fallback = (level+1)*100
-========================================================= */
-function _calcXP(totalXp, level, xpToNextDB) {
-    const xpFloor  = level * (level + 1) / 2 * 100;
-    const xpToNext = (xpToNextDB && xpToNextDB > 0) ? xpToNextDB : (level + 1) * 100;
-    const xpIn     = Math.max(0, totalXp - xpFloor);
-    const pct      = Math.min(Math.round(xpIn / xpToNext * 100), 100);
-    return { xpIn, xpToNext, pct };
-}
-
-
-/* =========================================================
-   🏆 MODULE: LEADERBOARD – BẢNG XẾP HẠNG
-   - Gọi GET /leaderboardList
-   - is_me = 1 được backend tính theo session (không hardcode)
-   - user_rank = RANK() OVER ORDER BY xp DESC
-   - Medal: 🥇🥈🥉 cho top 3
-========================================================= */
+/* ════════════════════════════════════════
+   LEADERBOARD
+════════════════════════════════════════ */
 const MEDALS = { 1: "🥇", 2: "🥈", 3: "🥉" };
 
 async function loadLeaderboard() {
@@ -191,9 +131,9 @@ async function loadLeaderboard() {
         }
 
         list.innerHTML = players.map(p => {
-            const isMe        = p.is_me == 1;
+            const isMe = p.is_me == 1;
             const displayName = _pickDisplayName(p.nickname, p.name, "Người chơi");
-            const medal       = MEDALS[p.user_rank]
+            const medal = MEDALS[p.user_rank]
                 ? `<div class="lb-medal">${MEDALS[p.user_rank]}</div>`
                 : `<div class="lb-medal" style="opacity:.3">🏅</div>`;
 
@@ -209,98 +149,76 @@ async function loadLeaderboard() {
             </div>`;
         }).join("");
 
-        // Cập nhật dòng "vị trí của tôi" ở dưới leaderboard
         const me = players.find(p => p.is_me == 1);
         if (me) {
-            _set("myRankPos",    "#" + me.user_rank);
+            _set("myRankPos", "#" + me.user_rank);
             _set("myRankAvatar", me.avatar || "WA");
-            _set("myRankName",   _pickDisplayName(me.nickname, me.name, "Bạn"));
-            _set("myRankSub",    `Level ${me.level} • ${me.xp} XP`);
+            _set("myRankName", _pickDisplayName(me.nickname, me.name, "Bạn"));
+            _set("myRankSub", `Level ${me.level} • ${me.xp} XP`);
         }
     } catch (err) {
         console.error("loadLeaderboard error:", err.message);
         list.innerHTML = `<div style="padding:14px;text-align:center;color:var(--muted);font-size:13px">
-            Không tải được —
-            <button onclick="loadLeaderboard()" style="color:#c084fc;background:none;border:none;cursor:pointer;font-weight:700">Thử lại</button>
+             Không tải được — <button onclick="loadLeaderboard()" style="color:#c084fc;background:none;border:none;cursor:pointer;font-weight:700">Thử lại</button>
         </div>`;
     }
 }
 
-
-/* =========================================================
-   📊 MODULE: TOP BAR – CẬP NHẬT THANH THÔNG TIN ĐẦU TRANG
-   - Hiển thị nickname, level, XP bar, streak
-   - Gọi mỗi khi profile thay đổi (claim XP, đổi nickname…)
-========================================================= */
+/* ════════════════════════════════════════
+   TOP BAR & PROFILE
+════════════════════════════════════════ */
 function updateTopBar(player) {
     const displayName = _pickDisplayName(player.nickname, player.name, "Warrior");
-    _set("profileName",  displayName);
+    _set("profileName", displayName);
     _set("profileLevel", `Level ${player.level || 1}`);
 
-    const { xpIn, xpToNext, pct } = _calcXP(player.xp || 0, player.level || 1, player.xp_to_next);
-    _set("profileXpText", `${xpIn} / ${xpToNext} XP`);
+    const level = player.level || 1;
+    const currentXp = player.xp || 0;
+    const xpToNext = player.xp_to_next > 0 ? player.xp_to_next : (level + 1) * 100;
+
+    const pct = Math.min(Math.round((currentXp / xpToNext) * 100), 100);
+
+    _set("profileXpText", `${currentXp} / ${xpToNext} XP`);
     _setBar("profileXpBar", pct);
 
     const firePill = document.querySelector(".day-pill.fire");
     if (firePill) firePill.textContent = `🔥 ${player.total_streak || 0}`;
 }
 
-
-/* =========================================================
-   🔥 MODULE: STREAK FIRE PILLS – TÔ MÀU 7 Ô NGÀY TRONG TUẦN
-   - Gọi GET /api/streak-history
-   - Backend trả mảng { streak_date, is_streak_day }
-   - Map ngày trong tuần → index pill (T2=0 … CN=6)
-   - Pill có is_streak_day=1 → thêm class 'fire-active'
-========================================================= */
 async function lightTodayFire() {
     const dayPills = document.querySelectorAll('.day-pill');
     if (!dayPills.length) return;
-
     try {
         const response = await fetch("/api/streak-history");
         if (!response.ok) return;
-
         const historyData = await response.json();
         const records = Array.isArray(historyData) ? historyData : (historyData.data || []);
+        if (!Array.isArray(records)) return;
 
-        if (!Array.isArray(records)) {
-            console.error("Dữ liệu streak không hợp lệ");
-            return;
-        }
-
-        const activeIndices = new Set();
-        // map: getDay() 0(CN)→6, 1(T2)→0 … 6(T7)→5
-        const map = [6, 0, 1, 2, 3, 4, 5];
-
+        const pillMap = [1, 2, 3, 4, 5, 6, 0];
+        const fireDays = new Set();
         records.forEach(record => {
             if (record.is_streak_day === 1 && record.streak_date) {
-                const dateStr  = record.streak_date.split('T')[0].replace(/-/g, '/');
-                const date     = new Date(dateStr);
-                const dayIndex = map[date.getDay()];
-                activeIndices.add(dayIndex);
+                const date = new Date(record.streak_date);
+                const jsDay = date.getDay();
+                const pillIdx = pillMap.indexOf(jsDay);
+                if (pillIdx !== -1) fireDays.add(pillIdx);
             }
         });
-
-        dayPills.forEach((pill, index) => {
+        dayPills.forEach((pill, idx) => {
             pill.classList.remove('fire-active', 'active');
-            if (activeIndices.has(index)) pill.classList.add('fire-active');
+            if (fireDays.has(idx)) pill.classList.add('fire-active');
         });
-
     } catch (e) {
-        console.error("Lỗi cập nhật streak:", e);
+        console.error("Lỗi khi cập nhật streak:", e);
     }
 }
 
-
-/* =========================================================
-   🧘 MODULE: MEDITATION TIMER – ĐẾM NGƯỢC 10 PHÚT
-   - Bấm nút → fullscreen countdown → hiện nút Claim XP
-   - claimXP('meditate_10min') khi claim
-   ─ Muốn đổi thời gian: đổi giá trị 600 (giây)
-========================================================= */
-let meditationTimer          = null;
-let currentMeditationSeconds = 600; // 10 phút
+/* ════════════════════════════════════════
+   MEDITATION TIMER
+════════════════════════════════════════ */
+let meditationTimer = null;
+let currentMeditationSeconds = 20;
 
 function updateMeditationClock() {
     const m = Math.floor(currentMeditationSeconds / 60);
@@ -312,9 +230,11 @@ function updateMeditationClock() {
 }
 
 function startMeditation() {
-    document.getElementById("startMeditationBtn")?.classList.add("hidden");
+    const startBtn = document.getElementById("startMeditationBtn");
+    if (startBtn) startBtn.classList.add("hidden");
+
     document.getElementById("meditationFullscreen").style.display = "flex";
-    currentMeditationSeconds = 600;
+    currentMeditationSeconds = 20;
     updateMeditationClock();
 
     if (meditationTimer) clearInterval(meditationTimer);
@@ -323,30 +243,43 @@ function startMeditation() {
         updateMeditationClock();
         if (currentMeditationSeconds <= 0) {
             clearInterval(meditationTimer);
-            showMeditationCompleted();
+            meditationTimer = null;
+            _showMeditationCompleted();
         }
     }, 1000);
 }
 
-function showMeditationCompleted() {
+async function _showMeditationCompleted() {
     document.getElementById("meditationFullscreen").style.display = "none";
+
+    await _completeTask("meditate_10min");
+
     const claimBtn = document.getElementById("meditationClaimBtn");
-    if (claimBtn) { claimBtn.classList.remove("hidden"); claimBtn.style.display = "block"; }
+    if (claimBtn) {
+        claimBtn.classList.remove("hidden");
+        claimBtn.style.display = "block";
+    }
+    const row = document.querySelector('.task-row[data-task="meditate_10min"]');
+    if (row) {
+        const subEl = row.querySelector(".task-sub");
+        const startBtn = row.querySelector(".start-btn");
+        if (subEl) subEl.textContent = "Hoàn thành – Nhận XP";
+        if (startBtn) startBtn.classList.add("hidden");
+    }
+
+    await loadTasks();
 }
 
-function stopMeditation() {
-    if (meditationTimer) clearInterval(meditationTimer);
-    showMeditationCompleted();
+async function stopMeditation() {
+    if (meditationTimer) { clearInterval(meditationTimer); meditationTimer = null; }
+    await _showMeditationCompleted();
 }
 
-
-/* =========================================================
-   🏋️ MODULE: EXERCISE TIMER – ĐẾM NGƯỢC 20 PHÚT
-   - claimXP('exercise_20min') khi claim
-   ─ Muốn đổi thời gian: đổi 1200 (giây)
-========================================================= */
-let exerciseTimer          = null;
-let currentExerciseSeconds = 1200; // 20 phút
+/* ════════════════════════════════════════
+   EXERCISE TIMER
+════════════════════════════════════════ */
+let exerciseTimer = null;
+let currentExerciseSeconds = 1200;
 
 function updateExerciseClock() {
     const m = Math.floor(currentExerciseSeconds / 60);
@@ -358,7 +291,9 @@ function updateExerciseClock() {
 }
 
 function startExercise() {
-    document.getElementById("startExerciseBtn")?.classList.add("hidden");
+    const startBtn = document.getElementById("startExerciseBtn");
+    if (startBtn) startBtn.classList.add("hidden");
+
     document.getElementById("exerciseFullscreen").style.display = "flex";
     currentExerciseSeconds = 1200;
     updateExerciseClock();
@@ -369,30 +304,44 @@ function startExercise() {
         updateExerciseClock();
         if (currentExerciseSeconds <= 0) {
             clearInterval(exerciseTimer);
-            showExerciseCompleted();
+            exerciseTimer = null;
+            _showExerciseCompleted();
         }
     }, 1000);
 }
 
-function showExerciseCompleted() {
+async function _showExerciseCompleted() {
     document.getElementById("exerciseFullscreen").style.display = "none";
+
+    await _completeTask("exercise_20min");
+
     const claimBtn = document.getElementById("exerciseClaimBtn");
-    if (claimBtn) { claimBtn.classList.remove("hidden"); claimBtn.style.display = "block"; }
+    if (claimBtn) {
+        claimBtn.classList.remove("hidden");
+        claimBtn.style.display = "block";
+    }
+
+    const row = document.querySelector('.task-row[data-task="exercise_20min"]');
+    if (row) {
+        const subEl = row.querySelector(".task-sub");
+        const startBtn = row.querySelector(".start-btn");
+        if (subEl) subEl.textContent = "Hoàn thành – Nhận XP";
+        if (startBtn) startBtn.classList.add("hidden");
+    }
+
+    await loadTasks();
 }
 
-function stopExercise() {
-    if (exerciseTimer) clearInterval(exerciseTimer);
-    showExerciseCompleted();
+async function stopExercise() {
+    if (exerciseTimer) { clearInterval(exerciseTimer); exerciseTimer = null; }
+    await _showExerciseCompleted();
 }
 
-
-/* =========================================================
-   📖 MODULE: READING TIMER – ĐẾM NGƯỢC 10 PHÚT
-   - claimXP('reading_10min') khi claim (nếu có nút)
-   ─ Muốn đổi thời gian: đổi 600 (giây)
-========================================================= */
-let readingTimer          = null;
-let currentReadingSeconds = 600; // 10 phút
+/* ════════════════════════════════════════
+   READING TIMER
+════════════════════════════════════════ */
+let readingTimer = null;
+let currentReadingSeconds = 600;
 
 function updateReadingClock() {
     const m = Math.floor(currentReadingSeconds / 60);
@@ -404,7 +353,9 @@ function updateReadingClock() {
 }
 
 function startReading() {
-    document.getElementById("startReadBtn")?.classList.add("hidden");
+    const startBtn = document.getElementById("startReadBtn");
+    if (startBtn) startBtn.classList.add("hidden");
+
     document.getElementById("readingFullscreen").style.display = "flex";
     currentReadingSeconds = 600;
     updateReadingClock();
@@ -415,65 +366,146 @@ function startReading() {
         updateReadingClock();
         if (currentReadingSeconds <= 0) {
             clearInterval(readingTimer);
-            showReadingCompleted();
+            readingTimer = null;
+            _showReadingCompleted();
         }
     }, 1000);
 }
-
-function showReadingCompleted() {
+async function _showReadingCompleted() {
     document.getElementById("readingFullscreen").style.display = "none";
+
+    await _completeTask("reading_10min");
+
     const claimBtn = document.getElementById("readClaimBtn");
-    if (claimBtn) { claimBtn.classList.remove("hidden"); claimBtn.style.display = "block"; }
+    if (claimBtn) {
+        claimBtn.classList.remove("hidden");
+        claimBtn.style.display = "block";
+    }
+
+    const row = document.querySelector('.task-row[data-task="reading_10min"]');
+    if (row) {
+        const subEl = row.querySelector(".task-sub");
+        const startBtn = row.querySelector(".start-btn");
+        if (subEl) subEl.textContent = "Hoàn thành – Nhận XP";
+        if (startBtn) startBtn.classList.add("hidden");
+    }
+
+    await loadTasks();
 }
 
-function stopReading() {
-    if (readingTimer) clearInterval(readingTimer);
-    showReadingCompleted();
+async function stopReading() {
+    if (readingTimer) { clearInterval(readingTimer); readingTimer = null; }
+    await _showReadingCompleted();
 }
 
+/* ════════════════════════════════════════
+   COMPLETE TASK 
+════════════════════════════════════════ */
+async function _completeTask(taskName) {
 
-/* =========================================================
-   🔧 MODULE: FLIP CLOCK HELPER – HIỆU ỨNG LẬT SỐ
-   - Dùng chung cho tất cả timer (meditation, exercise, reading)
-========================================================= */
+    try {
+
+        console.log("Sending task:", taskName);
+
+        const res = await fetch("/complete-task", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                type: taskName
+            })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            console.error(" COMPLETE TASK ERROR:", data.error);
+            throw new Error(data.error || "Server error");
+        }
+
+        console.log("✅ Task completed:", data);
+
+        return data;
+
+    } catch (err) {
+
+        console.error(" _completeTask FAILED:", err);
+
+    }
+}
+async function showFocusCompleted() {
+    const response = await fetch("/api/focus/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            focus_mode: "timer",
+            focus_duration_seconds: 1500,
+            time_remaining_seconds: 0,
+            status: "finished"
+        })
+    });
+    const sessionData = await response.json();
+    document.getElementById("focusFullscreen").style.display = "none";
+    document.getElementById("doneText").innerText = `Hoàn thành ${sessionData.minutes} phút tập trung!`;
+    document.getElementById("donePopup").style.display = "flex";
+}
+
+/* ════════════════════════════════════════
+   FLIP CLOCK HELPER
+════════════════════════════════════════ */
 function setFlip(id, value) {
     const el = document.getElementById(id);
-    if (!el || el.textContent == value) return;
+    if (!el) return;
+    if (el.textContent == value) return;
     el.classList.remove("flip");
-    void el.offsetWidth; // reflow để reset animation
+    void el.offsetWidth;
     el.textContent = value;
     el.classList.add("flip");
 }
 
-
-/* =========================================================
-   🎁 MODULE: CLAIM XP – NHẬN XP SAU KHI HOÀN THÀNH HOẠT ĐỘNG
-   - Gọi POST /api/tasks/claim-xp với task_name
-   - task_name hợp lệ: 'meditate_10min', 'exercise_20min', 'reading_10min'
-     và các task chính: 'walk_completed', 'sleep_completed'…
-   - Sau khi claim: refresh topbar, leaderboard, tasks, streak
-========================================================= */
+/* ════════════════════════════════════════
+   CLAIM XP
+════════════════════════════════════════ */
 async function claimXP(task) {
     try {
-        const res  = await fetch("/api/tasks/claim-xp", {
-            method:  "POST",
+        const res = await fetch("/api/tasks/claim-xp", {
+            method: "POST",
             headers: { "Content-Type": "application/json" },
-            body:    JSON.stringify({ task_name: task })
+            body: JSON.stringify({ task_name: task })
         });
-        const data = await res.json();
+        const result = await res.json();
 
-        if (data.error) { alert("Lỗi: " + data.error); return; }
+        if (result.error) {
+            alert("Lỗi: " + result.error);
+            return;
+        }
 
-        if (data.success) {
-            alert(`+${data.xp_gain} XP`);
+        if (result.success) {
+            _showXpToast(`+${result.xp_gain} XP`);
 
-            // Refresh toàn bộ UI liên quan đến XP
+            if (result.leveledUp) {
+                setTimeout(() => _showXpToast(`🎉 Lên Level ${result.level}!`), 800);
+            }
+
+            updateTopBar({
+                level: result.level,
+                xp: result.xp,
+                xp_to_next: result.xp_to_next,
+                total_streak: undefined,
+                nickname: undefined,
+                name: undefined,
+                avatar: undefined
+            });
+            _set("profileXpText", `${result.xp} / ${result.xp_to_next} XP`);
+            _setBar("profileXpBar", Math.min(Math.round((result.xp / result.xp_to_next) * 100), 100));
+
             const player = await fetchJSON("/profile-data");
-            updateTopBar(player);
             await loadProfileWithData(player);
-            loadTasks();
             loadLeaderboard();
-            await lightTodayFire();
+            if (typeof updateWeeklyStreak === "function") await updateWeeklyStreak();
+
+            _markTaskClaimed(task);
         }
     } catch (err) {
         console.error(err);
@@ -481,51 +513,116 @@ async function claimXP(task) {
     }
 }
 
+function _markTaskClaimed(taskName) {
+    const keyMap = {
+        "meditate_10min": "meditate_10min",
+        "exercise_20min": "exercise_20min",
+        "reading_10min": "reading_10min",
+        "walk_completed": "walk_completed",
+        "focus_completed": "focus"
+    };
+    const dataTask = keyMap[taskName] || taskName;
+    const row = document.querySelector(`.task-row[data-task="${dataTask}"]`);
+    if (!row) return;
 
-/* =========================================================
-   📋 MODULE: TASKS – TẢI VÀ HIỂN THỊ NHIỆM VỤ NGÀY HÔM NAY
-   - Gọi GET /tasks → backend tự tạo bản ghi nếu chưa có
-   - data[0] chứa tất cả cột: walk_completed, walk_xp_claimed…
-   - Mỗi .task-row có data-task = tên cột task
-   - Logic: completed=true → hiện claimBtn hoặc "Đã nhận XP"
-             completed=false → hiện startBtn
-========================================================= */
+    row.querySelectorAll(".claim-xp-btn").forEach(b => {
+        b.classList.add("hidden");
+        b.style.display = "none";
+    });
+
+    const subEl = row.querySelector(".task-sub");
+    if (subEl) subEl.textContent = "✓ Đã nhận XP";
+
+    const percentEl = row.querySelector(".task-val");
+    const progressEl = row.querySelector(".progress-fill");
+    if (percentEl) { percentEl.textContent = "100%"; percentEl.classList.remove("zero"); }
+    if (progressEl) progressEl.style.width = "100%";
+}
+
+function _showXpToast(msg) {
+    let toast = document.getElementById("_xpToast");
+    if (!toast) {
+        toast = document.createElement("div");
+        toast.id = "_xpToast";
+        Object.assign(toast.style, {
+            position: "fixed", bottom: "80px", left: "50%",
+            transform: "translateX(-50%)",
+            background: "linear-gradient(135deg,#a855f7,#7c3aed)",
+            color: "#fff", padding: "10px 22px", borderRadius: "24px",
+            fontWeight: "700", fontSize: "15px", zIndex: "9999",
+            boxShadow: "0 4px 20px rgba(168,85,247,.5)",
+            transition: "opacity .4s", pointerEvents: "none"
+        });
+        document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.style.opacity = "1";
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => { toast.style.opacity = "0"; }, 2000);
+}
+
+/* ════════════════════════════════════════
+   TASKS – tải và render
+════════════════════════════════════════ */
 async function loadTasks() {
     try {
         const data = await fetchJSON("/tasks");
         if (!data || !data.length) return;
-
         const task = data[0];
 
+        let focusStatus = null;
+        try {
+            const focusHistory = await fetchJSON("/api/focus/history");
+            if (Array.isArray(focusHistory) && focusHistory.length > 0) {
+                focusStatus = focusHistory[0].status;
+            }
+        } catch (_) { }
+
         document.querySelectorAll(".task-row").forEach(row => {
-            const taskKey     = row.dataset.task;
-            const completed   = !!task[taskKey];
-            const claimedField = taskKey + "_xp_claimed";
-            const isClaimed   = !!task[claimedField];
+            const taskKey = row.dataset.task;
 
-            const startBtn  = row.querySelector(".start-btn");
-            const claimBtn  = row.querySelector(".claim-xp-btn");
-            const subEl     = row.querySelector(".task-sub");
-            const percentEl = row.querySelector(".task-val");
-            const progressEl= row.querySelector(".progress-fill");
+            const dbKey = _dbKey(taskKey);
+            const completed = dbKey ? !!task[dbKey] : false;
 
-            // Reset trạng thái
-            startBtn?.classList.add("hidden");
-            claimBtn?.classList.add("hidden");
+            const startBtn = row.querySelector(".start-btn");
+            const claimBtn = row.querySelector(".claim-xp-btn");
+            const subEl = row.querySelector(".task-sub");
 
-            if (completed) {
+            if (startBtn) startBtn.classList.add("hidden");
+            if (claimBtn) { claimBtn.classList.add("hidden"); claimBtn.style.display = "none"; }
+
+            if (taskKey === "focus") {
+                const isClaimed = !!(task["focus_xp_claimed"]);
                 if (isClaimed) {
                     if (subEl) subEl.textContent = "✓ Đã nhận XP";
+                } else if (task["focus_completed"] || focusStatus === "finished") {
+                    if (claimBtn) {
+                        claimBtn.classList.remove("hidden");
+                        claimBtn.style.display = "block";
+                    }
+                    if (subEl) subEl.textContent = "Hoàn thành – Nhận XP";
                 } else {
-                    if (claimBtn) { claimBtn.classList.remove("hidden"); claimBtn.style.display = "block"; }
-                    if (subEl)    subEl.textContent = "Hoàn thành – Nhận XP";
+                    if (startBtn) startBtn.classList.remove("hidden");
+                    if (subEl) subEl.textContent = "Chưa bắt đầu";
                 }
             } else {
-                if (startBtn) startBtn.classList.remove("hidden");
-                if (subEl)    subEl.textContent = "Chưa bắt đầu";
+                const claimedField = dbKey + "_xp_claimed";
+                const isClaimed = dbKey ? !!task[claimedField] : false;
+
+                if (isClaimed) {
+                    if (subEl) subEl.textContent = "✓ Đã nhận XP";
+                } else if (completed) {
+                    if (claimBtn) { claimBtn.classList.remove("hidden"); claimBtn.style.display = "block"; }
+                    if (subEl) subEl.textContent = "Hoàn thành – Nhận XP";
+                } else {
+                    if (startBtn) startBtn.classList.remove("hidden");
+                    if (subEl) subEl.textContent = "Chưa bắt đầu";
+                }
             }
 
-            // Cập nhật % thanh tiến trình
+            // Progress bar
+            const percentEl = row.querySelector(".task-val");
+            const progressEl = row.querySelector(".progress-fill");
             if (percentEl && progressEl) {
                 const percent = completed ? 100 : 0;
                 percentEl.textContent = percent + "%";
@@ -538,117 +635,22 @@ async function loadTasks() {
     }
 }
 
-// Cập nhật UI task thủ công (dùng khi cần update riêng lẻ)
-function updateTaskUI(row, value) {
-    const percentEl  = row.querySelector(".task-val");
-    const progressEl = row.querySelector(".progress-fill");
-    const subEl      = row.querySelector(".task-sub");
-
-    if (percentEl && progressEl) {
-        const percent = value ? 100 : 0;
-        percentEl.textContent = percent + "%";
-        percentEl.classList.toggle("zero", percent === 0);
-        progressEl.style.width = percent + "%";
-    }
-    if (subEl) {
-        subEl.textContent = typeof value === "number"
-            ? value + " phút"
-            : value ? "✔ Completed" : "Chưa ghi nhận";
-    }
+function _dbKey(dataTask) {
+    const map = {
+        "walk_completed": "walk_completed",
+        "walk_5000_steps": "walk_completed",
+        "meditate_10min": "meditate_10min",
+        "exercise_20min": "exercise_20min",
+        "reading_10min": "reading_10min",
+        "read_10min": "reading_10min",
+        "focus": "focus_completed",
+        "focus_completed": "focus_completed"
+    };
+    return map[dataTask] || dataTask;
 }
-
-
-/* =========================================================
-   ✏️ MODULE: NICKNAME POPUP – NHẬP NICKNAME LẦN ĐẦU
-   - Tự mở khi user chưa có nickname (kiểm tra lúc onload)
-   - Gọi POST /api/nickname để lưu
-   - Sau khi lưu → cập nhật topbar, leaderboard
-========================================================= */
-const nmInput = document.getElementById("nicknameInput");
-if (nmInput) {
-    nmInput.addEventListener("input", () => {
-        const len     = nmInput.value.length;
-        const counter = document.getElementById("nmCounter");
-        if (counter) {
-            counter.textContent = len + "/20";
-            counter.style.color = len >= 18 ? "#f87171" : "";
-        }
-    });
-    nmInput.addEventListener("keydown", e => { if (e.key === "Enter") saveNickname(); });
-}
-
-function openNicknamePopup() {
-    const ov = document.getElementById("nicknameOverlay");
-    if (ov) {
-        ov.style.display = "flex";
-        ov.classList.add("open");
-        setTimeout(() => document.getElementById("nicknameInput")?.focus(), 100);
-    }
-}
-
-function closeNicknamePopup() {
-    const ov = document.getElementById("nicknameOverlay");
-    if (ov) { ov.classList.remove("open"); ov.style.display = "none"; }
-}
-
-async function saveNickname() {
-    const input    = document.getElementById("nicknameInput");
-    const errEl    = document.getElementById("nmError");
-    const btn      = document.getElementById("nmConfirm");
-    const nickname = input.value.trim();
-
-    if (nickname.length > 20) { errEl.textContent = "Nickname tối đa 20 ký tự"; return; }
-    if (!nickname || nickname.length < 2) {
-        errEl.textContent = nickname ? "Nickname phải có ít nhất 2 ký tự" : "Vui lòng nhập nickname";
-        input.focus();
-        return;
-    }
-
-    errEl.textContent = "";
-    btn.disabled      = true;
-    btn.textContent   = "Đang lưu...";
-
-    try {
-        const json = await fetchJSON("/api/nickname", {
-            method:  "POST",
-            headers: { "Content-Type": "application/json" },
-            body:    JSON.stringify({ nickname })
-        });
-        closeNicknamePopup();
-        displayNickname(json.nickname || nickname);
-
-        const player = await fetchJSON("/profile-data");
-        updateTopBar(player);
-        await loadProfileWithData(player);
-        loadLeaderboard();
-    } catch (err) {
-        errEl.textContent = err.message || "Không thể kết nối server";
-        btn.disabled      = false;
-        btn.textContent   = "Xác nhận";
-    }
-}
-
-// Bỏ qua nhập nickname → lấy name làm nickname
-async function skipNickname() {
-    try {
-        const player = await fetchJSON("/profile-data");
-        const name   = _pickDisplayName(player.nickname, player.name, "Warrior");
-        await fetchJSON("/api/nickname", {
-            method:  "POST",
-            headers: { "Content-Type": "application/json" },
-            body:    JSON.stringify({ nickname: name })
-        });
-        displayNickname(name);
-    } catch (_) { }
-    closeNicknamePopup();
-}
-
-
-/* =========================================================
-   💬 MODULE: MOTIVATION QUOTES – CÂU QUOTE NGẪU NHIÊN
-   - Hiển thị vào #motivationQuote mỗi lần load trang
-   ─ Thêm quote mới: thêm vào mảng quotes
-========================================================= */
+/* ════════════════════════════════════════
+   MOTIVATION QUOTES
+════════════════════════════════════════ */
 const quotes = [
     "Kỷ luật hôm nay, tự do ngày mai.",
     "Mỗi ngày tiến lên một chút.",
@@ -707,31 +709,25 @@ function randomQuote() {
     if (el) el.innerText = quotes[Math.floor(Math.random() * quotes.length)];
 }
 
-
-/* =========================================================
-   🚀 MODULE: MAIN ENTRY POINT – KHỞI CHẠY KHI TRANG TẢI
-   - Thứ tự: tasks → leaderboard → streak fire → quote → profile
-   - Hiện nickname popup nếu user chưa có nickname
-   - Gán onclick cho claimBtn meditation & exercise
-========================================================= */
+/* ════════════════════════════════════════
+   MAIN ENTRY POINT
+════════════════════════════════════════ */
 window.onload = async () => {
-    loadTasks();
-    loadLeaderboard();
-    lightTodayFire();
+    await loadTasks();
+    await loadLeaderboard();
+    await lightTodayFire();
     randomQuote();
 
-    // Ẩn nút claim mặc định (chỉ hiện sau khi timer chạy xong)
-    document.getElementById("meditationClaimBtn") && (document.getElementById("meditationClaimBtn").style.display = "none");
-    document.getElementById("exerciseClaimBtn")   && (document.getElementById("exerciseClaimBtn").style.display   = "none");
+    // Ẩn các nút claim lúc khởi động (loadTasks đã xử lý, đây là safety net)
+    ["meditationClaimBtn", "exerciseClaimBtn", "readClaimBtn"].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) { btn.classList.add("hidden"); btn.style.display = "none"; }
+    });
 
-    // Load profile
     let player;
     try {
         const res = await fetch("/profile-data");
-        if (res.ok) {
-            player = await res.json();
-            console.log("[onload] player:", player);
-        }
+        if (res.ok) player = await res.json();
     } catch (err) {
         console.error("[onload] fetch /profile-data thất bại:", err.message);
     }
@@ -741,13 +737,16 @@ window.onload = async () => {
         await loadProfileWithData(player);
     }
 
-    // Nếu chưa có nickname → mở popup nhập
-    // const hasNickname = player
-    //     && typeof player.nickname === "string"
-    //     && player.nickname.trim().length > 0;
-    // if (!hasNickname) openNicknamePopup();
+    const hasNickname = player && typeof player.nickname === "string" && player.nickname.trim().length > 0;
+    if (!hasNickname) openNicknamePopup();
 
-    // Gán sự kiện cho nút claim bonus
-    document.getElementById("meditationClaimBtn") && (document.getElementById("meditationClaimBtn").onclick = () => claimXP('meditate_10min'));
-    document.getElementById("exerciseClaimBtn")   && (document.getElementById("exerciseClaimBtn").onclick   = () => claimXP('exercise_20min'));
+    const gearBtn = document.getElementById("gearBtn");
+    const gearDropdown = document.getElementById("gearDropdown");
+    if (gearBtn && gearDropdown) {
+        gearBtn.addEventListener("click", e => {
+            e.stopPropagation();
+            gearDropdown.style.display = gearDropdown.style.display === "none" ? "block" : "none";
+        });
+        document.addEventListener("click", () => { gearDropdown.style.display = "none"; });
+    }
 };

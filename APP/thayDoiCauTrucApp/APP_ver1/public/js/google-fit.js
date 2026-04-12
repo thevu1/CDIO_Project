@@ -87,25 +87,35 @@ async function fetchWithTokenRefresh(url, options) {
 }
 
 async function getTodaySteps() {
-    if (!accessToken) await requestGoogleFitPermissions();
-    const today = new Date();
-    const startOfDay = new Date(today.setHours(0,0,0,0));
-    const endOfDay = new Date();
-    const startTimeMillis = startOfDay.getTime();
-    const endTimeMillis = endOfDay.getTime();
-    try {
-        const res = await fetchWithTokenRefresh('https://www.googleapis.com/fitness/v1/users/me/dataset:aggregate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+    const res = await fetch(
+        "https://www.googleapis.com/fitness/v1/users/me/dataset:aggregate",
+        {
+            method: "POST",
+            headers: {
+                "Authorization": "Bearer " + window.googleFitToken,
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify({
-                aggregateBy: [{ dataTypeName: 'com.google.step_count.delta', dataSourceId: 'derived:com.google.step_count.delta:com.google.android.gms:estimated_steps' }],
+                aggregateBy: [{
+                    dataTypeName: "com.google.step_count.delta"
+                }],
                 bucketByTime: { durationMillis: 86400000 },
-                startTimeMillis, endTimeMillis
+                startTimeMillis: Date.now() - 86400000,
+                endTimeMillis: Date.now()
             })
-        });
-        const data = await res.json();
-        return data.bucket?.[0]?.dataset?.[0]?.point?.[0]?.value?.[0]?.intVal || 0;
-    } catch (e) { console.error(e); return 0; }
+        }
+    );
+
+    const data = await res.json();
+
+    let steps = 0;
+
+    if (data.bucket?.length) {
+        steps = data.bucket[0].dataset[0].point
+            .reduce((sum, p) => sum + (p.value[0].intVal || 0), 0);
+    }
+
+    return steps;
 }
 
 async function getTodayDistance() {

@@ -5,18 +5,33 @@ const GOAL_KM = 5;
 /* ── Hero circle ── */
 function setHero(km, goal) {
     const pct = Math.min(Math.round((km / goal) * 100), 100);
-    document.getElementById('kmDisplay').textContent = km.toFixed(1);
-    document.getElementById('kmSub').textContent = `${km.toFixed(1)} km / ${goal} km`;
-    document.getElementById('pctDisplay').textContent = pct;
+    const kmDisplay = document.getElementById('kmDisplay');
+    const kmSub = document.getElementById('kmSub');
+    const pctDisplay = document.getElementById('pctDisplay');
+    
+    if (kmDisplay) kmDisplay.textContent = km.toFixed(1);
+    if (kmSub) kmSub.textContent = `${km.toFixed(1)} km / ${goal} km`;
+    if (pctDisplay) pctDisplay.textContent = pct;
 
     const circ = 2 * Math.PI * 29;
     const offset = circ - (pct / 100) * circ;
     const arc = document.getElementById('circleArc');
-    arc.style.strokeDasharray = circ;
-    arc.style.strokeDashoffset = offset;
-    arc.style.stroke = pct >= 100 ? '#69f0ae' : pct >= 60 ? '#f5c542' : '#fff';
+    if (arc) {
+        arc.style.strokeDasharray = circ;
+        arc.style.strokeDashoffset = offset;
+        arc.style.stroke = pct >= 100 ? '#69f0ae' : pct >= 60 ? '#f5c542' : '#fff';
+    }
 
-    document.getElementById('heroBar').style.width = pct + '%';
+    const heroBar = document.getElementById('heroBar');
+    if (heroBar) heroBar.style.width = pct + '%';
+    
+    // Hiển thị banner chúc mừng nếu đạt mục tiêu
+    const congrats = document.querySelector('.congrats-banner');
+    if (congrats && km >= goal) {
+        congrats.style.display = 'flex';
+    } else if (congrats) {
+        congrats.style.display = 'none';
+    }
 }
 
 /* ── XP claim ── */
@@ -25,17 +40,21 @@ function claimXP() {
     if (xpClaimed) return;
     xpClaimed = true;
     const b = document.querySelector('.mission-badge');
-    b.style.background = 'rgba(0,200,83,0.2)';
-    b.style.borderColor = 'rgba(0,200,83,0.45)';
-    document.getElementById('missionText').textContent = 'Đã nhận XP! 🎉';
+    if (b) {
+        b.style.background = 'rgba(0,200,83,0.2)';
+        b.style.borderColor = 'rgba(0,200,83,0.45)';
+    }
+    const missionText = document.getElementById('missionText');
+    if (missionText) missionText.textContent = 'Đã nhận XP! 🎉';
 }
 
 /* ── Edit goal ── */
 function editGoal() {
     const val = prompt('Nhập mục tiêu km mỗi ngày:', GOAL_KM);
     if (val && !isNaN(val) && +val > 0) {
-        document.getElementById('goalVal').textContent = +val;
-        const currentKm = parseFloat(document.getElementById('kmDisplay').textContent);
+        const goalVal = document.getElementById('goalVal');
+        if (goalVal) goalVal.textContent = +val;
+        const currentKm = parseFloat(document.getElementById('kmDisplay')?.textContent) || 0;
         setHero(currentKm, +val);
     }
 }
@@ -43,6 +62,8 @@ function editGoal() {
 /* ── Vẽ biểu đồ ── */
 function drawChart(weeklyKm) {
     const svg = document.getElementById('barChart');
+    if (!svg) return;
+    
     const W = 340, H = 160;
     const padL = 28, padR = 10, padT = 10, padB = 28;
     const chartW = W - padL - padR;
@@ -118,68 +139,137 @@ function updateStats(weeklyKm) {
     const activeDays = weeklyKm.filter(km => km > 0);
     const total = weeklyKm.reduce((s, km) => s + km, 0);
     const avg = activeDays.length > 0 ? (total / 7).toFixed(1) : '0.0';
-    document.getElementById('avg7d').innerHTML = `${avg} <span class="unit">km</span>`;
-    document.getElementById('totalDays').innerHTML = `${activeDays.length} <span class="unit">ngày</span>`;
+    const avg7d = document.getElementById('avg7d');
+    const totalDays = document.getElementById('totalDays');
+    
+    if (avg7d) avg7d.innerHTML = `${avg} <span class="unit">km</span>`;
+    if (totalDays) totalDays.innerHTML = `${activeDays.length} <span class="unit">ngày</span>`;
 }
+
+/* ── Load dữ liệu từ server ── */
 async function loadTodayFromServer() {
     try {
         const res = await fetch('/api/walk/today');
         if (!res.ok) throw new Error('Network response was not ok');
         const data = await res.json();
-        if (data.totalSteps !== undefined) {
-            document.getElementById('stepsDisplay').innerText = data.totalSteps.toLocaleString();
-            const goal = parseFloat(document.getElementById('goalVal').innerText) || 5;
-            setHero(parseFloat(data.distanceKm), goal);
-        } else {
-            // Nếu không có dữ liệu, set về 0
-            setHero(0, parseFloat(document.getElementById('goalVal').innerText) || 5);
+        
+        const stepsDisplay = document.getElementById('stepsDisplay');
+        if (stepsDisplay && data.totalSteps !== undefined) {
+            stepsDisplay.innerText = data.totalSteps.toLocaleString();
         }
+        
+        const goal = parseFloat(document.getElementById('goalVal')?.innerText) || 5;
+        const distance = data.distanceKm ? parseFloat(data.distanceKm) : 0;
+        setHero(distance, goal);
+        
+        return data;
     } catch (err) {
         console.error('Lỗi loadTodayFromServer:', err);
-        setHero(0, parseFloat(document.getElementById('goalVal').innerText) || 5);
+        const goal = parseFloat(document.getElementById('goalVal')?.innerText) || 5;
+        setHero(0, goal);
+        return null;
     }
 }
 
 async function loadWeeklyFromServer() {
-    const res = await fetch('/api/walk/weekly');
-    const data = await res.json();
-    if (data.weeklyKm) {
-        const weeklyKmNumbers = data.weeklyKm.map(km => parseFloat(km));
-        drawChart(weeklyKmNumbers);
-        updateStats(weeklyKmNumbers);
+    try {
+        const res = await fetch('/api/walk/weekly');
+        if (!res.ok) throw new Error('Network response was not ok');
+        const data = await res.json();
+        
+        if (data.weeklyKm) {
+            const weeklyKmNumbers = data.weeklyKm.map(km => parseFloat(km));
+            drawChart(weeklyKmNumbers);
+            updateStats(weeklyKmNumbers);
+            return weeklyKmNumbers;
+        }
+        return null;
+    } catch (err) {
+        console.error('Lỗi loadWeeklyFromServer:', err);
+        const emptyData = new Array(7).fill(0);
+        drawChart(emptyData);
+        updateStats(emptyData);
+        return null;
     }
 }
 
 async function saveStepsToServer(steps, distanceKm) {
-    const res = await fetch('/api/walk/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ steps, distance_km: distanceKm })
-    });
-    const data = await res.json();
-    if (data.goal_reached && !data.already_completed) alert('🎉 Đạt 5000 bước! Nhận 20 XP!');
-    return data;
-}
-/* ── Khởi tạo toàn bộ với dữ liệu từ Google Fit ── */
-async function initWalkPage() {
-    await loadTodayFromServer();
-    await loadWeeklyFromServer();
-
-    if (window.googleFitToken) {
-        try {
-            const steps = await getTodaySteps();
-            const distance = await getTodayDistance();
-            if (steps > 0) {
-                await saveStepsToServer(steps, distance);
-                await loadTodayFromServer();
-                await loadWeeklyFromServer();
-            }
-        } catch(e) { console.warn(e); }
+    try {
+        const res = await fetch('/api/walk/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ steps, distance_km: distanceKm })
+        });
+        const data = await res.json();
+        if (data.goal_reached && !data.already_completed) {
+            alert('🎉 Đạt 5000 bước! Nhận 20 XP!');
+        }
+        return data;
+    } catch (err) {
+        console.error('Lỗi saveStepsToServer:', err);
+        return null;
     }
 }
 
-// Gọi init khi trang tải, sau khi google-fit.js đã load
-window.addEventListener('load', () => {
+/* ── Khởi tạo toàn bộ với dữ liệu từ Google Fit ── */
+async function initWalkPage() {
+    console.log('Initializing walk page...');
+    
+    // Load dữ liệu từ server trước
+    await loadTodayFromServer();
+    await loadWeeklyFromServer();
+
+    // Nếu có token Google Fit, lấy dữ liệu và cập nhật
+    if (window.googleFitToken && typeof getTodaySteps === 'function') {
+        try {
+            console.log('Fetching Google Fit data...');
+            const steps = await getTodaySteps();
+            const distance = await getTodayDistance();
+            
+            console.log(`Google Fit data - Steps: ${steps}, Distance: ${distance}km`);
+            
+            if (steps > 0) {
+                // Cập nhật UI ngay lập tức
+                const stepsDisplay = document.getElementById('stepsDisplay');
+                if (stepsDisplay) stepsDisplay.innerText = steps.toLocaleString();
+                
+                const goal = parseFloat(document.getElementById('goalVal')?.innerText) || 5;
+                setHero(distance, goal);
+                
+                // Lưu lên server
+                await saveStepsToServer(steps, distance);
+                
+                // Reload dữ liệu từ server để đồng bộ
+                await loadTodayFromServer();
+                await loadWeeklyFromServer();
+            }
+        } catch(e) { 
+            console.warn('Error fetching Google Fit data:', e); 
+        }
+    }
+}
+
+/* ── Load token Google Fit từ server ── */
+async function loadGoogleFitToken() {
+    try {
+        const res = await fetch('/api/google-fit/token');
+        const data = await res.json();
+
+        if (data.token) {
+            window.googleFitToken = data.token;
+            console.log('Google Fit token loaded from server');
+        }
+    } catch (err) {
+        console.error('Error loading Google Fit token:', err);
+    }
+}
+
+/* ── Khởi tạo khi trang load ── */
+window.addEventListener('load', async () => {
+    console.log('Page loaded, initializing...');
+    await loadGoogleFitToken();
+    
+    // Đợi một chút để các script khác load xong
     setTimeout(() => {
         initWalkPage();
     }, 500);

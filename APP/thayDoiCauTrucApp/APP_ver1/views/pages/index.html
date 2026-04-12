@@ -1,22 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HealthQuest</title>
-
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="HealthQuest">
-    <link rel="stylesheet" href="/static/css/main.css">
-
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Health Quest</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="./static/css/main.css" />
 </head>
 
 <body>
-
     <div class="nickname-overlay" id="nicknameOverlay" style="display:none">
         <div class="nickname-modal">
-
             <div class="nm-icon">👋</div>
             <h3 class="nm-title">Chào mừng!</h3>
             <p class="nm-desc">Hãy chọn một nickname để hiển thị trên bảng xếp hạng</p>
@@ -29,23 +26,32 @@
 
             <div class="nm-error" id="nmError"></div>
 
-            <button class="nm-btn" id="nmConfirm" onclick="saveNickname()">
-                Xác nhận
-            </button>
-
-            <button class="nm-skip" onclick="skipNickname()">
-                Bỏ qua, dùng tên mặc định
-            </button>
-
+            <button class="nm-btn" id="nmConfirm" onclick="saveNickname()">Xác nhận</button>
+            <button class="nm-skip" onclick="skipNickname()">Bỏ qua, dùng tên mặc định</button>
         </div>
     </div>
+
     <div class="phone">
         <div class="scroll">
             <div class="header">
-
                 <div class="topbar">
                     <div class="avatar" id="avatarBtn">WA</div>
                     <span id="profileName" class="topbar-nickname"></span>
+
+                    <script>
+                        function _pickDisplayName(nickname, name, fallback = "Warrior") {
+                            const nick = typeof nickname === "string" ? nickname.trim() : "";
+                            if (nick.length > 0) return nick;
+                            const fullName = typeof name === "string" ? name.trim() : "";
+                            if (fullName.length > 0) return fullName;
+                            return fallback;
+                        }
+
+                        function displayNickname(nickname) {
+                            const el = document.getElementById("profileName");
+                            if (el) el.textContent = typeof nickname === "string" && nickname.trim() ? nickname.trim() : "Warrior";
+                        }
+                    </script>
 
                     <div class="gear-btn" id="gearBtn">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c4c0e0" stroke-width="2"
@@ -55,23 +61,19 @@
                                 d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
                         </svg>
 
-                        <div class="gear-dropdown" id="gearDropdown">
-                            <a href="/help" class="dropdown-item">
-                                <span>❓</span> Trợ giúp
-                            </a>
+                        <div class="gear-dropdown" id="gearDropdown" style="display:none">
+                            <a href="/help" class="dropdown-item"><span>❓</span> Trợ giúp</a>
                             <div class="dropdown-divider"></div>
-                            <a href="/logout" class="dropdown-item dropdown-logout">
-                                <span>🚪</span> Đăng xuất
-                            </a>
+                            <a href="/logout" class="dropdown-item dropdown-logout"><span>🚪</span> Đăng xuất</a>
                         </div>
                     </div>
-
                 </div>
+
                 <div class="profile">
                     <div class="level-row">
                         <span class="level-badge" id="profileLevel">Level 1</span>
                         <div class="xp-bar-wrap">
-                            <div class="xp-bar" id="profileXpBar"></div>
+                            <div class="xp-bar" id="profileXpBar" ></div>
                         </div>
                         <span class="xp-text" id="profileXpText">0 / 100 XP</span>
                     </div>
@@ -88,26 +90,18 @@
                     <div class="day-pill">CN</div>
                 </div>
             </div>
+
             <div class="card motivation-card">
-
                 <div class="section-title">💡 Động lực hôm nay</div>
-
                 <div class="quote-box">
-                    <p id="motivationQuote">
-                        Hãy bấm nút để nhận động lực!
-                    </p>
-
-                    <button class="quote-btn" onclick="randomQuote()">
-                        Động lực mới 💪
-                    </button>
+                    <p id="motivationQuote">Hãy bấm nút để nhận động lực!</p>
+                    <button class="quote-btn" onclick="randomQuote()">Động lực mới 💪</button>
                 </div>
-
             </div>
+
             <div class="card">
                 <div class="section-title">🏆 Bảng xếp hạng</div>
-
                 <div class="lb-scroll" id="leaderboardList">
-
                     <div class="lb-row">
                         <div class="lb-rank" style="opacity:.3">—</div>
                         <div class="lb-avatar ng" style="opacity:.3"></div>
@@ -120,8 +114,6 @@
                         </div>
                         <div class="lb-medal" style="opacity:.15">🏅</div>
                     </div>
-
-                    <!-- Skeleton row 2 -->
                     <div class="lb-row">
                         <div class="lb-rank" style="opacity:.3">—</div>
                         <div class="lb-avatar ng" style="opacity:.3"></div>
@@ -130,19 +122,6 @@
                                 style="background:rgba(255,255,255,.08);border-radius:6px;height:13px;width:50%;"></div>
                             <div class="lb-sub"
                                 style="background:rgba(255,255,255,.05);border-radius:4px;height:10px;width:35%;margin-top:5px;">
-                            </div>
-                        </div>
-                        <div class="lb-medal" style="opacity:.15">🏅</div>
-                    </div>
-
-                    <div class="lb-row">
-                        <div class="lb-rank" style="opacity:.3">—</div>
-                        <div class="lb-avatar wa" style="opacity:.3"></div>
-                        <div class="lb-info">
-                            <div class="lb-name"
-                                style="background:rgba(255,255,255,.08);border-radius:6px;height:13px;width:42%;"></div>
-                            <div class="lb-sub"
-                                style="background:rgba(255,255,255,.05);border-radius:4px;height:10px;width:30%;margin-top:5px;">
                             </div>
                         </div>
                         <div class="lb-medal" style="opacity:.15">🏅</div>
@@ -162,107 +141,228 @@
                     </div>
                     <span class="my-rank-active">● Active</span>
                 </div>
-
             </div>
 
             <div class="card">
                 <div class="section-title">📋 Nhiệm vụ hôm nay</div>
-                <div class="task-row">
+
+                <!-- Đi bộ -->
+                <div class="task-row" data-task="walk_5000_steps">
                     <div class="task-header">
-                        <span class="task-name">Đi bộ 🚶</span>
-                        <span class="task-val zero">0%</span>
+                        <span class="task-name">🚶 Đi bộ 5000 bước</span>
+                        <span class="task-val zero" id="walk-val">0%</span>
                     </div>
                     <div class="progress-track">
-                        <div class="progress-fill" style="width:0%"></div>
+                        <div class="progress-fill" id="walk-progress"></div>
                     </div>
+                    <button class="claim-xp-btn hidden" id="walkClaimBtn" onclick="claimXP('walk_5000_steps')">Nhận 50
+                        XP</button>
                 </div>
-                <div class="task-row">
+
+                <!-- Thiền -->
+                <div class="task-row" data-task="meditate_10min">
                     <div class="task-header">
-                        <span class="task-name">Thiền 🧘</span>
+                        <span class="task-name">🧘 Thiền 10 phút</span>
+                        <button id="startMeditationBtn" class="start-btn" onclick="startMeditation()">Bắt đầu</button>
+                    </div>
+                    <div class="task-sub" id="meditation-sub">Chưa bắt đầu</div>
+                    <button class="claim-xp-btn hidden" id="meditationClaimBtn" onclick="claimXP('meditate_10min')">Nhận
+                        30 XP</button>
+                </div>
+
+                <!-- Vận động -->
+                <div class="task-row" data-task="exercise_20min">
+                    <div class="task-header">
+                        <span class="task-name">🏋 Vận động 20 phút</span>
+                        <button id="startExerciseBtn" class="start-btn" onclick="startExercise()">Bắt đầu</button>
+                    </div>
+                    <div class="task-sub" id="exercise-sub">Chưa bắt đầu</div>
+                    <button class="claim-xp-btn hidden" id="exerciseClaimBtn" onclick="claimXP('exercise_20min')">Nhận
+                        50 XP</button>
+                </div>
+
+                <!-- Tập trung -->
+                <div class="task-row" data-task="focus">
+                    <div class="task-header">
+                        <span class="task-name">🎯 Tập trung</span>
+                        <button class="claim-xp-btn hidden" onclick="claimXP('focus')">Nhận 70 XP</button>
+                    </div>
+                    <div class="task-sub">Sử dụng trang Focus</div>
+                </div>
+
+                <!-- Đọc sách -->
+                <div class="task-row" data-task="reading_10min">
+                    <div class="task-header">
+                        <span class="task-name">📖 Đọc sách 10 phút</span>
+                        <button id="startReadBtn" class="start-btn" onclick="startReading()">Bắt đầu</button>
                     </div>
                     <div class="task-sub">Chưa ghi nhận</div>
-                </div>
-                <div class="task-row">
-                    <div class="task-header">
-                        <span class="task-name">Vận động 🏋</span>
-                        <span class="task-val zero">0%</span>
-                    </div>
-                    <div class="progress-track">
-                        <div class="progress-fill" style="width:0%"></div>
-                    </div>
-                </div>
-                <div class="task-row">
-                    <div class="task-header">
-                        <span class="task-name">Tập trung 🎯</span>
-                    </div>
-                    <div class="task-sub">0 phút</div>
-                </div>
-                <div class="task-row">
-                    <div class="task-header">
-                        <span class="task-name">Đọc sách 📖</span>
-                    </div>
-                    <div class="task-sub">0 phút</div>
+                    <button class="claim-xp-btn hidden" id="readClaimBtn" onclick="claimXP('reading_10min')">Nhận 20
+                        XP</button>
                 </div>
             </div>
 
-        </div>
-
-        <div class="profile-overlay" id="profileOverlay">
-            <div class="profile-modal">
-
-                <div class="pm-header">
-                    <button class="pm-close" id="pmClose">✕</button>
-                    <span class="pm-title">Hồ sơ</span>
-                    <a href="/profile" class="pm-edit">✏️ Sửa</a>
-                </div>
-
-                <div class="pm-hero">
-                    <div class="pm-avatar" id="pmAvatar">WA</div>
-                    <div class="pm-name" id="pmName">Warrior</div>
-                    <div class="pm-email" id="pmEmail">—</div>
-                </div>
-
-                <div class="pm-level-row">
-                    <span class="pm-badge" id="pmBadge">Level 1</span>
-                    <div class="pm-xp-wrap">
-                        <div class="pm-xp-bar" id="pmXpBar" style="width:30%"></div>
+            <div class="profile-overlay" id="profileOverlay">
+                <div class="profile-modal">
+                    <div class="pm-header">
+                        <button class="pm-close" id="pmClose">✕</button>
+                        <span class="pm-title">Hồ sơ</span>
+                        <a href="/profile" class="pm-edit">✏️ Sửa</a>
                     </div>
-                    <span class="pm-xp-text" id="pmXpText">30 / 100 XP</span>
-                </div>
-
-                <div class="pm-stats">
-                    <div class="pm-stat">
-                        <div class="pm-stat-val" id="pmStreak">0</div>
-                        <div class="pm-stat-label">🔥 Streak</div>
+                    <div class="pm-hero">
+                        <div class="pm-avatar" id="pmAvatar">WA</div>
+                        <div class="pm-name" id="pmName">Warrior</div>
+                        <div class="pm-email" id="pmEmail">—</div>
                     </div>
-                    <div class="pm-stat">
-                        <div class="pm-stat-val" id="pmRank">#—</div>
-                        <div class="pm-stat-label">🏆 Hạng</div>
+                    <div class="pm-level-row">
+                        <span class="pm-badge" id="pmBadge">Level 1</span>
+                        <div class="pm-xp-wrap">
+                            <div class="pm-xp-bar" id="pmXpBar" style="width:30%"></div>
+                        </div>
+                        <span class="pm-xp-text" id="pmXpText">30 / 100 XP</span>
                     </div>
-                    <div class="pm-stat">
-                        <div class="pm-stat-val" id="pmTotalXp">0</div>
-                        <div class="pm-stat-label">⭐ Tổng XP</div>
+                    <div class="pm-stats">
+                        <div class="pm-stat">
+                            <div class="pm-stat-val" id="pmToStreak">0</div>
+                            <div class="pm-stat-label">🔥 Streak</div>
+                        </div>
+                        <div class="pm-stat">
+                            <div class="pm-stat-val" id="pmRank">#—</div>
+                            <div class="pm-stat-label">🏆 Hạng</div>
+                        </div>
+                        <div class="pm-stat">
+                            <div class="pm-stat-val" id="pmTotalXp">0</div>
+                            <div class="pm-stat-label">⭐ Tổng XP</div>
+                        </div>
+                    </div>
+                    <div class="pm-divider"></div>
+                    <div class="pm-actions">
+                        <a href="/profile" class="pm-action-btn"><span>👤</span> Xem hồ sơ đầy đủ</a>
+                        <a href="/logout" class="pm-action-btn pm-logout"><span>🚪</span> Đăng xuất</a>
                     </div>
                 </div>
+            </div>
+            <div class="focus-fullscreen" id="exerciseFullscreen">
 
-                <div class="pm-divider"></div>
-
-                <div class="pm-actions">
-                    <a href="/profile" class="pm-action-btn">
-                        <span>👤</span> Xem hồ sơ đầy đủ
-                    </a>
-                    <a href="/logout" class="pm-action-btn pm-logout">
-                        <span>🚪</span> Đăng xuất
-                    </a>
+                <div class="focus-mode">EXERCISE MODE</div>
+                <div class="flip-clock">
+                    <div class="flip-group">
+                        <div class="cards-row">
+                            <div class="flip-card">
+                                <div class="flip-card-inner" id="exM1">2</div>
+                            </div>
+                            <div class="flip-card">
+                                <div class="flip-card-inner" id="exM2">0</div>
+                            </div>
+                        </div>
+                        <div class="flip-label">phút</div>
+                    </div>
+                    <div class="flip-colon">:</div>
+                    <div class="flip-group">
+                        <div class="cards-row">
+                            <div class="flip-card">
+                                <div class="flip-card-inner" id="exS1">0</div>
+                            </div>
+                            <div class="flip-card">
+                                <div class="flip-card-inner" id="exS2">0</div>
+                            </div>
+                        </div>
+                        <div class="flip-label">giây</div>
+                    </div>
                 </div>
+                <div class="focus-footer">
+                    <button class="end-focus-btn" onclick="stopExercise()">Kết thúc</button>
+                </div>
+            </div>
+            <button class="claim-xp-btn hidden" id="exerciseClaimBtn"
+                onclick="claimXP('exercise_20min')">Completed</button>
 
+            <div class="focus-fullscreen" id="meditationFullscreen">
+                <div class="focus-mode">MEDITATION MODE</div>
+                <div class="flip-clock">
+                    <div class="flip-group">
+                        <div class="cards-row">
+                            <div class="flip-card">
+                                <div class="flip-card-inner" id="medM1">1</div>
+                            </div>
+                            <div class="flip-card">
+                                <div class="flip-card-inner" id="medM2">0</div>
+                            </div>
+                        </div>
+                        <div class="flip-label">phút</div>
+                    </div>
+                    <div class="flip-colon">:</div>
+                    <div class="flip-group">
+                        <div class="cards-row">
+                            <div class="flip-card">
+                                <div class="flip-card-inner" id="medS1">0</div>
+                            </div>
+                            <div class="flip-card">
+                                <div class="flip-card-inner" id="medS2">0</div>
+                            </div>
+                        </div>
+                        <div class="flip-label">giây</div>
+                    </div>
+                </div>
+                <div class="focus-footer">
+                    <button class="end-focus-btn" onclick="stopMeditation()">Kết thúc</button>
+                </div>
+            </div>
+            <button class="claim-xp-btn hidden" id="meditationClaimBtn"
+                onclick="claimXP('meditate_10min')">Completed</button>
+
+            <div class="focus-fullscreen" id="readingFullscreen">
+                <div class="focus-mode">READING MODE</div>
+                <div class="flip-clock">
+                    <div class="flip-group">
+                        <div class="cards-row">
+                            <div class="flip-card">
+                                <div class="flip-card-inner" id="readM1">1</div>
+                            </div>
+                            <div class="flip-card">
+                                <div class="flip-card-inner" id="readM2">0</div>
+                            </div>
+                        </div>
+                        <div class="flip-label">phút</div>
+                    </div>
+                    <div class="flip-colon">:</div>
+                    <div class="flip-group">
+                        <div class="cards-row">
+                            <div class="flip-card">
+                                <div class="flip-card-inner" id="readS1">0</div>
+                            </div>
+                            <div class="flip-card">
+                                <div class="flip-card-inner" id="readS2">0</div>
+                            </div>
+                        </div>
+                        <div class="flip-label">giây</div>
+                    </div>
+                </div>
+                <div class="focus-footer">
+                    <button class="end-focus-btn" onclick="stopReading()">Kết thúc</button>
+                </div>
+            </div>
+            <button class="claim-xp-btn hidden" id="readClaimBtn" onclick="claimXP('read_10min')">Completed</button>
+
+            <div class="bottom-nav">
+                <a href="/walk">
+                    <div class="nav-icon">🚶</div>Đi bộ
+                </a>
+                <a href="/focus">
+                    <div class="nav-icon">🎯</div>Tập trung
+                </a>
+                <a href="/index" class="active">
+                    <div class="nav-icon">🏠</div>Trang chủ
+                </a>
+                <a href="/group">
+                    <div class="nav-icon">🤝</div>Bang hội
+                </a>
+                <a href="/tasks">
+                    <div class="nav-icon">📋</div>Nhiệm vụ
+                </a>
             </div>
         </div>
-        
-        <div id="bottomNavContainer"></div>
-        <script src="/static/js/loadComponent.js"></script>
-    </div>
-    <script src="/static/js/app.js"></script>
+        <script src="./static/js/app.js"></script>
 </body>
 
-</html>
+</html> 
